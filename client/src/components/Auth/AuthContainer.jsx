@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import "./styles/AuthStyles.css";
+import "../styles/AuthStyles.css";
 
 const AuthContainer = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);

@@ -1,18 +1,30 @@
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
 
 * {
   box-sizing: border-box;
 }
 
 .body {
-  background: #51919bfa;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  font-family: "Montserrat", sans-serif;
   height: 100vh;
   width: 100%;
+  background: linear-gradient(341deg,#a596dd,#2f24ce,#7feff1,#2c167b,#ab6bff,#76ca51);
+  background-size: 360% 360%;
+  animation: gradient-animation 12s ease infinite;
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .h1 {
@@ -164,8 +176,8 @@
 
 .overlay {
   background: #2C3E50; /* Single color fallback */
-  background: -webkit-linear-gradient(to right, #2C3E50, #FF6B6B); /* For Chrome and Safari */
-  background: linear-gradient(to right, #2C3E50, #FF6B6B);
+  background: -webkit-linear-gradient(to right, #2C3E50, #ab6bff); /* For Chrome and Safari */
+  background: linear-gradient(to right, #2C3E50, #ab6bff);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;

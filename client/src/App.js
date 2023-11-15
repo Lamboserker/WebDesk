@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import Video from "./components/Video";
-import AuthContainer from "./components/AuthContainer";
-import LandingPage from "./components/LandingPage";
+import AuthContainer from "./components/Auth/AuthContainer";
+import LandingPage from "./components/Landing/LandingPage";
 import "./index.css";
 function App() {
   return (
