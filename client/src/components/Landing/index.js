@@ -2,21 +2,16 @@ import { WrenchScrewdriverIcon, CloudArrowUpIcon, FingerPrintIcon, UserGroupIcon
 
 export const navigation = [
     { name: "Documentation", href: "/auth" },
-    { name: "Produkt", href: "/" },
+    { name: "Product", href: "/" },
     { name: "Blog", href: "/" },
     { name: "About Us", href: "/" },
   ];
-  
-  
-  
-  
-  
   
  export const stats = [
     { name: 'Integrations available', value: '20+' },
     { name: 'Total User ', value: '500+' },
     { name: 'Projects managed on WebDesk', value: '1.000+' },
-    { name: 'Hours saved weeky', value: '10.000+' },
+    { name: 'Hours saved weekly', value: '10.000+' },
   ]
   
  export const features = [
