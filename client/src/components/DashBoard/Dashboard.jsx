@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import {Link} from "react-router-dom";
 import "../styles/dashboard.css";
 import {
   PlusIcon,
@@ -36,15 +37,23 @@ const Dashboard = () => {
     setActiveChannel(channel);
   };
 
-  const handleMessageSend = () => {
-    const messageContent = messageInputRef.current.innerHTML;
-    console.log("message sent:", messageContent);
-    // Add logic to send the message (now with HTML formatting)
-    messageInputRef.current.innerHTML = ""; // Clear the field after sending
+  const onEmojiClick = (emojiObject) => {
+    if (messageInputRef.current) {
+      const quill = messageInputRef.current.getEditor();
+      const range = quill.getSelection(true); // Get the current selection
+      const position = range ? range.index : quill.getLength(); // Position to insert emoji
+      quill.insertText(position, emojiObject.emoji); // Insert emoji at the position
+      quill.setSelection(position + emojiObject.emoji.length); // Move cursor after the emoji
+    }
   };
 
-  const onEmojiClick = (emojiObject) => {
-    setMessage((prevMessage) => prevMessage + emojiObject.emoji);
+  const handleMessageSend = () => {
+    if (messageInputRef.current) {
+      const messageContent = messageInputRef.current.getEditor().getText();
+      console.log("message sent:", messageContent);
+      // Add logic to send the message
+      messageInputRef.current.getEditor().deleteText(0, messageContent.length); // Clear the field after sending
+    }
   };
 
   // Click outside the emoji picker handle to close it
@@ -70,17 +79,14 @@ const Dashboard = () => {
     };
   }, []);
 
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
       {/* sidebar */}
-      <div className="flex flex-col bg-gray-800 text-white w-64">
+      <div className="flex flex-col  text-white w-64">
         {/* Top Bar/Header */}
         <div className="flex items-center justify-between h-16 px-4 shadow-md">
-          <h1 className="text-lg font-bold">WebDesk</h1>
-          <div className="space-x-2">
-            <button>🔍</button> {/* Search Icon */}
-            <button>☰</button> {/* Menu Icon */}
-          </div>
+          <h1 className="text-lg font-bold"><Link to="/">WebDesk</Link></h1>
         </div>
 
         {/* Primary Navigation */}
@@ -154,9 +160,9 @@ const Dashboard = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1 bg-blue-950">
+      <div className="flex flex-col flex-1">
         {/* Searchbar */}
-        <div className="bg-gray-800 p-4 flex items-center">
+        <div className=" p-4 flex items-center">
           <MagnifyingGlassIcon className="h-5 w-5 text-white mr-2" />
           <input
             type="text"
@@ -166,8 +172,8 @@ const Dashboard = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {/* chat history */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        {/* chat history/ main area */}
+        <div className="flex-1 p-4 overflow-y-auto bg-white">
           <h2 className="font-bold mb-2">
             {activeChannel ? `#${activeChannel}` : "Wählen Sie einen Kanal"}
           </h2>
@@ -195,15 +201,17 @@ const Dashboard = () => {
         </div>
         {/* message input area */}
         {activeChannel && (
-          <div className="p-4 bg-blue-950 shadow-md flex flex-col">
+          <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill"
+          >
             <ReactQuill
-              className="custom-quill flex-1 mr-2"
-              theme="snow"
+              ref={messageInputRef}
               value={message}
               onChange={setMessage}
               modules={modules}
               formats={formats}
+              
             />
+
             {/* Message Input with Emoji Picker */}
             <div className="flex items-center p-2 rounded-b-lg justify-end">
               {" "}
@@ -218,7 +226,10 @@ const Dashboard = () => {
                 </span>
               </button>
               {showEmojiPicker && (
-                <div ref={emojiPickerRef} className="absolute bottom-12 left-0">
+                <div
+                  ref={emojiPickerRef}
+                  className="absolute bottom-16 right-5"
+                >
                   <Picker onEmojiClick={onEmojiClick} />
                 </div>
               )}
