@@ -13,8 +13,8 @@ const containerVariants = {
     opacity: 1,
     scale: 1,
     transition: {
-      delayChildren: 0.3, // Verzögert den Start der Kinder-Animationen
-      staggerChildren: 0.2 // Verzögerung zwischen den Animationen der Kinder
+      delayChildren: 0.3, 
+      staggerChildren: 0.2 
     }
   }
 };
@@ -25,7 +25,7 @@ const itemVariants = {
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 0.6 // Verlängert die Dauer der Animation für jedes Element
+      duration: 0.6 
     }
   }
 };
@@ -37,7 +37,7 @@ const textVariants = {
     opacity: 1, 
     y: 0,
     transition: {
-      duration: 1 // Verlängerte Animationsdauer
+      duration: 1 
     }
   }
 };
@@ -48,12 +48,14 @@ const statVariants = {
     opacity: 1, 
     scale: 1,
     transition: {
-      delayChildren: 0.3, // Verzögerte Kinder-Animationen
-      staggerChildren: 0.2, // Verzögerung zwischen den Kinder-Animationen
-      duration: 1 // Verlängerte Animationsdauer
+      delayChildren: 0.3, 
+      staggerChildren: 0.2, 
+      duration: 1 
     }
   }
 };
+
+
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -231,7 +233,7 @@ const LandingPage = () => {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 1.0 }} // Startet die Animation, wenn das Element zu 100% im Viewport ist
+            viewport={{ once: true, amount: 1.0 }} 
           >
             <h2 className="text-base font-semibold leading-7 text-indigo-600">Streamline Your Workflow with Advanced Deployment Features</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

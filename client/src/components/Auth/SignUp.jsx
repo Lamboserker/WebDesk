@@ -8,19 +8,23 @@ import {
 
 const SignUp = () => {
   return (
-    <div className="form-container sign-up-container">
-      <form className="form" action="#">
-        <h1 className="h1">Create Account</h1>
-        <div className="social-container">
-          <FontAwesomeIcon icon={faFacebookF} className="social-icon" />
-          <FontAwesomeIcon icon={faGooglePlusG} className="social-icon" />
-          <FontAwesomeIcon icon={faLinkedinIn} className="social-icon" />
+    <div className="myApp-form-container myApp-sign-up-container">
+      <form className="myApp-form" action="#">
+        <h1 className="myApp-heading1">Create Account</h1>
+        <div className="myApp-social-container">
+          <FontAwesomeIcon icon={faFacebookF} className="myApp-social-icon" />
+          <FontAwesomeIcon icon={faGooglePlusG} className="myApp-social-icon" />
+          <FontAwesomeIcon icon={faLinkedinIn} className="myApp-social-icon" />
         </div>
-        <span className="span">or use your email for registration</span>
-        <input className="input" type="text" placeholder="Name" />
-        <input className="input" type="email" placeholder="Email" />
-        <input className="input" type="password" placeholder="Password" />
-        <button className="button">Sign Up</button>
+        <span className="myApp-paragraph">or use your email for registration</span>
+        <input className="myApp-input" type="text" placeholder="Name" />
+        <input className="myApp-input" type="email" placeholder="Email" />
+        <input
+          className="myApp-input"
+          type="password"
+          placeholder="Password"
+        />
+        <button className="myApp-button">Sign Up</button>
       </form>
     </div>
   );

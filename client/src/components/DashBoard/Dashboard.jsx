@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../styles/dashboard.css";
 import {
   PlusIcon,
@@ -79,14 +79,15 @@ const Dashboard = () => {
     };
   }, []);
 
-
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
       {/* sidebar */}
       <div className="flex flex-col  text-white w-64">
         {/* Top Bar/Header */}
         <div className="flex items-center justify-between h-16 px-4 shadow-md">
-          <h1 className="text-lg font-bold"><Link to="/">WebDesk</Link></h1>
+          <h1 className="text-lg font-bold">
+            <Link to="/">WebDesk</Link>
+          </h1>
         </div>
 
         {/* Primary Navigation */}
@@ -201,15 +202,13 @@ const Dashboard = () => {
         </div>
         {/* message input area */}
         {activeChannel && (
-          <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill"
-          >
+          <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">
             <ReactQuill
               ref={messageInputRef}
               value={message}
               onChange={setMessage}
               modules={modules}
               formats={formats}
-              
             />
 
             {/* Message Input with Emoji Picker */}

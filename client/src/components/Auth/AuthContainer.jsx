@@ -1,48 +1,48 @@
 import React, { useState } from "react";
 import SignIn from "./SignIn";
 import SignUp from "./SignUp";
-import "../styles/AuthStyles.css";
+import "../styles/authstyles.css";
 
 const AuthContainer = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
 
   return (
-    <div className="body">
-    <div
-      className={`container ${isRightPanelActive ? "right-panel-active" : ""}`}
-      id="container"
-    >
-      <SignUp />
-      <SignIn />
-      <div className="overlay-container">
-        <div className="overlay">
-          <div className="overlay-panel overlay-left">
-            <h1 className="h1">Welcome Back!</h1>
-            <p className="p">
-              To get started please login!
-            </p>
-            <button
-              className="ghost button"
-              id="signIn"
-              onClick={() => setIsRightPanelActive(false)}
-            >
-              Sign In
-            </button>
-          </div>
-          <div className="overlay-panel overlay-right">
-            <h1 className="h1">Hello, Friend!</h1>
-            <p>Enter your personal details and start journey with us</p>
-            <button
-              className="ghost button"
-              id="signUp"
-              onClick={() => setIsRightPanelActive(true)}
-            >
-              Sign Up
-            </button>
+    <div className="myApp-body">
+      <div
+        className={`myApp-container ${
+          isRightPanelActive ? "right-panel-active" : ""
+        }`}
+        id="container"
+      >
+        <SignUp />
+        <SignIn />
+        <div className="myApp-overlay-container">
+          <div className="myApp-overlay">
+            <div className="myApp-overlay-panel myApp-overlay-left">
+              <h1 className="myApp-heading1">Welcome Back!</h1>
+              <p className="myApp-paragraph">To get started please login!</p>
+              <button
+                className="myApp-ghost myApp-button"
+                id="signIn"
+                onClick={() => setIsRightPanelActive(false)}
+              >
+                Sign In
+              </button>
+            </div>
+            <div className="myApp-overlay-panel myApp-overlay-right">
+              <h1 className="myApp-heading1">Hello, Friend!</h1>
+              <p>Enter your personal details and start the journey with us</p>
+              <button
+                className="myApp-ghost myApp-button"
+                id="signUp"
+                onClick={() => setIsRightPanelActive(true)}
+              >
+                Sign Up
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

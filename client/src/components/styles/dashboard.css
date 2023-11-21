@@ -1,43 +1,43 @@
 .iconSeparator {
-  border-right: 1px solid rgba(0, 0, 0, 0.2); /* Schwarze Linie mit 20% Opazität */
-  margin-right: 8px; /* Etwas Abstand nach rechts */
-  padding-right: 8px; /* Etwas Abstand innerhalb des Buttons */
-}
-
-/* CSS */
-.menu-container {
-  position: relative; /* Container für das Icon und das Dropdown-Menü */
-}
-
-.dropdown-menu {
-  position: absolute;
-  right: 0;
-  bottom: 100%; /* Platzieren Sie es über dem Icon */
-  margin-bottom: 0.5em; /* Kleiner Abstand zum Icon */
-  /* Weitere Stile für das Menü */
-}
-
-/* CSS */
-
-.custom-quill .ql-toolbar {
-  color: white !important;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  border-bottom: none; /* Entfernt die untere Umrandung der Toolbar */
-}
-
-.custom-quill .ql-container {
-  border: 2px solid #ccc; /* Setzt eine dickere Border */
-  caret-color: white;
-  color: white;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  border-top: none; /* Entfernt die obere Umrandung des Editors */
-}
-
-.custom-quill .ql.toolbar .ql-container {
-  border: 15px solid white !important;
-}
-.custom-quill svg {
-  color: white;
-}
+    border-right: 1px solid rgba(0, 0, 0, 0.2); /* Schwarze Linie mit 20% Opazität */
+    margin-right: 8px; /* Etwas Abstand nach rechts */
+    padding-right: 8px; /* Etwas Abstand innerhalb des Buttons */
+  }
+  
+  /* CSS */
+  .menu-container {
+    position: relative; /* Container für das Icon und das Dropdown-Menü */
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    right: 0;
+    bottom: 100%; /* Platzieren Sie es über dem Icon */
+    margin-bottom: 0.5em; /* Kleiner Abstand zum Icon */
+    /* Weitere Stile für das Menü */
+  }
+  
+  /* CSS */
+  
+  .custom-quill .ql-toolbar {
+    color: white !important;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom: none; /* Entfernt die untere Umrandung der Toolbar */
+  }
+  
+  .custom-quill .ql-container {
+    border: 2px solid #ccc; /* Setzt eine dickere Border */
+    caret-color: white;
+    color: white;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top: none; /* Entfernt die obere Umrandung des Editors */
+  }
+  
+  .custom-quill .ql.toolbar .ql-container {
+    border: 15px solid white !important;
+  }
+  .custom-quill svg {
+    color: white;
+  }
