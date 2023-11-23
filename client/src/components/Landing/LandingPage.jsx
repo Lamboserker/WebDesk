@@ -93,7 +93,7 @@ const LandingPage = () => {
               <a
                 key={item.name}
                 href={item.href}
-                className="text-sm font-semibold leading-6 text-gray-900"
+                className="text-sm font-semibold leading-6 text-black"
               >
                 {item.name}
               </a>
@@ -102,7 +102,7 @@ const LandingPage = () => {
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <a
               href="/auth"
-              className="text-sm font-semibold leading-6 text-gray-900"
+              className="text-sm font-semibold leading-6 text-black"
             >
               Log in <span aria-hidden="true">&rarr;</span>
             </a>
@@ -127,7 +127,7 @@ const LandingPage = () => {
               </a>
               <button
                 type="button"
-                className="-m-2.5 rounded-md p-2.5 text-gray-700"
+                className="-m-2.5 rounded-md p-2.5 text-black"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <span className="sr-only">Close menu</span>
@@ -141,7 +141,7 @@ const LandingPage = () => {
                     <a
                       key={item.name}
                       href={item.href}
-                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-black hover:bg-gray-50"
                     >
                       {item.name}
                     </a>
@@ -151,7 +151,7 @@ const LandingPage = () => {
                   <div className="py-6">
                     <Link
                       to="/auth"
-                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-black hover:bg-gray-150 "
                     >
                       Log in
                     </Link>
@@ -189,7 +189,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-black sm:text-6xl">
             WebDesk: Revolutionize Your Team Collaboration
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600">
@@ -198,13 +198,13 @@ const LandingPage = () => {
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <a
                 href="/auth"
-                className="rounded-md bg-purple-500 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+                className="rounded-md bg-purple-700 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
               >
                 Get started
               </a>
               <a
                 href="/"
-                className="text-sm font-semibold leading-6 text-gray-900"
+                className="text-sm font-semibold leading-6 text-black"
               >
                 See Demo <span aria-hidden="true">→</span>
               </a>
@@ -236,7 +236,7 @@ const LandingPage = () => {
             viewport={{ once: true, amount: 1.0 }} 
           >
             <h2 className="text-base font-semibold leading-7 text-indigo-600">Streamline Your Workflow with Advanced Deployment Features</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+            <p className="mt-2 text-3xl font-bold tracking-tight text-black sm:text-4xl">
               WebDesk simplifies app deployment, making it faster and more efficient.
             </p>
           </motion.div>
@@ -313,7 +313,7 @@ const LandingPage = () => {
       >
         All-in-One Collaboration Hub
       </motion.h2>
-          <p className="mt-6 text-lg leading-8 text-gray-300">
+          <p className="mt-6 text-lg leading-8 text-white">
           Connect with your team anywhere, anytime.
          Customizable spaces to bring your projects to life.
           Direct access to your repositories for streamlined development.
@@ -329,7 +329,7 @@ const LandingPage = () => {
            viewport={{ once: true, amount: 0.5 }}>
             {stats.map((stat) => (
               <div key={stat.name} className="flex flex-col-reverse">
-                <dt className="text-base leading-7 text-gray-300">{stat.name}</dt>
+                <dt className="text-base leading-7 text-gray-400">{stat.name}</dt>
                 <dd className="text-2xl font-bold leading-9 tracking-tight text-white">{stat.value}</dd>
               </div>
             ))}

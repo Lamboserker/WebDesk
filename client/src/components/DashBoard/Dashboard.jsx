@@ -6,35 +6,68 @@ import {
   PaperAirplaneIcon,
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
+  VideoCameraIcon,
 } from "@heroicons/react/24/outline";
 import Picker from "emoji-picker-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // import styles
-
+import Modal from "./VideoModal";
+import VideoApp from "../Video/VideoApp";
 import { modules, formats } from "./index";
+import axios from "axios";
 
 const Dashboard = () => {
   const [activeChannel, setActiveChannel] = useState(null);
   const [message, setMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const emojiPickerRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
   const messageInputRef = useRef(null);
+  const [channels, setChannels] = useState([]);
+  const [newChannelName, setNewChannelName] = useState("");
+  const [isCreatingChannel, setIsCreatingChannel] = useState(false);
+  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceDescription, setWorkspaceDescription] = useState("");
 
-  const channels = ["channel-1", "channel-2"]; // paste here more channels
-  const messages = {
-    "channel-1": ["message 1", "message 2"], // Dummy-message for channel-1
-    "channel-2": ["message 3", "message 4"], // Dummy-message for channel-2
-  };
 
-  const handleCreateChannel = () => {
-    console.log("Create new channel");
-  };
+  const openWorkspaceModal = () => setIsWorkspaceModalOpen(true);
+  const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
+  
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
+  };
+  
+  const createWorkspace = () => {
+    
+
+    closeWorkspaceModal();
+  };
+  
+  const createChannel = async (channelName) => {
+    const token = localStorage.getItem("token"); // Token aus dem localStorage
+
+    try {
+      const response = await axios.post(
+        "/api/create-channel",
+        {
+          name: channelName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Verarbeiten der Antwort
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const onEmojiClick = (emojiObject) => {
@@ -71,6 +104,14 @@ const Dashboard = () => {
     }
   };
 
+  const openVideoModal = () => {
+    setIsVideoModalOpen(true);
+  };
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false);
+  };
+
   // Add event listener for clicks outside
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
@@ -78,6 +119,40 @@ const Dashboard = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const token = localStorage.getItem("userToken"); // Holt den Token aus dem Local Storage
+        const response = await axios.get(
+          "http://localhost:9000/api/channels/create-channel",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response.data); // Verarbeiten Sie die Channel-Daten
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchChannels();
+  }, []);
+
+  const handleCreateChannel = () => {
+    setIsCreatingChannel(true);
+  };
+
+  const saveNewChannel = () => {
+    axios
+      .post("http://localhost:9000/api/channels", { name: newChannelName })
+      .then((response) => {
+        setChannels([...channels, response.data]);
+        setIsCreatingChannel(false);
+        setNewChannelName("");
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -89,7 +164,25 @@ const Dashboard = () => {
             <Link to="/">WebDesk</Link>
           </h1>
         </div>
-
+        {isWorkspaceModalOpen && (
+  <div className="workspace-modal">
+    <div className="workspace-modal-content">
+      <input
+        type="text"
+        placeholder="Workspace Name"
+        value={workspaceName}
+        onChange={(e) => setWorkspaceName(e.target.value)}
+      />
+      <textarea
+        placeholder="Workspace Description"
+        value={workspaceDescription}
+        onChange={(e) => setWorkspaceDescription(e.target.value)}
+      />
+      <button onClick={createWorkspace}>Create Workspace</button>
+      <button onClick={closeWorkspaceModal}>Close</button>
+    </div>
+  </div>
+)}
         {/* Primary Navigation */}
         <div className="flex flex-col px-4 mt-2">
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
@@ -117,18 +210,39 @@ const Dashboard = () => {
               <PlusIcon className="h-5 w-5 text-white" />
             </button>
           </div>
+          {/* Dialog oder Formular für neue Channel-Erstellung*/}
+          {isCreatingChannel && (
+            <div>
+              <input
+                className="text-black"
+                type="text"
+                value={newChannelName}
+                onChange={(e) => setNewChannelName(e.target.value)}
+              />
+              <button onClick={saveNewChannel}>Channel erstellen</button>
+            </div>
+          )}
           {/* List of channels */}
           {channels.map((channel) => (
-            <button
-              key={channel}
+            <div
+              key={channel._id}
               className="flex items-center py-2 text-sm font-medium hover:bg-gray-700"
-              onClick={() => handleChannelClick(channel)}
             >
-              # {channel}
-            </button>
+              {channel.name}
+              <button onClick={() => handleChannelClick(channel)}>
+                # {channel}
+              </button>
+              <button onClick={openVideoModal}>
+                <VideoCameraIcon className="h-5 w-5 text-white" />
+              </button>
+            </div>
           ))}
         </div>
-
+        {isVideoModalOpen && (
+          <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
+            <VideoApp />
+          </Modal>
+        )}
         {/* Direct Messages Section */}
         <div className="px-4 mt-2">
           <h2 className="text-xs font-semibold text-gray-500 uppercase">
@@ -180,7 +294,7 @@ const Dashboard = () => {
           </h2>
           <div className="space-y-4">
             {activeChannel &&
-              messages[activeChannel].map((msg, index) => (
+              message[activeChannel].map((msg, index) => (
                 <div key={index} className="flex items-start space-x-2">
                   <img
                     src="/path/to/avatar.png"

@@ -31,7 +31,7 @@ const AuthContainer = () => {
             </div>
             <div className="myApp-overlay-panel myApp-overlay-right">
               <h1 className="myApp-heading1">Hello, Friend!</h1>
-              <p>Enter your personal details and start the journey with us</p>
+              <p className="myApp-paragraph">Enter your personal details and start your journey</p>
               <button
                 className="myApp-ghost myApp-button"
                 id="signUp"

@@ -1,0 +1,26 @@
+.modal-overlay {
+    /* ... andere Stile für das Overlay ... */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* ... */
+  }
+  
+  .modal-content {
+    /* ... andere Stile für den Modal-Inhalt ... */
+    position: relative;
+    /* ... */
+  }
+  
+  .close-modal-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+  }
+  
