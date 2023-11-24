@@ -3,7 +3,7 @@ import Dashboard from "./components/DashBoard/Dashboard";
 import AuthContainer from "./components/Auth/AuthContainer";
 import LandingPage from "./components/Landing/LandingPage";
 import VideoApp from "./components/Video/VideoApp";
-import WorkspaceModal from "./components/Modal/WorkspceModal";
+import WorkspaceModal from "./components/Modal/WorkspaceModal";
 
 function App() {
   return (

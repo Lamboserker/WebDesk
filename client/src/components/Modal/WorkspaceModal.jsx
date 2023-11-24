@@ -1,22 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
-import 'tailwindcss/tailwind.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import "tailwindcss/tailwind.css";
 
 const WorkspaceModal = ({ onClose }) => {
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceDescription, setWorkspaceDescription] = useState('');
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [userHasWorkspace, setUserHasWorkspace] = useState(false);
 
-  // Überprüfen, ob der Benutzer bereits einem Workspace beigetreten ist
   useEffect(() => {
     const checkUserWorkspace = async () => {
       try {
-        // Ersetzen Sie die URL durch Ihre API-Endpunkte
-        const response = await axios.get('http://localhost:9000/api/workspace/workspace-status');
+        const response = await axios.get(
+          "http://localhost:9000/api/workspaces/workspace-status",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+            },
+          }
+        );
+
         setUserHasWorkspace(response.data.hasWorkspace);
       } catch (error) {
-        console.error('Fehler beim Abrufen des Workspace-Status:', error);
+        console.error("Fehler beim Abrufen des Workspace-Status:", error);
       }
     };
 
@@ -26,14 +32,26 @@ const WorkspaceModal = ({ onClose }) => {
   // Funktion zum Erstellen eines neuen Workspaces
   const createWorkspace = async () => {
     try {
-      const response = await axios.post('http://localhost:9000/api/workspaces/create', {
-        name: workspaceName,
-        description: workspaceDescription
-      });
-      console.log('Workspace erstellt:', response.data);
+      // Extrahieren des Tokens
+      const token = localStorage.getItem("userToken");
+
+      const response = await axios.post(
+        "http://localhost:9000/api/workspaces/create",
+        {
+          name: workspaceName,
+          description: workspaceDescription,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Workspace erstellt:", response.data);
       onClose();
     } catch (error) {
-      console.error('Fehler beim Erstellen des Workspaces:', error);
+      console.error("Fehler beim Erstellen des Workspaces:", error);
     }
   };
 

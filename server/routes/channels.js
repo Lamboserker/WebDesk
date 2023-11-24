@@ -1,24 +1,22 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 const router = express.Router();
-import Channel from '../models/Channel.js'; // Passen Sie den Pfad an Ihr Modell an
-//Channel erstellen
+import Channel from '../models/Channel.js'; 
+
+
+//create a channel
 router.post('/create-channel', async (req, res) => {
   try {
     const { name } = req.body;
-    const token = req.headers.authorization.split(' ')[1]; // Token aus dem Header extrahieren
-
-    // Verifizieren des Tokens und Extrahieren der Benutzer-ID
+    const token = req.headers.authorization.split(' ')[1]; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decoded.user.id;
-
-    // Erstellen eines neuen Channel-Objekts
     const newChannel = new Channel({
       name,
       createdBy: userId
     });
 
-    // Speichern des Channel-Objekts in der Datenbank
+
     const savedChannel = await newChannel.save();
 
     res.status(201).json(savedChannel);
@@ -55,7 +53,7 @@ router.post('/channel/:channelId/send-message', (req, res) => {
 });
 
 // Alle Channels anzeigen
-router.get('/api/channels', async (req, res) => {
+router.get('/channel', async (req, res) => {
   try {
     // Logik zum Abrufen der Channel-Daten
     res.json(channels); // Sendet die abgerufenen Channels als Antwort

@@ -10,11 +10,16 @@ export const getToken = async () => {
   } else if (VIDEOSDK_TOKEN) {
     return VIDEOSDK_TOKEN;
   } else if (API_AUTH_URL) {
-    const res = await fetch(`${API_AUTH_URL}/get-token`, {
-      method: "GET",
-    });
-    const { token } = await res.json();
-    return token;
+    try {
+      const res = await fetch(`${API_AUTH_URL}/api/video/get-token`, {
+        method: "GET",
+      });
+      const { token } = await res.json();
+      console.log(token);
+      return token;
+    } catch (error) {
+      console.log(error.message);
+    }
   } else {
     console.error("Error: ", Error("Please add a token or Auth Server URL"));
   }

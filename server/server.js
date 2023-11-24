@@ -2,11 +2,11 @@ import express from "express";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
-import messageRoutes from './routes/messages.js';
-import channelRoutes from './routes/channels.js';
-import workspaceRoutes from './routes/workspaces.js';
-import auth from './middleware/Auth.js'; // Import der Authentifizierungsmiddleware
-import ErrorHandler from './middleware/ErrorHandler/ErrorHandlingMiddleware.js';
+import messageRoutes from "./routes/messages.js";
+import channelRoutes from "./routes/channels.js";
+import workspaceRoutes from "./routes/workspaces.js";
+import auth from "./middleware/Auth.js";
+import ErrorHandler from "./middleware/ErrorHandler/ErrorHandlingMiddleware.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
@@ -22,14 +22,12 @@ app.use(morgan("dev"));
 
 connectDB();
 
-// Hier können Sie auth als Middleware für bestimmte Routen verwenden
+//routes
 app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/channels', channelRoutes);
-
-// Beispiel, wie die Auth-Middleware in den Workspace-Routen verwendet wird
-app.use('/api/workspaces', auth, workspaceRoutes);
+app.use("/api/messages", messageRoutes);
+app.use("/api/channels", channelRoutes);
+app.use("/api/workspaces", auth, workspaceRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

@@ -1,20 +1,26 @@
-import express from 'express';
+import express from "express";
 const router = express.Router();
-import Workspace from '../models/Workspace.js'; // Passen Sie den Pfad an Ihr Modell an
-
-
-// Workspace erstellen
-router.post('/create', async (req, res) => {
+import Workspace from "../models/Workspace.js";
+import User from "../models/User.js";
+// create a Workspace
+router.post("/create", async (req, res) => {
   try {
-    const { name, description, owner } = req.body;
-
+    const { name, description } = req.body;
+    const owner = req.user.id; // User ID aus dem JWT-Token
     const newWorkspace = new Workspace({
       name,
       description,
-      owner // Angenommen, dies ist die ID des Benutzers, der den Workspace erstellt
+      owner,
+      members: [owner],
     });
 
     const savedWorkspace = await newWorkspace.save();
+
+    // Aktualisieren des User-Modells
+    await User.findByIdAndUpdate(owner, {
+      $push: { workspaces: savedWorkspace._id },
+    });
+
     res.status(201).json(savedWorkspace);
   } catch (error) {
     console.error(error);
@@ -22,8 +28,8 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// Alle Workspaces anzeigen
-router.get('/list', async (req, res) => {
+// show all workspaces
+router.get("/list", async (req, res) => {
   try {
     const workspaces = await Workspace.find();
     res.json(workspaces);
@@ -33,21 +39,19 @@ router.get('/list', async (req, res) => {
   }
 });
 
-
-router.get('/workspace-status', async (req, res) => {
+router.get("/workspace-status", async (req, res) => {
   try {
     const user = req.user;
     const workspace = await Workspace.findOne({ members: user._id });
-    res.json({ hasWorkspace:!!workspace });
+    res.json({ hasWorkspace: !!workspace });
   } catch (error) {
     console.error(error);
     res.status(500).send("Fehler beim Abrufen des Workspace-Status");
   }
 });
 
-
-// Workspace löschen
-router.delete('/delete/:workspaceId', async (req, res) => {
+// delete a workspace
+router.delete("/delete/:workspaceId", async (req, res) => {
   try {
     const workspaceId = req.params.workspaceId;
     await Workspace.findByIdAndDelete(workspaceId);

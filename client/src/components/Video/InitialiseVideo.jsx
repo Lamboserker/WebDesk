@@ -18,7 +18,7 @@ const InitializeVideo = () => {
     webcamEnabled: true,
     name: "Lukas's Org",
   }}
-  token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI5MjhhODFkMC1kZDE3LTQzMTQtOTc3Ny0wOGQ1MzQyZTFiNzkiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMDQ4NTA0NSwiZXhwIjoxNzAwNTcxNDQ1fQ.BpoI0y6dshiBpIoVY6gJQ9g4hjn9XdTUWdS067z8Ia4"
+  token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiI5MjhhODFkMC1kZDE3LTQzMTQtOTc3Ny0wOGQ1MzQyZTFiNzkiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcwMDgxNjkzNCwiZXhwIjoxNzAxNDIxNzM0fQ.aXg6PO_f5ZIP96C50Jocv5_a3U10CQKgbeGSaP-b63A"
 >
   <MeetingView />
 </MeetingProvider>

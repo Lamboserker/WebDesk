@@ -14,46 +14,47 @@ const SignIn = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userHasWorkspace, setUserHasWorkspace] = useState(false);
 
   const handleSignIn = async () => {
     try {
-      const response = await axios.post("http://localhost:9000/api/users/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:9000/api/users/login",
+        {
+          email,
+          password,
+        }
+      );
 
       const token = response.data.token;
       localStorage.setItem("userToken", token);
-
-      
-      checkUserWorkspace();
+      setUserHasWorkspace(response.data.hasWorkspace);
+      // Direkter Aufruf von checkUserWorkspace nach dem Login
+      await checkUserWorkspace();
     } catch (error) {
       console.error(error);
-      
     }
   };
 
-
-const checkUserWorkspace = async () => {
-  try {
-    const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+  const checkUserWorkspace = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:9000/api/workspaces/workspace-status",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      if (response.data.hasWorkspace) {
+        navigate("/dashboard");
+      } else {
+        navigate("/workspace-modal");
       }
-    });
-
-    if (response.data.hasWorkspace) {
-      navigate("/dashboard"); 
-    } else {
-      navigate("/workspace-modal"); 
+    } catch (error) {
+      console.error("Fehler beim Abrufen des Workspace-Status:", error);
     }
-  } catch (error) {
-    console.error('Fehler beim Abrufen des Workspace-Status:', error);
-   
-  }
-
-  
-};
+  };
 
   return (
     <div className="myApp-form-container myApp-sign-in-container">

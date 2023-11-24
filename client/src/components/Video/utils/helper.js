@@ -16,7 +16,7 @@ export const nameTructed = (name, tructedLength) => {
   }
 };
 
-export const json_verify = (s) => {
+export const json_verify = (s = {}) => {
   try {
     JSON.parse(s);
     return true;

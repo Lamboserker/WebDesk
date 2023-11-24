@@ -32,23 +32,19 @@ const Dashboard = () => {
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
 
-
   const openWorkspaceModal = () => setIsWorkspaceModalOpen(true);
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
-  
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
   };
-  
-  const createWorkspace = () => {
-    
 
+  const createWorkspace = () => {
     closeWorkspaceModal();
   };
-  
+
   const createChannel = async (channelName) => {
-    const token = localStorage.getItem("token"); // Token aus dem localStorage
+    const token = localStorage.getItem("userToken"); // Token aus dem localStorage
 
     try {
       const response = await axios.post(
@@ -165,24 +161,24 @@ const Dashboard = () => {
           </h1>
         </div>
         {isWorkspaceModalOpen && (
-  <div className="workspace-modal">
-    <div className="workspace-modal-content">
-      <input
-        type="text"
-        placeholder="Workspace Name"
-        value={workspaceName}
-        onChange={(e) => setWorkspaceName(e.target.value)}
-      />
-      <textarea
-        placeholder="Workspace Description"
-        value={workspaceDescription}
-        onChange={(e) => setWorkspaceDescription(e.target.value)}
-      />
-      <button onClick={createWorkspace}>Create Workspace</button>
-      <button onClick={closeWorkspaceModal}>Close</button>
-    </div>
-  </div>
-)}
+          <div className="workspace-modal">
+            <div className="workspace-modal-content">
+              <input
+                type="text"
+                placeholder="Workspace Name"
+                value={workspaceName}
+                onChange={(e) => setWorkspaceName(e.target.value)}
+              />
+              <textarea
+                placeholder="Workspace Description"
+                value={workspaceDescription}
+                onChange={(e) => setWorkspaceDescription(e.target.value)}
+              />
+              <button onClick={createWorkspace}>Create Workspace</button>
+              <button onClick={closeWorkspaceModal}>Close</button>
+            </div>
+          </div>
+        )}
         {/* Primary Navigation */}
         <div className="flex flex-col px-4 mt-2">
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
