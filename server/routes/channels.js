@@ -1,19 +1,19 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import Channel from '../models/Channel.js';
+import auth from '../middleware/Auth.js';
 const router = express.Router();
-import Channel from '../models/Channel.js'; 
 
 
 //create a channel
 router.post('/create-channel', async (req, res) => {
   try {
-    const { name } = req.body;
-    const token = req.headers.authorization.split(' ')[1]; 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.user.id;
+   const {name, workspaceId} = req.body;
+   const userId = req.user.id; // User ID aus dem JWT-Token
+   
     const newChannel = new Channel({
       name,
-      createdBy: userId
+      workspace: workspaceId,
     });
 
 
@@ -25,6 +25,8 @@ router.post('/create-channel', async (req, res) => {
     res.status(500).send("Fehler beim Erstellen des Channels");
   }
 });
+
+
 //Mitglieder hinzufügen 
 router.post('/channel/:channelId/add-member', (req, res) => {
   try {
@@ -55,6 +57,7 @@ router.post('/channel/:channelId/send-message', (req, res) => {
 // Alle Channels anzeigen
 router.get('/channel', async (req, res) => {
   try {
+    const channels = await Channel.find();
     // Logik zum Abrufen der Channel-Daten
     res.json(channels); // Sendet die abgerufenen Channels als Antwort
   } catch (error) {

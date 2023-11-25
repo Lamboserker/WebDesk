@@ -28,8 +28,6 @@ const SignIn = () => {
 
       const token = response.data.token;
       localStorage.setItem("userToken", token);
-      setUserHasWorkspace(response.data.hasWorkspace);
-      // Direkter Aufruf von checkUserWorkspace nach dem Login
       await checkUserWorkspace();
     } catch (error) {
       console.error(error);
@@ -38,24 +36,25 @@ const SignIn = () => {
 
   const checkUserWorkspace = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:9000/api/workspaces/workspace-status",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
+      const token = localStorage.getItem("userToken");
+      console.log(token);
+      const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
+
+      // Prüfen Sie, ob der Benutzer Mitglied in einem Workspace ist
       if (response.data.hasWorkspace) {
-        navigate("/dashboard");
+        navigate("/dashboard");  // Leiten Sie zum Dashboard um, wenn der Benutzer Mitglied ist
       } else {
-        navigate("/workspace-modal");
+        navigate("/workspace-modal");  // Leiten Sie zur WorkspaceModal Komponente um, wenn nicht
       }
     } catch (error) {
-      console.error("Fehler beim Abrufen des Workspace-Status:", error);
+      console.error('Fehler beim Abrufen des Workspace-Status (Fehlercode 1):', error);
     }
   };
-
+  
   return (
     <div className="myApp-form-container myApp-sign-in-container">
       <form className="myApp-form" onSubmit={(e) => e.preventDefault()}>
@@ -71,7 +70,7 @@ const SignIn = () => {
                 console.log("Login Failed");
               }}
             />
-            ;
+            
           </button>
           <FontAwesomeIcon icon={faLinkedinIn} className="myApp-social-icon" />
         </div>

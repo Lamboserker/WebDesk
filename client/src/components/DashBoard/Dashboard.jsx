@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import "../styles/dashboard.css";
 import {
   PlusIcon,
@@ -7,6 +7,7 @@ import {
   EllipsisVerticalIcon,
   MagnifyingGlassIcon,
   VideoCameraIcon,
+  Bars3Icon,
 } from "@heroicons/react/24/outline";
 import Picker from "emoji-picker-react";
 import ReactQuill from "react-quill";
@@ -17,23 +18,28 @@ import { modules, formats } from "./index";
 import axios from "axios";
 
 const Dashboard = () => {
+  let navigate = useNavigate();
   const [activeChannel, setActiveChannel] = useState(null);
   const [message, setMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const emojiPickerRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
-  const messageInputRef = useRef(null);
   const [channels, setChannels] = useState([]);
   const [newChannelName, setNewChannelName] = useState("");
   const [isCreatingChannel, setIsCreatingChannel] = useState(false);
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
-
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [workspaces, setWorkspaces] = useState([]);
+  const menuRef = useRef();
+  const messageInputRef = useRef(null);
+  const emojiPickerRef = useRef(null);
   const openWorkspaceModal = () => setIsWorkspaceModalOpen(true);
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
@@ -48,7 +54,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post(
-        "/api/create-channel",
+        "http://localhost:9000/api/channels/create-channel",
         {
           name: channelName,
         },
@@ -100,6 +106,8 @@ const Dashboard = () => {
     }
   };
 
+
+  
   const openVideoModal = () => {
     setIsVideoModalOpen(true);
   };
@@ -121,7 +129,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("userToken"); // Holt den Token aus dem Local Storage
         const response = await axios.get(
-          "http://localhost:9000/api/channels/create-channel",
+          "http://localhost:9000/api/channels/channel",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -140,15 +148,44 @@ const Dashboard = () => {
   };
 
   const saveNewChannel = () => {
-    axios
-      .post("http://localhost:9000/api/channels", { name: newChannelName })
-      .then((response) => {
-        setChannels([...channels, response.data]);
-        setIsCreatingChannel(false);
-        setNewChannelName("");
-      })
-      .catch((error) => console.error(error));
+    try {
+      const token = localStorage.getItem("userToken"); // Token aus dem localStorage
+      const workspaceId = activeChannel.workspaceId;
+       const response = axios.post("http://localhost:9000/api/channels/create-channel",
+        {
+          name: newChannelName,
+          workspaceId: activeChannel.workspaceId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+    } catch (error) {
+        console.error(error);
+      }}
+  const handleLogout = () => {
+    // Remove the token from LocalStorage
+    localStorage.removeItem('token'); // Replace 'token' with your token's key
+
+    // Redirect to the login/landing page
+    navigate('/'); // Replace '/login' with your login or landing page path
   };
+
+  // Funktion zum Schließen des Menüs
+  const closeMenu = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+    }
+};
+
+// Event Listener zum Schließen des Menüs bei Klick außerhalb
+useEffect(() => {
+    document.addEventListener("mousedown", closeMenu);
+    return () => {
+        document.removeEventListener("mousedown", closeMenu);
+    };
+}, []);
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -273,16 +310,29 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="flex flex-col flex-1">
         {/* Searchbar */}
-        <div className=" p-4 flex items-center">
+        <div className="p-4 flex items-center">
           <MagnifyingGlassIcon className="h-5 w-5 text-white mr-2" />
           <input
             type="text"
-            className="flex-1 p-2 rounded"
+            className="p-2 rounded w-11/12" // Adjust width class as needed
             placeholder="Nachrichten suchen"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+           {/*hamburger menu */}
+
+        <Bars3Icon className="w-4 " onClick={toggleDropdown} />
+      
+      {showDropdown && (
+        <div ref={menuRef} className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md">
+          {/* Add menu items here */}
+          <button onClick={handleLogout}>Logout</button>
         </div>
+      )}
+        </div>
+        
+       
+
         {/* chat history/ main area */}
         <div className="flex-1 p-4 overflow-y-auto bg-white">
           <h2 className="font-bold mb-2">

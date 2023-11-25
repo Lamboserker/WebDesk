@@ -1,7 +1,12 @@
 import express from "express";
-const router = express.Router();
 import Workspace from "../models/Workspace.js";
 import User from "../models/User.js";
+import channelRoutes from "./channels.js";
+const router = express.Router();
+
+
+
+
 // create a Workspace
 router.post("/create", async (req, res) => {
   try {
@@ -29,7 +34,7 @@ router.post("/create", async (req, res) => {
 });
 
 // show all workspaces
-router.get("/list", async (req, res) => {
+router.get("/list", async (res) => {
   try {
     const workspaces = await Workspace.find();
     res.json(workspaces);
@@ -40,15 +45,24 @@ router.get("/list", async (req, res) => {
 });
 
 router.get("/workspace-status", async (req, res) => {
+  console.log(req.user.id);
   try {
-    const user = req.user;
-    const workspace = await Workspace.findOne({ members: user._id });
+    // Stellen Sie sicher, dass der Benutzer authentifiziert ist
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ msg: "Nicht authentifiziert" });
+    }
+
+    const userId = req.user.id;
+    const workspace = await Workspace.findOne({ members: userId });
+
+    // Gibt true zurück, wenn ein Workspace gefunden wurde, in dem der Benutzer Mitglied ist
     res.json({ hasWorkspace: !!workspace });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Fehler beim Abrufen des Workspace-Status");
+    console.error("Fehler beim Abrufen des Workspace-Status (Fehlercode 2):", error);
+    res.status(500).json({ msg: "Fehler beim Abrufen des Workspace-Status (Fehlercode 3)", error: error.message });
   }
 });
+
 
 // delete a workspace
 router.delete("/delete/:workspaceId", async (req, res) => {

@@ -26,7 +26,7 @@ connectDB();
 app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/channels", channelRoutes);
+app.use("/api/channels",auth, channelRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
 
 app.get("/", (req, res) => {

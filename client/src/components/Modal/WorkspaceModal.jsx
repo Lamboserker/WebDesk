@@ -11,20 +11,19 @@ const WorkspaceModal = ({ onClose }) => {
   useEffect(() => {
     const checkUserWorkspace = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:9000/api/workspaces/workspace-status",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-            },
+        const token = localStorage.getItem("userToken");
+        const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
-
-        setUserHasWorkspace(response.data.hasWorkspace);
+        });
+    
+        // Weiterer Code zur Handhabung der Antwort
       } catch (error) {
-        console.error("Fehler beim Abrufen des Workspace-Status:", error);
+        console.error('Fehler beim Abrufen des Workspace-Status:', error);
       }
     };
+    
 
     checkUserWorkspace();
   }, []);
