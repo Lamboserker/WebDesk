@@ -54,12 +54,12 @@ router.post('/channel/:channelId/send-message', (req, res) => {
   }
 });
 
-// Alle Channels anzeigen
-router.get('/channel', async (req, res) => {
+// Anzeigen aller Kanäle, die zu einem bestimmten Workspace gehören
+router.get('/workspace/:workspaceId/channels', async (req, res) => {
   try {
-    const channels = await Channel.find();
-    // Logik zum Abrufen der Channel-Daten
-    res.json(channels); // Sendet die abgerufenen Channels als Antwort
+    const { workspaceId } = req.params;
+    const channels = await Channel.find({ workspace: workspaceId });
+    res.json(channels);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");

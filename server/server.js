@@ -6,7 +6,7 @@ import messageRoutes from "./routes/messages.js";
 import channelRoutes from "./routes/channels.js";
 import workspaceRoutes from "./routes/workspaces.js";
 import auth from "./middleware/Auth.js";
-import ErrorHandler from "./middleware/ErrorHandler/ErrorHandlingMiddleware.js";
+import authGoogleRoutes from "./routes/google0auth.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
@@ -22,12 +22,13 @@ app.use(morgan("dev"));
 
 connectDB();
 
-//routes
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/channels",auth, channelRoutes);
+app.use("/api/channels", auth, channelRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
+app.use("/api/google0auth", authGoogleRoutes); // Entfernen Sie `auth` von dieser Route
 
 app.get("/", (req, res) => {
   res.send("API is running...");

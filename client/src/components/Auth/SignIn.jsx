@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebookF,
-  faGoogle,
   faLinkedinIn,
 } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
@@ -10,11 +9,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 
-const SignIn = () => {
+const SignIn = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userHasWorkspace, setUserHasWorkspace] = useState(false);
 
   const handleSignIn = async () => {
     try {
@@ -29,6 +27,7 @@ const SignIn = () => {
       const token = response.data.token;
       localStorage.setItem("userToken", token);
       await checkUserWorkspace();
+      onLoginSuccess();	// Aufrufen der onLoginSuccess-Methode, um die den User zum Dashboard weiterzuleiten
     } catch (error) {
       console.error(error);
     }
@@ -37,7 +36,6 @@ const SignIn = () => {
   const checkUserWorkspace = async () => {
     try {
       const token = localStorage.getItem("userToken");
-      console.log(token);
       const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
         headers: {
           Authorization: `Bearer ${token}`
@@ -54,6 +52,25 @@ const SignIn = () => {
       console.error('Fehler beim Abrufen des Workspace-Status (Fehlercode 1):', error);
     }
   };
+
+  const handleGoogleSignIn = async (credentialResponse) => {
+    try {
+      // Senden des Google Tokens an Ihren Server
+      const res = await axios.post('http://localhost:9000/api/google0auth/google-auth', {
+        token: credentialResponse.credential,
+      });
+
+      // Speichern des JWT-Tokens, das von Ihrem Server zurückgegeben wird
+      const token = res.data.token;
+      localStorage.setItem("userToken", token);
+
+      // Überprüfen Sie den Workspace-Status des Benutzers
+      await checkUserWorkspace();
+      onLoginSuccess();	// Aufrufen der onLoginSuccess-Methode, um den User zum Dashboard weiterzuleiten
+    } catch (error) {
+      console.error('Fehler bei der Google-Anmeldung:', error);
+    }
+  };
   
   return (
     <div className="myApp-form-container myApp-sign-in-container">
@@ -62,14 +79,12 @@ const SignIn = () => {
         <div className="myApp-social-container">
           <FontAwesomeIcon icon={faFacebookF} className="myApp-social-icon" />
           <button id="signInButton">
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                console.log(credentialResponse);
-              }}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
+          <GoogleLogin
+            onSuccess={handleGoogleSignIn}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
             
           </button>
           <FontAwesomeIcon icon={faLinkedinIn} className="myApp-social-icon" />

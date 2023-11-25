@@ -11,7 +11,7 @@ const router = express.Router();
 // @desc Register a new user
 // @access Public
 router.post("/register", async (req, res) => {
-  const { name, email, color, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     let user = await User.findOne({ email });

@@ -3,7 +3,7 @@ import SignIn from "./SignIn";
 import SignUp from "./SignUp";
 import "../styles/authstyles.css";
 
-const AuthContainer = () => {
+const AuthContainer = ({onLoginSuccess }) => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
 
   return (
@@ -14,8 +14,8 @@ const AuthContainer = () => {
         }`}
         id="container"
       >
-        <SignUp />
-        <SignIn />
+        <SignUp  />
+        <SignIn onLoginSuccess={onLoginSuccess} />
         <div className="myApp-overlay-container">
           <div className="myApp-overlay">
             <div className="myApp-overlay-panel myApp-overlay-left">

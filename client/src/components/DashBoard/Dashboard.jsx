@@ -32,8 +32,11 @@ const Dashboard = () => {
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [workspaces, setWorkspaces] = useState([]);
+  const [ setIsMenuOpen] = useState(false);
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [selectedChannel, setSelectedChannel] = useState(null);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
@@ -186,6 +189,31 @@ useEffect(() => {
         document.removeEventListener("mousedown", closeMenu);
     };
 }, []);
+
+  // Kanäle abrufen
+  useEffect(() => {
+    axios.get('/channel')
+      .then(response => setChannels(response.data))
+      .catch(error => console.error(error));
+  }, []);
+
+  // Benutzer abrufen
+  useEffect(() => {
+    if (selectedWorkspace) {
+      axios.get(`http://localhost:9000/api/workspaces/${selectedWorkspace}/users`)
+        .then(response => setUsers(response.data))
+        .catch(error => console.error(error));
+    }
+  }, [selectedWorkspace]);
+
+  // Nachrichten abrufen
+  useEffect(() => {
+    if (selectedChannel) {
+      axios.get(`/channel/${selectedChannel}/messages`)
+        .then(response => setMessages(response.data))
+        .catch(error => console.error(error));
+    }
+  }, [selectedChannel]);
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">

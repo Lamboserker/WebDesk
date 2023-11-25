@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import "tailwindcss/tailwind.css";
@@ -6,28 +7,8 @@ import "tailwindcss/tailwind.css";
 const WorkspaceModal = ({ onClose }) => {
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
-  const [userHasWorkspace, setUserHasWorkspace] = useState(false);
-
-  useEffect(() => {
-    const checkUserWorkspace = async () => {
-      try {
-        const token = localStorage.getItem("userToken");
-        const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-    
-        // Weiterer Code zur Handhabung der Antwort
-      } catch (error) {
-        console.error('Fehler beim Abrufen des Workspace-Status:', error);
-      }
-    };
-    
-
-    checkUserWorkspace();
-  }, []);
-
+  const [userHasWorkspace] = useState(false);
+  const navigate = useNavigate();
   // Funktion zum Erstellen eines neuen Workspaces
   const createWorkspace = async () => {
     try {
@@ -49,6 +30,7 @@ const WorkspaceModal = ({ onClose }) => {
 
       console.log("Workspace erstellt:", response.data);
       onClose();
+      navigate("/dashboard");
     } catch (error) {
       console.error("Fehler beim Erstellen des Workspaces:", error);
     }

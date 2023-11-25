@@ -1,7 +1,6 @@
 import express from "express";
 import Workspace from "../models/Workspace.js";
 import User from "../models/User.js";
-import channelRoutes from "./channels.js";
 const router = express.Router();
 
 
