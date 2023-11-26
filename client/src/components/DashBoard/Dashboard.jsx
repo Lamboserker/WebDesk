@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 import {
   PlusIcon,
@@ -16,7 +16,7 @@ import Modal from "./VideoModal";
 import VideoApp from "../Video/VideoApp";
 import { modules, formats } from "./index";
 import axios from "axios";
-
+import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
 const Dashboard = () => {
   let navigate = useNavigate();
   const [activeChannel, setActiveChannel] = useState(null);
@@ -32,17 +32,24 @@ const Dashboard = () => {
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [ setIsMenuOpen] = useState(false);
+  const [, setIsMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [messages, setMessages] = useState([]);
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [, setUsers] = useState([]);
+  const [, setMessages] = useState([]);
+  const [selectedChannel] = useState(null);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
-  const openWorkspaceModal = () => setIsWorkspaceModalOpen(true);
+  const dropdownRef = useRef(null);
+
+
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+  
+  const setActiveChannelFunction = (channel) => {
+    setActiveChannel(channel);
+};
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
@@ -52,7 +59,8 @@ const Dashboard = () => {
     closeWorkspaceModal();
   };
 
-  const createChannel = async (channelName) => {
+  // function to create a new channel
+  const createChannel = async (channelName, selectedWorkspace) => {
     const token = localStorage.getItem("userToken"); // Token aus dem localStorage
 
     try {
@@ -60,6 +68,7 @@ const Dashboard = () => {
         "http://localhost:9000/api/channels/create-channel",
         {
           name: channelName,
+          workspace: selectedWorkspace._id,
         },
         {
           headers: {
@@ -109,8 +118,6 @@ const Dashboard = () => {
     }
   };
 
-
-  
   const openVideoModal = () => {
     setIsVideoModalOpen(true);
   };
@@ -132,18 +139,34 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("userToken"); // Holt den Token aus dem Local Storage
         const response = await axios.get(
-          "http://localhost:9000/api/channels/channel",
+          "http://localhost:9000/api/channels/:workspaceId/channels",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        console.log(response.data); // Verarbeiten Sie die Channel-Daten
+        setChannels(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchChannels();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    // Event Listener hinzufügen
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup-Funktion
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleCreateChannel = () => {
@@ -154,7 +177,8 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("userToken"); // Token aus dem localStorage
       const workspaceId = activeChannel.workspaceId;
-       const response = axios.post("http://localhost:9000/api/channels/create-channel",
+      const response = axios.post(
+        "http://localhost:9000/api/channels/create-channel",
         {
           name: newChannelName,
           workspaceId: activeChannel.workspaceId,
@@ -163,57 +187,96 @@ const Dashboard = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        });
+        }
+      );
     } catch (error) {
-        console.error(error);
-      }}
+      console.error(error);
+    }
+  };
   const handleLogout = () => {
     // Remove the token from LocalStorage
-    localStorage.removeItem('token'); // Replace 'token' with your token's key
+    localStorage.removeItem("token"); // Replace 'token' with your token's key
 
     // Redirect to the login/landing page
-    navigate('/'); // Replace '/login' with your login or landing page path
+    navigate("/"); // Replace '/login' with your login or landing page path
   };
 
   // Funktion zum Schließen des Menüs
   const closeMenu = (event) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
+      setIsMenuOpen(false);
     }
-};
+  };
 
-// Event Listener zum Schließen des Menüs bei Klick außerhalb
-useEffect(() => {
+  // Event Listener zum Schließen des Menüs bei Klick außerhalb
+  useEffect(() => {
     document.addEventListener("mousedown", closeMenu);
     return () => {
-        document.removeEventListener("mousedown", closeMenu);
+      document.removeEventListener("mousedown", closeMenu);
     };
-}, []);
+  }, []);
 
   // Kanäle abrufen
   useEffect(() => {
-    axios.get('/channel')
-      .then(response => setChannels(response.data))
-      .catch(error => console.error(error));
+    axios
+      .get("/channel")
+      .then((response) => setChannels(response.data))
+      .catch((error) => console.error(error));
   }, []);
 
   // Benutzer abrufen
   useEffect(() => {
     if (selectedWorkspace) {
-      axios.get(`http://localhost:9000/api/workspaces/${selectedWorkspace}/users`)
-        .then(response => setUsers(response.data))
-        .catch(error => console.error(error));
+      axios
+        .get(`http://localhost:9000/api/workspaces/${selectedWorkspace}/users`)
+        .then((response) => setUsers(response.data))
+        .catch((error) => console.error(error));
     }
   }, [selectedWorkspace]);
 
   // Nachrichten abrufen
   useEffect(() => {
     if (selectedChannel) {
-      axios.get(`/channel/${selectedChannel}/messages`)
-        .then(response => setMessages(response.data))
-        .catch(error => console.error(error));
+      axios
+        .get(`/channel/${selectedChannel}/messages`)
+        .then((response) => setMessages(response.data))
+        .catch((error) => console.error(error));
     }
   }, [selectedChannel]);
+
+  const handleChangeWorkspace = (event) => {
+    setSelectedWorkspace(event.target.value);
+  };
+
+  // Load last visited workspace on user login
+  useEffect(() => {
+    const lastVisitedWorkspaceId = localStorage.getItem('lastVisitedWorkspaceId');
+    if (lastVisitedWorkspaceId) {
+        // Fetch the workspace details including its channels
+        // Set the first channel of this workspace as activeChannel
+        // ... Fetching logic here
+        setSelectedWorkspace(lastVisitedWorkspaceId);
+    }
+}, []);
+
+const handleSelectWorkspace = (workspaceId) => {
+  // Logik, um den Workspace zu wechseln
+};
+
+// Function to handle workspace change
+const changeWorkspace = async (workspaceId) => {
+    try {
+        const response = await axios.get(`http://localhost:9000/api/workspaces/${workspaceId}`);
+        if (response.data && response.data.channels && response.data.channels.length > 0) {
+            setActiveChannelFunction(response.data.channels[0]);
+        }
+        setSelectedWorkspace(workspaceId);
+        localStorage.setItem('lastVisitedWorkspaceId', workspaceId);
+        navigate('/dashboard')
+    } catch (error) {
+        console.error("Error changing workspace:", error);
+    }
+};
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -221,9 +284,26 @@ useEffect(() => {
       <div className="flex flex-col  text-white w-64">
         {/* Top Bar/Header */}
         <div className="flex items-center justify-between h-16 px-4 shadow-md">
-          <h1 className="text-lg font-bold">
-            <Link to="/">WebDesk</Link>
-          </h1>
+        {showDropdown && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md flex flex-col"
+                ><span>WebDesk</span>
+                  {/* Workspace Dropdown */}
+                  <WorkspaceDropdown onSelectWorkspace={handleSelectWorkspace} />
+
+                  {/* Andere Menüpunkte */}
+                  <button className="p-2 hover:bg-gray-100" onClick={handleLogout}>
+                    Logout
+                  </button>
+                  <button
+                    className="p-2 hover:bg-gray-100"
+                    onClick={changeWorkspace}
+                  >
+                    Change Workspace
+                  </button>
+                </div>
+              )}
         </div>
         {isWorkspaceModalOpen && (
           <div className="workspace-modal">
@@ -271,7 +351,8 @@ useEffect(() => {
               <PlusIcon className="h-5 w-5 text-white" />
             </button>
           </div>
-          {/* Dialog oder Formular für neue Channel-Erstellung*/}
+
+          {/* Dialog oder Formular für neue Channel-Erstellung */}
           {isCreatingChannel && (
             <div>
               <input
@@ -283,6 +364,7 @@ useEffect(() => {
               <button onClick={saveNewChannel}>Channel erstellen</button>
             </div>
           )}
+
           {/* List of channels */}
           {channels.map((channel) => (
             <div
@@ -291,7 +373,7 @@ useEffect(() => {
             >
               {channel.name}
               <button onClick={() => handleChannelClick(channel)}>
-                # {channel}
+                # {channel.name}
               </button>
               <button onClick={openVideoModal}>
                 <VideoCameraIcon className="h-5 w-5 text-white" />
@@ -299,6 +381,7 @@ useEffect(() => {
             </div>
           ))}
         </div>
+
         {isVideoModalOpen && (
           <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
             <VideoApp />
@@ -338,28 +421,46 @@ useEffect(() => {
       {/* Main Content */}
       <div className="flex flex-col flex-1">
         {/* Searchbar */}
-        <div className="p-4 flex items-center">
-          <MagnifyingGlassIcon className="h-5 w-5 text-white mr-2" />
+        <div className="relative p-4 flex items-center">
+          {/* Search icon inside the input field */}
+          <div className="absolute left-4 inset-y-0 flex items-center pointer-events-none">
+            <MagnifyingGlassIcon className="h-5 w-5 ml-2 text-gray-800" />
+          </div>
+
+          {/* Input field */}
           <input
             type="text"
-            className="p-2 rounded w-11/12" // Adjust width class as needed
+            className="pl-10 pr-8 py-2 rounded w-full" // padding adjusted for icons
             placeholder="Nachrichten suchen"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-           {/*hamburger menu */}
 
-        <Bars3Icon className="w-4 " onClick={toggleDropdown} />
-      
-      {showDropdown && (
-        <div ref={menuRef} className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md">
-          {/* Add menu items here */}
-          <button onClick={handleLogout}>Logout</button>
+          {/* Hamburger menu icon enlarged and moved inside the input field */}
+          <div className="absolute right-4 inset-y-0 flex items-center">
+            <Bars3Icon className="w-6 h-6 mr-2" onClick={toggleDropdown} />{" "}
+            {/* Size increased */}
+          </div>
+
+          {/* Dropdown menu */}
+          {showDropdown && (
+            <div
+              ref={dropdownRef}
+              className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md flex flex-col"
+            >
+              {/* Add menu items here */}
+              <button className="p-2 hover:bg-gray-100" onClick={handleLogout}>
+                Logout
+              </button>
+              <button
+                className="p-2 hover:bg-gray-100"
+                onClick={handleChangeWorkspace}
+              >
+                Change Workspace
+              </button>
+            </div>
+          )}
         </div>
-      )}
-        </div>
-        
-       
 
         {/* chat history/ main area */}
         <div className="flex-1 p-4 overflow-y-auto bg-white">

@@ -102,7 +102,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
+// @route GET api/users/user-workspaces
+// @desc Get all workspaces of a user
+// @access Private
+router.get("/user-workspaces", async (req, res) => {
+  try {
+      const userId = req.user.id; // Benutzer-ID aus dem JWT-Token
+      const userWorkspaces = await Workspace.find({ members: userId });
+      res.json(userWorkspaces);
+  } catch (error) {
+      console.error(error);
+      res.status(500).send("Fehler beim Abrufen der Benutzer-Workspaces");
+  }
+});
 
 // @route GET api/users/validate-token
 // @desc Validate user's token

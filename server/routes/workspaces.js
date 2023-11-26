@@ -63,6 +63,19 @@ router.get("/workspace-status", async (req, res) => {
 });
 
 
+
+router.get("/:workspaceId", async (req, res) => {
+  try {
+    const workspaceId = req.params.workspaceId;
+    const workspace = await Workspace.findById(workspaceId);
+    res.json(workspace);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Fehler beim Abrufen des Workspaces");
+  }
+});
+
+
 // delete a workspace
 router.delete("/delete/:workspaceId", async (req, res) => {
   try {
