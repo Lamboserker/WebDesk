@@ -116,6 +116,22 @@ router.get("/user-workspaces", async (req, res) => {
   }
 });
 
+// GET api/users/me
+// Beschreibung: Aktuellen Benutzer abrufen
+// Zugriff: Privat
+router.get("/me", Auth, async (req, res) => {
+  try {
+      const user = await User.findById(req.user.id).select("-password");
+      if (!user) {
+          return res.status(404).send("Benutzer nicht gefunden");
+      }
+      res.json(user);
+  } catch (error) {
+      console.error(error.message);
+      res.status(500).send("Server Fehler");
+  }
+});
+
 // @route GET api/users/validate-token
 // @desc Validate user's token
 // @access Private

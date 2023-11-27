@@ -18,7 +18,7 @@ const SignIn = ({ onLoginSuccess }) => {
     try {
       const response = await axios.post(
         "http://localhost:9000/api/users/login",
-        {
+        { 
           email,
           password,
         }

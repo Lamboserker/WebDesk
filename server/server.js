@@ -3,7 +3,6 @@ import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
 import messageRoutes from "./routes/messages.js";
-import channelRoutes from "./routes/channels.js";
 import workspaceRoutes from "./routes/workspaces.js";
 import auth from "./middleware/Auth.js";
 import authGoogleRoutes from "./routes/google0auth.js";
@@ -26,7 +25,6 @@ connectDB();
 app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
-app.use("/api/channels", auth, channelRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
 app.use("/api/google0auth", authGoogleRoutes); // Entfernen Sie `auth` von dieser Route
 

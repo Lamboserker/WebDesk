@@ -37,19 +37,20 @@ const Dashboard = () => {
   const [, setUsers] = useState([]);
   const [, setMessages] = useState([]);
   const [selectedChannel] = useState(null);
+  const [workspaces, setWorkspaces] = useState([]);
+  const [userData, setUserData] = useState({ name: "", profileImage: "" });
+  const [imageLoadError, setImageLoadError] = useState(false);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const dropdownRef = useRef(null);
 
-
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
-  
   const setActiveChannelFunction = (channel) => {
     setActiveChannel(channel);
-};
+  };
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
@@ -65,7 +66,7 @@ const Dashboard = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:9000/api/channels/create-channel",
+        `http://localhost:9000/api/workspaces/create-channel`,
         {
           name: channelName,
           workspace: selectedWorkspace._id,
@@ -139,7 +140,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("userToken"); // Holt den Token aus dem Local Storage
         const response = await axios.get(
-          "http://localhost:9000/api/channels/:workspaceId/channels",
+          "http://localhost:9000/api/workspaces/channels",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -173,15 +174,21 @@ const Dashboard = () => {
     setIsCreatingChannel(true);
   };
 
-  const saveNewChannel = () => {
+  const saveNewChannel = async () => {
     try {
       const token = localStorage.getItem("userToken"); // Token aus dem localStorage
-      const workspaceId = activeChannel.workspaceId;
-      const response = axios.post(
-        "http://localhost:9000/api/channels/create-channel",
+      const workspaceId = selectedWorkspace._id; // Use the ID of the selected workspace
+      console.log(selectedWorkspace._id);
+      if (!workspaceId) {
+        console.error("No workspace selected");
+        return;
+      }
+
+      const response = await axios.post(
+        `http://localhost:9000/api/workspaces/create-channel`,
         {
           name: newChannelName,
-          workspaceId: activeChannel.workspaceId,
+          workspaceId: workspaceId,
         },
         {
           headers: {
@@ -189,10 +196,12 @@ const Dashboard = () => {
           },
         }
       );
+      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
   };
+
   const handleLogout = () => {
     // Remove the token from LocalStorage
     localStorage.removeItem("token"); // Replace 'token' with your token's key
@@ -216,25 +225,76 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Kanäle abrufen
+  // Fetch workspaces
+
+  const fetchWorkspaces = async () => {
+    const token = localStorage.getItem("userToken");
+    try {
+      const response = await axios.get(
+        "http://localhost:9000/api/workspaces/list",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setWorkspaces(response.data);
+      // Auto-select if there is only one workspace
+      if (response.data.length === 1) {
+        setSelectedWorkspace(response.data[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching workspaces:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWorkspaces();
+  }, []);
+
+  // fetch channels
   useEffect(() => {
     axios
-      .get("/channel")
+      .get("http://localhost:9000/api/workspaces/workspaceChannels")
       .then((response) => setChannels(response.data))
       .catch((error) => console.error(error));
   }, []);
 
-  // Benutzer abrufen
+  // Fetch users
   useEffect(() => {
     if (selectedWorkspace) {
+      const token = localStorage.getItem("userToken");
+      const workspaceId = workspaces._id;
       axios
-        .get(`http://localhost:9000/api/workspaces/${selectedWorkspace}/users`)
+        .get(`http://localhost:9000/api/workspaces/users`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((response) => setUsers(response.data))
         .catch((error) => console.error(error));
     }
   }, [selectedWorkspace]);
 
-  // Nachrichten abrufen
+  // fetch user information
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const response = await axios.get("http://localhost:9000/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUserData({
+          name: response.data.name,
+          profileImage: response.data.profileImage,
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Fetch messages
   useEffect(() => {
     if (selectedChannel) {
       axios
@@ -250,33 +310,37 @@ const Dashboard = () => {
 
   // Load last visited workspace on user login
   useEffect(() => {
-    const lastVisitedWorkspaceId = localStorage.getItem('lastVisitedWorkspaceId');
+    const lastVisitedWorkspaceId = localStorage.getItem(
+      "lastVisitedWorkspaceId"
+    );
     if (lastVisitedWorkspaceId) {
-        // Fetch the workspace details including its channels
-        // Set the first channel of this workspace as activeChannel
-        // ... Fetching logic here
-        setSelectedWorkspace(lastVisitedWorkspaceId);
+      // Fetch the workspace details including its channels
+      // Set the first channel of this workspace as activeChannel
+      // ... Fetching logic here
+      setSelectedWorkspace(lastVisitedWorkspaceId);
     }
-}, []);
+  }, []);
 
-const handleSelectWorkspace = (workspaceId) => {
-  // Logik, um den Workspace zu wechseln
-};
-
-// Function to handle workspace change
-const changeWorkspace = async (workspaceId) => {
+  // Function to handle workspace change
+  const changeWorkspace = async (workspaceId) => {
     try {
-        const response = await axios.get(`http://localhost:9000/api/workspaces/${workspaceId}`);
-        if (response.data && response.data.channels && response.data.channels.length > 0) {
-            setActiveChannelFunction(response.data.channels[0]);
-        }
-        setSelectedWorkspace(workspaceId);
-        localStorage.setItem('lastVisitedWorkspaceId', workspaceId);
-        navigate('/dashboard')
+      const response = await axios.get(
+        `http://localhost:9000/api/workspaces/isInWorkspace`
+      );
+      if (
+        response.data &&
+        response.data.channels &&
+        response.data.channels.length > 0
+      ) {
+        setActiveChannelFunction(response.data.channels[0]);
+      }
+      setSelectedWorkspace(workspaceId);
+      localStorage.setItem("lastVisitedWorkspaceId", workspaceId);
+      navigate("/dashboard");
     } catch (error) {
-        console.error("Error changing workspace:", error);
+      console.error("Error changing workspace:", error);
     }
-};
+  };
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -284,26 +348,16 @@ const changeWorkspace = async (workspaceId) => {
       <div className="flex flex-col  text-white w-64">
         {/* Top Bar/Header */}
         <div className="flex items-center justify-between h-16 px-4 shadow-md">
-        {showDropdown && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-md flex flex-col"
-                ><span>WebDesk</span>
-                  {/* Workspace Dropdown */}
-                  <WorkspaceDropdown onSelectWorkspace={handleSelectWorkspace} />
+          <div className="absolute left-0 mt-2 w-56 bg-black  rounded-md shadow-md flex flex-col">
+            {/* Workspace Dropdown */}
+            <WorkspaceDropdown onSelectWorkspace={changeWorkspace} />
 
-                  {/* Andere Menüpunkte */}
-                  <button className="p-2 hover:bg-gray-100" onClick={handleLogout}>
-                    Logout
-                  </button>
-                  <button
-                    className="p-2 hover:bg-gray-100"
-                    onClick={changeWorkspace}
-                  >
-                    Change Workspace
-                  </button>
-                </div>
-              )}
+            {/* Andere Menüpunkte */}
+
+            <button className="p-2 hover:bg-gray-700" onClick={changeWorkspace}>
+              Change Workspace
+            </button>
+          </div>
         </div>
         {isWorkspaceModalOpen && (
           <div className="workspace-modal">
@@ -416,6 +470,24 @@ const changeWorkspace = async (workspaceId) => {
             Help
           </button>
         </div>
+        {/* User Profile Section */}
+        <div className="mt-auto px-4 py-2">
+          <div className="flex items-center space-x-3">
+            {!imageLoadError ? (
+              <img
+                src={userData.profileImage}
+                alt="Profile"
+                className="h-10 w-10 rounded-full border-2 border-gray-300 object-cover"
+                onError={() => setImageLoadError(true)}
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                <span className="text-xs">User</span>
+              </div>
+            )}
+            <span className="text-sm font-medium">{userData.name}</span>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -452,12 +524,6 @@ const changeWorkspace = async (workspaceId) => {
               <button className="p-2 hover:bg-gray-100" onClick={handleLogout}>
                 Logout
               </button>
-              <button
-                className="p-2 hover:bg-gray-100"
-                onClick={handleChangeWorkspace}
-              >
-                Change Workspace
-              </button>
             </div>
           )}
         </div>
@@ -465,7 +531,7 @@ const changeWorkspace = async (workspaceId) => {
         {/* chat history/ main area */}
         <div className="flex-1 p-4 overflow-y-auto bg-white">
           <h2 className="font-bold mb-2">
-            {activeChannel ? `#${activeChannel}` : "Wählen Sie einen Kanal"}
+            {activeChannel ? `#${activeChannel}` : "please choose a channel"}
           </h2>
           <div className="space-y-4">
             {activeChannel &&
