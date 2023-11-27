@@ -15,7 +15,7 @@ function App() {
     setIsWorkspaceModalOpen(true);
   };
 
-  // Funktion zum Schließen des Workspace-Modals
+  
   const closeWorkspaceModal = () => {
     setIsWorkspaceModalOpen(false);
   };

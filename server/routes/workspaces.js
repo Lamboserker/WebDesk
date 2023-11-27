@@ -101,36 +101,51 @@ router.delete("/delete", async (req, res) => {
 });
 
 // Display Workspace channels
-router.get("/channels", async (req, res) => {
+router.get("/:workspaceId/channels", async (req, res) => {
   try {
     const workspaceId = req.params.workspaceId;
     if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
       return res.status(400).send("Invalid workspaceId");
     }
-    const channels = await Channel.find({ workspace: workspaceId });
-    res.status(200).json(channels);
+
+    const workspace = await Workspace.findById(workspaceId).populate("channels");
+    if (!workspace) {
+      return res.status(404).send("Workspace not found");
+    }
+
+    res.json(workspace.channels);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
   }
 });
 
-// Create a channel within a workspace
-router.post("/create-channel", async (req, res) => {
+
+// create a channel within a workspace
+router.post("/:workspaceId/create-channel", async (req, res) => {
   try {
-    const workspaceId = req.body.workspaceId;
+    const workspaceId = req.params.workspaceId;
     const { name } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
       return res.status(400).send("Invalid workspaceId");
-    }
+  }
+
 
     const newChannel = new Channel({
       name,
-      workspace: workspaceId,
+      messages: [],
+      workspaceId: workspaceId,
     });
 
     const savedChannel = await newChannel.save();
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace) {
+      return res.status(404).send("Workspace not found");
+    }
+    workspace.channels.push(savedChannel._id);
+    await workspace.save();
+
     res.status(201).json(savedChannel);
   } catch (error) {
     console.error(error);
