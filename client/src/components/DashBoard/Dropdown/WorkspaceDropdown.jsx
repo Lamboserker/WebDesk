@@ -11,6 +11,12 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
   const modalRef = useRef(null); // Referenz für das Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handleWorkspaceClick = (workspace) => {
+    setSelectedWorkspace(workspace._id);
+    onSelectWorkspace(workspace);
+  };
+
   useEffect(() => {
     // Event Listener, um Klicks außerhalb des Modals zu erkennen
     const handleClickOutside = (event) => {
@@ -29,7 +35,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
   }, []);
 
   const openCreateWorkspaceModal = () => {
-    navigate('/workspace-modal');
+    navigate("/workspace-modal");
   };
 
   useEffect(() => {
@@ -53,10 +59,10 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
     fetchWorkspaces();
   }, []);
 
-  const handleSelectionChange = (workspaceId) => {
-    setSelectedWorkspace(workspaceId);
-    onSelectWorkspace(workspaceId);
-    setIsModalOpen(false); // Close the modal after selection
+  const handleSelectionChange = (workspace) => {
+    setSelectedWorkspace(workspace._id);
+    onSelectWorkspace(workspace);
+    setIsModalOpen(false);
   };
 
   const getWorkspaceName = () => {
@@ -69,7 +75,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
       {/* Modal toggle */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        className="block text-2xl text-white focus:outline-none focus:ring-0 font-medium rounded-lg  px-5 py-2.5 text-center"
         type="button"
       >
         {getWorkspaceName()}
@@ -91,15 +97,25 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 className=" w-full text-lg font-semibold text-gray-900 dark:text-white">
                   Select a Workspace
-                  
                 </h3>
                 <button
                   onClick={openCreateWorkspaceModal}
                   className="ml-2 text-gray-400 hover:text-gray-600"
                   aria-label="Create new workspace"
                 >
-                  <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <svg
+                    className="w-6 h-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
                   </svg>
                 </button>
                 <button
@@ -116,7 +132,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
                   Select your workspace:
                 </p>
                 <ul className="space-y-4 mb-4">
-                  {workspaces.map((workspace, index) => (
+                  {workspaces.map((workspace) => (
                     <li key={workspace._id}>
                       <input
                         type="radio"
@@ -125,7 +141,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
                         value={workspace._id}
                         className="hidden peer"
                         checked={selectedWorkspace === workspace._id}
-                        onChange={() => handleSelectionChange(workspace._id)}
+                        onChange={() => handleSelectionChange(workspace)}
                       />
                       <label
                         htmlFor={`workspace-${workspace._id}`}
@@ -158,12 +174,6 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
                     </li>
                   ))}
                 </ul>
-                <button
-                  className="text-white inline-flex w-full justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  select workspace
-                </button>
               </div>
             </div>
           </div>

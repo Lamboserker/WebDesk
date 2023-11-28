@@ -24,7 +24,7 @@ const WorkspaceSchema = new mongoose.Schema({
   ],
   chatMessages: [
     {
-      type: Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "ChatMessage",
     },
   ],

@@ -35,7 +35,7 @@ const Dashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [, setIsMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [selectedChannel] = useState(null);
   const [, setWorkspaces] = useState([]);
   const [userData, setUserData] = useState({ name: "", profileImage: "" });
@@ -90,8 +90,8 @@ const Dashboard = () => {
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
-  const handleChannelClick = (channel) => {
-    setActiveChannel(channel);
+  const handleChannelClick = (channelId) => {
+    setActiveChannel(channelId);
   };
 
   const createWorkspace = () => {
@@ -107,9 +107,8 @@ const Dashboard = () => {
   }, []);
 
   // Fetch all channels from the server
-  const fetchChannels = async () => {
+  const fetchChannels = async (workspaceId) => {
     const token = localStorage.getItem("userToken");
-    const workspaceId = selectedWorkspace._id;
     try {
       const response = await axios.get(
         `http://localhost:9000/api/workspaces/${workspaceId}/channels`,
@@ -119,7 +118,6 @@ const Dashboard = () => {
           },
         }
       );
-
       setChannels(response.data);
     } catch (error) {
       console.error("Error fetching channels:", error);
@@ -127,8 +125,16 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (selectedWorkspace) {
+    const lastVisitedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
+    if (lastVisitedWorkspaceId) {
+      setSelectedWorkspace({ _id: lastVisitedWorkspaceId });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedWorkspace && selectedWorkspace._id) {
       fetchChannels(selectedWorkspace._id);
+      localStorage.setItem("lastVisitedWorkspace", selectedWorkspace._id);
     }
   }, [selectedWorkspace]);
 
@@ -138,11 +144,7 @@ const Dashboard = () => {
         setShowDropdown(false);
       }
     };
-
-    // Event Listener hinzufügen
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup-Funktion
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -203,7 +205,6 @@ const Dashboard = () => {
   }, []);
 
   // Fetch workspaces
-
   const fetchWorkspaces = async () => {
     const token = localStorage.getItem("userToken");
     try {
@@ -249,27 +250,70 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
-  // Fetch messages
-  useEffect(() => {
-    if (selectedChannel) {
-      axios
-        .get(`http://localhost:9000/api/workspaces/${selectedChannel}/messages`)
-        .then((response) => setMessages(response.data))
-        .catch((error) => console.error(error));
-    }
-  }, [selectedChannel]);
-
   // Function to handle workspace change
-  const changeWorkspace = async (workspaceId) => {
-    try {
-      setSelectedWorkspace(workspaceId);
-      localStorage.setItem("lastVisitedWorkspaceId", workspaceId);
+  const changeWorkspace = (workspace) => {
+    setSelectedWorkspace(workspace);
+    localStorage.setItem("lastVisitedWorkspaceId", workspace._id);
+    fetchChannels(workspace._id);
+  };
 
-      await fetchChannels(workspaceId);
+  // Function to send a message
+  const sendMessage = async (messageContent, channelId) => {
+    try {
+      const response = await fetch("http://localhost:9000/api/messages/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: messageContent, channelId }),
+      });
+      if (response.ok) {
+        // Handle successful message send (e.g., clear input field, update UI)
+      } else {
+        // Handle error in sending message
+      }
     } catch (error) {
-      console.error("Error changing workspace:", error);
+      console.error("Error sending message:", error);
     }
   };
+
+  const handleSendMessage = async (event) => {
+    event.preventDefault();
+    setMessage("");
+  };
+
+  // Function to receive messages for a channel
+  const receiveMessages = async (channelId) => {
+    console.log(channelId);
+
+    try {
+      const workspaceId = selectedWorkspace._id;
+      const response = await axios.get(
+        `http://localhost:9000/api/messages/messages`,
+
+        {
+          params: {
+            workspaceId: workspaceId,
+            channelId: channelId,
+          },
+        }
+      );
+      if (response.status === 200) {
+        setMessages(response.data);
+        // Update the UI with the received messages
+      } else {
+        // Handle error in receiving messages
+      }
+    } catch (error) {
+      console.error("Error receiving messages:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (activeChannel) {
+      receiveMessages(activeChannel);
+    }
+  }, [activeChannel]);
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -348,7 +392,7 @@ const Dashboard = () => {
               key={channel._id}
               className="flex items-center justify-between py-2 text-sm font-medium hover:bg-gray-700"
             >
-              <button onClick={() => handleChannelClick(channel)}>
+              <button onClick={() => handleChannelClick(channel._id)}>
                 # {channel.name}
               </button>
               <button onClick={openVideoModal}>
@@ -453,11 +497,12 @@ const Dashboard = () => {
         {/* chat history/ main area */}
         <div className="flex-1 p-4 overflow-y-auto bg-white">
           <h2 className="font-bold mb-2">
-            {activeChannel ? `#${activeChannel}` : "please choose a channel"}
+            {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
           </h2>
           <div className="space-y-4">
+            {console.log(messages)}
             {activeChannel &&
-              message[activeChannel].map((msg, index) => (
+              messages.map((msg, index) => (
                 <div key={index} className="flex items-start space-x-2">
                   <img
                     src="/path/to/avatar.png"
@@ -481,9 +526,9 @@ const Dashboard = () => {
         {activeChannel && (
           <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">
             <ReactQuill
+              onChange={(value) => setMessage(value)}
               ref={messageInputRef}
               value={message}
-              onChange={setMessage}
               modules={modules}
               formats={formats}
             />
@@ -539,7 +584,7 @@ const Dashboard = () => {
                 )}
               </div>
               <button
-                onClick={handleMessageSend}
+                onClick={handleSendMessage}
                 className="ml-2 text-gray-700 rounded-lg p-2 z-50"
                 style={{ fontSize: "24px" }} // Adjusting the size of send icon
               >
