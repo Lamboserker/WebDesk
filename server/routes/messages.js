@@ -1,19 +1,23 @@
 import express from "express";
 import Message from "../models/ChatMessage.js";
-import Channel from "../models/Channel.js";
 import Workspace from "../models/Workspace.js";
 const router = express.Router();
 
 // send a message to a channel
-router.post("/send", async (req, res) => {
+router.post("/:workspaceId/send", async (req, res) => {
+  console.log(req.body)
   try {
-    const { content, channelId, senderId } = req.body; // Assuming senderId is passed in the request
+    const { content, channelId, senderId } = req.body;
 
-    // Validate request data (e.g., check if content is not empty)
-    if (!content || !channelId || !senderId) {
-      return res
-        .status(400)
-        .send("Missing message content, channel, or sender information");
+    // Separate validation for each field
+    if (!content) {
+      return res.status(400).send("Message content is missing");
+    }
+    if (!channelId) {
+      return res.status(400).send("Channel ID is missing");
+    }
+    if (!senderId) {
+      return res.status(400).send("Sender ID is missing");
     }
 
     // Create a new message
@@ -32,6 +36,7 @@ router.post("/send", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 // get all messages for a channel
 router.get("/messages", async (req, res) => {
   try {

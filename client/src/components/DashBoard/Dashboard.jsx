@@ -36,7 +36,7 @@ const Dashboard = () => {
   const [, setIsMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [selectedChannel] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState(null);
   const [, setWorkspaces] = useState([]);
   const [userData, setUserData] = useState({ name: "", profileImage: "" });
   const [imageLoadError, setImageLoadError] = useState(false);
@@ -52,15 +52,6 @@ const Dashboard = () => {
       const position = range ? range.index : quill.getLength(); // Position to insert emoji
       quill.insertText(position, emojiObject.emoji); // Insert emoji at the position
       quill.setSelection(position + emojiObject.emoji.length); // Move cursor after the emoji
-    }
-  };
-
-  const handleMessageSend = () => {
-    if (messageInputRef.current) {
-      const messageContent = messageInputRef.current.getEditor().getText();
-      console.log("message sent:", messageContent);
-      // Add logic to send the message
-      messageInputRef.current.getEditor().deleteText(0, messageContent.length); // Clear the field after sending
     }
   };
 
@@ -257,34 +248,9 @@ const Dashboard = () => {
     fetchChannels(workspace._id);
   };
 
-  // Function to send a message
-  const sendMessage = async (messageContent, channelId) => {
-    try {
-      const response = await fetch("http://localhost:9000/api/messages/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: messageContent, channelId }),
-      });
-      if (response.ok) {
-        // Handle successful message send (e.g., clear input field, update UI)
-      } else {
-        // Handle error in sending message
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-  };
-
-  const handleSendMessage = async (event) => {
-    event.preventDefault();
-    setMessage("");
-  };
-
   // Function to receive messages for a channel
   const receiveMessages = async (channelId) => {
-    console.log(channelId);
+    setActiveChannel(channelId);
 
     try {
       const workspaceId = selectedWorkspace._id;
@@ -314,6 +280,63 @@ const Dashboard = () => {
       receiveMessages(activeChannel);
     }
   }, [activeChannel]);
+
+  async function validateToken() {
+    try {
+      const response = await axios.get('http://localhost:9000/api/users/validate-token', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('userToken')}` // Annahme, dass das Token im Local Storage gespeichert ist
+        }
+      });
+  
+      if (response.data.valid) {
+        return response.data.userId; // Rückgabe der Benutzer-ID, wenn der Token gültig ist
+      } else {
+        throw new Error('Invalid token');
+      }
+    } catch (error) {
+      console.error('Token validation error:', error);
+      return null; // oder eine andere Fehlerbehandlung
+    }
+  }
+  
+  // Neue sendMessage Funktion
+  async function sendMessage(content) {
+    const userId = await validateToken();
+    const channelId = selectedWorkspace._id;
+  
+    if (!userId) {
+      console.error('User ID not found. Token may be invalid.');
+      return; // Frühzeitiger Abbruch, wenn keine Benutzer-ID gefunden wird
+    }
+  
+    try {
+      const response = await axios.post(`http://localhost:9000/api/messages/${channelId}/send`, {
+        content,
+        channelId,
+        senderId: userId
+      });
+  
+      if (response.status === 201) {
+        console.log('Message sent successfully:', response.data);
+      } else {
+        console.error('Failed to send message:', response);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+
+
+
+  const handleSendMessage = async (event) => {
+    event.preventDefault();
+    if (message) {
+      setMessages([...messages, message]);
+      await sendMessage(message);
+      setMessage("");
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
@@ -346,6 +369,7 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+
         {/* Primary Navigation */}
         <div className="flex flex-col px-4 mt-2">
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
@@ -500,7 +524,7 @@ const Dashboard = () => {
             {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
           </h2>
           <div className="space-y-4">
-            {console.log(messages)}
+            {/*console.log(messages)*/}
             {activeChannel &&
               messages.map((msg, index) => (
                 <div key={index} className="flex items-start space-x-2">
@@ -555,7 +579,7 @@ const Dashboard = () => {
                 </div>
               )}
               <div className="menu-container">
-                <button className="text-gray-500" onClick={toggleMenu}>
+                <button className="text-gray-500" onClick={sendMessage}>
                   <EllipsisVerticalIcon className="h-5 w-5" />
                 </button>
                 {showMenu && (
