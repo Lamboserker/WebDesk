@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Auth from "../middleware/Auth.js";
 
-
 const router = express.Router();
 
 // @route POST api/users/register
@@ -33,7 +32,7 @@ router.post("/register", async (req, res) => {
     const payload = {
       user: {
         id: user.id,
-        name: user.name // Include the user's name in the token payload if needed
+        name: user.name, // Include the user's name in the token payload if needed
       },
     };
 
@@ -54,10 +53,14 @@ router.post("/register", async (req, res) => {
 // @route GET api/users
 // @desc Get all users
 // @access Public
-router.get("/users", async (req, res) => {
+router.get("/:userId/users", async (req, res) => {
   try {
-    const users = await User.find().select("-password");
-    res.json(users);
+    const { userId } = req.params;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json(user);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server error");
@@ -107,12 +110,12 @@ router.post("/login", async (req, res) => {
 // @access Private
 router.get("/user-workspaces", async (req, res) => {
   try {
-      const userId = req.user.id; // Benutzer-ID aus dem JWT-Token
-      const userWorkspaces = await Workspace.find({ members: userId });
-      res.json(userWorkspaces);
+    const userId = req.user.id; // Benutzer-ID aus dem JWT-Token
+    const userWorkspaces = await Workspace.find({ members: userId });
+    res.json(userWorkspaces);
   } catch (error) {
-      console.error(error);
-      res.status(500).send("Fehler beim Abrufen der Benutzer-Workspaces");
+    console.error(error);
+    res.status(500).send("Fehler beim Abrufen der Benutzer-Workspaces");
   }
 });
 
@@ -121,14 +124,14 @@ router.get("/user-workspaces", async (req, res) => {
 // Zugriff: Privat
 router.get("/me", Auth, async (req, res) => {
   try {
-      const user = await User.findById(req.user.id).select("-password");
-      if (!user) {
-          return res.status(404).send("Benutzer nicht gefunden");
-      }
-      res.json(user);
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).send("Benutzer nicht gefunden");
+    }
+    res.json(user);
   } catch (error) {
-      console.error(error.message);
-      res.status(500).send("Server Fehler");
+    console.error(error.message);
+    res.status(500).send("Server Fehler");
   }
 });
 
@@ -138,6 +141,5 @@ router.get("/me", Auth, async (req, res) => {
 router.get("/validate-token", Auth, (req, res) => {
   res.json({ valid: true, userId: req.user.id });
 });
-
 
 export default router;

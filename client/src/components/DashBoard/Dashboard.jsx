@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 import {
@@ -22,10 +22,11 @@ const Dashboard = () => {
   let navigate = useNavigate();
   const [activeChannel, setActiveChannel] = useState(null);
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
+  const [showMenu] = useState(false);
   const [channels, setChannels] = useState([]);
   const [newChannelName, setNewChannelName] = useState("");
   const [isCreatingChannel, setIsCreatingChannel] = useState(false);
@@ -35,11 +36,10 @@ const Dashboard = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [, setIsMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [selectedChannel, setSelectedChannel] = useState(null);
   const [, setWorkspaces] = useState([]);
   const [userData, setUserData] = useState({ name: "", profileImage: "" });
   const [imageLoadError, setImageLoadError] = useState(false);
+  const [userCache, setUserCache] = useState({});
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
@@ -56,8 +56,7 @@ const Dashboard = () => {
   };
 
   // Click outside the emoji picker handle to close it
-
-  const handleClickOutside = (event) => {
+  const handleClickOutsideEmoji = (event) => {
     if (
       emojiPickerRef.current &&
       !emojiPickerRef.current.contains(event.target)
@@ -74,10 +73,6 @@ const Dashboard = () => {
     setIsVideoModalOpen(false);
   };
 
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
-
   const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
@@ -88,14 +83,6 @@ const Dashboard = () => {
   const createWorkspace = () => {
     closeWorkspaceModal();
   };
-
-  // Add event listener for clicks outside
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   // Fetch all channels from the server
   const fetchChannels = async (workspaceId) => {
@@ -187,7 +174,7 @@ const Dashboard = () => {
     }
   };
 
-  // Event Listener zum Schließen des Menüs bei Klick außerhalb
+  // function to open menu
   useEffect(() => {
     document.addEventListener("mousedown", closeMenu);
     return () => {
@@ -223,7 +210,7 @@ const Dashboard = () => {
 
   // fetch user information
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = async (userId) => {
       try {
         const token = localStorage.getItem("userToken");
         const response = await axios.get("http://localhost:9000/api/users/me", {
@@ -248,86 +235,113 @@ const Dashboard = () => {
     fetchChannels(workspace._id);
   };
 
-  // Function to receive messages for a channel
-  const receiveMessages = async (channelId) => {
-    setActiveChannel(channelId);
-
+  async function validateToken() {
     try {
-      const workspaceId = selectedWorkspace._id;
       const response = await axios.get(
-        `http://localhost:9000/api/messages/messages`,
-
+        "http://localhost:9000/api/users/validate-token",
         {
-          params: {
-            workspaceId: workspaceId,
-            channelId: channelId,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
         }
       );
-      if (response.status === 200) {
-        setMessages(response.data);
-        // Update the UI with the received messages
+
+      if (response.data.valid) {
+        return response.data.userId;
       } else {
-        // Handle error in receiving messages
+        throw new Error("Invalid token");
       }
     } catch (error) {
-      console.error("Error receiving messages:", error);
+      console.error("Token validation error:", error);
+      return null;
+    }
+  }
+
+  const fetchMessageInfos = async (userId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:9000/api/users/${userId}/users`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Benutzerdaten:", error);
     }
   };
 
+  // Vorabladen und Caching der Benutzerdaten
+  const preloadUserInfos = useCallback(
+    async (messages) => {
+      const userIds = [...new Set(messages.map((msg) => msg.senderId))];
+      await Promise.all(
+        userIds.map(async (userId) => {
+          if (userId && !userCache[userId]) {
+            // Überprüfen Sie, ob userId definiert ist
+            const userData = await fetchMessageInfos(userId);
+            setUserCache((prevCache) => ({
+              ...prevCache,
+              [userId]: userData,
+            }));
+          }
+        })
+      );
+    },
+    [userCache]
+  );
+
+  // Aktualisierte fetchMessages Funktion
+  const fetchMessages = useCallback(async () => {
+    try {
+      const channelId = activeChannel;
+      const response = await axios.get(
+        `http://localhost:9000/api/messages/${channelId}/messages`
+      );
+      setMessages(response.data);
+      await preloadUserInfos(response.data); // Vorabladen der Benutzerdaten
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  }, [activeChannel, preloadUserInfos]);
+
   useEffect(() => {
     if (activeChannel) {
-      receiveMessages(activeChannel);
+      fetchMessages();
     }
-  }, [activeChannel]);
+  }, [activeChannel, fetchMessages]);
 
-  async function validateToken() {
-    try {
-      const response = await axios.get('http://localhost:9000/api/users/validate-token', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('userToken')}` // Annahme, dass das Token im Local Storage gespeichert ist
-        }
-      });
-  
-      if (response.data.valid) {
-        return response.data.userId; // Rückgabe der Benutzer-ID, wenn der Token gültig ist
-      } else {
-        throw new Error('Invalid token');
-      }
-    } catch (error) {
-      console.error('Token validation error:', error);
-      return null; // oder eine andere Fehlerbehandlung
-    }
+  // Function to decode messages
+  function Message({ htmlContent }) {
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
   }
-  
+
   // Neue sendMessage Funktion
   async function sendMessage(content) {
     const userId = await validateToken();
-    const channelId = selectedWorkspace._id;
-  
+    const channelId = activeChannel;
+    console.log(channelId);
     if (!userId) {
-      console.error('User ID not found. Token may be invalid.');
+      console.error("User ID not found. Token may be invalid.");
       return; // Frühzeitiger Abbruch, wenn keine Benutzer-ID gefunden wird
     }
-  
+
     try {
-      const response = await axios.post(`http://localhost:9000/api/messages/${channelId}/send`, {
-        content,
-        channelId,
-        senderId: userId
-      });
-  
+      const response = await axios.post(
+        `http://localhost:9000/api/messages/${channelId}/send`,
+        {
+          content,
+          channelId,
+          senderId: userId,
+        }
+      );
+
       if (response.status === 201) {
-        console.log('Message sent successfully:', response.data);
+        console.log("Message sent successfully:", response.data);
       } else {
-        console.error('Failed to send message:', response);
+        console.error("Failed to send message:", response);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error("Error sending message:", error);
     }
   }
-
-
 
   const handleSendMessage = async (event) => {
     event.preventDefault();
@@ -524,28 +538,35 @@ const Dashboard = () => {
             {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
           </h2>
           <div className="space-y-4">
-            {/*console.log(messages)*/}
-            {activeChannel &&
-              messages.map((msg, index) => (
-                <div key={index} className="flex items-start space-x-2">
+            {messages.map((message) => {
+              console.log(message.sender);
+              const userData = userCache[message.sender] || {
+                name: "Loading...",
+                avatar:
+                  "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg?size=626&ext=jpg&ga=GA1.1.700948343.1701269311&semt=ais",
+              };
+              return (
+                <div key={message._id} className="flex items-start space-x-2">
                   <img
-                    src="/path/to/avatar.png"
-                    alt="Avatar"
+                    src={userData.avatar}
+                    alt={userData.name}
                     className="w-10 h-10 rounded-full"
-                  />{" "}
-                  {/* Avatar */}
+                  />
                   <div className="flex-1">
                     <div className="flex items-baseline justify-between">
-                      <p className="font-semibold">username</p> {/* username */}
-                      <span className="text-xs text-gray-500">12:00</span>{" "}
-                      {/* time */}
+                      <p className="font-semibold">{userData.name}</p>
+                      <span className="text-xs text-gray-500">
+                        {new Date(message.createdAt).toLocaleTimeString()}
+                      </span>
                     </div>
-                    <p>{msg}</p> {/* message text */}
+                    <Message htmlContent={message.content} />
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         </div>
+
         {/* message input area */}
         {activeChannel && (
           <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">

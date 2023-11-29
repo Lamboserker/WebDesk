@@ -5,7 +5,7 @@ const router = express.Router();
 
 // send a message to a channel
 router.post("/:workspaceId/send", async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     const { content, channelId, senderId } = req.body;
 
@@ -37,37 +37,21 @@ router.post("/:workspaceId/send", async (req, res) => {
   }
 });
 
-// get all messages for a channel
-router.get("/messages", async (req, res) => {
+// Get all messages for a specific channel
+router.get("/:channelId/messages", async (req, res) => {
   try {
-    const { workspaceId, channelId } = req.query;
-
-    // Assuming Workspace model has a channels array containing channel IDs
-    const workspace = await Workspace.findById(workspaceId).populate("channels");
-    if (!workspace) {
-      return res.status(404).send("Workspace not found");
-    }
-
-    // Check if the channel ID is in the workspace's channels array
-    const channelExistsInWorkspace = workspace.channels.some(
-      channel => channel._id.toString() === channelId
-    );
-
-    if (!channelExistsInWorkspace) {
-      return res
-        .status(404)
-        .send("Channel not found in the specified workspace");
-    }
+    const { channelId } = req.params;
 
     // Retrieve messages for the channel
-    const messages = await Message.find({ channel: channelId });
+    const messages = await Message.find({ channel: channelId }).sort({
+      createdAt: -1,
+    });
     res.json(messages);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
   }
 });
-
 
 // get the history of a channel
 router.get("/history", async (req, res) => {
