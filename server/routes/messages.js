@@ -8,7 +8,8 @@ router.post("/:workspaceId/send", Auth, async (req, res) => {
   console.log(req.body);
   try {
     const { content, channelId } = req.body;
-    const senderId = req.user.id;
+    const senderName = req.body.senderName;
+    const senderImage = req.body.senderImage;
 
     // Separate validation for each field
     if (!content) {
@@ -17,15 +18,17 @@ router.post("/:workspaceId/send", Auth, async (req, res) => {
     if (!channelId) {
       return res.status(400).send("Channel ID is missing");
     }
-    if (!senderId) {
-      return res.status(400).send("Sender ID is missing");
+    if (!senderName) {
+      return res.status(400).send("Sender name is missing");
     }
 
     // Create a new message
     const newMessage = new Message({
       content,
       channel: channelId,
-      sender: senderId,
+      sender: senderName,
+      senderImage: senderImage,
+      createdAt: new Date(),
     });
 
     // Save the message to the database
@@ -44,9 +47,7 @@ router.get("/:channelId/messages", async (req, res) => {
     const { channelId } = req.params;
 
     // Retrieve messages for the channel
-    const messages = await Message.find({ channel: channelId }).sort({
-      createdAt: -1,
-    });
+    const messages = await Message.find({ channel: channelId })
     res.json(messages);
   } catch (error) {
     console.error(error);

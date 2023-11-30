@@ -37,7 +37,7 @@ const Dashboard = () => {
   const [, setIsMenuOpen] = useState(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [, setWorkspaces] = useState([]);
-  const [userData, setUserData] = useState({ name: "", profileImage: "" });
+  const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [imageLoadError, setImageLoadError] = useState(false);
   const [userCache, setUserCache] = useState({});
   const menuRef = useRef();
@@ -238,23 +238,6 @@ const Dashboard = () => {
   }
 
   // Vorabladen und Caching der Benutzerdaten
-  const preloadUserInfos = useCallback(async (messages) => {
-    const userIds = [...new Set(messages.map((msg) => msg.senderId))];
-    console.log("Zu ladende userIds:", userIds); // Debugging
-    if (userIds.length > 0) {
-      const userData = await fetchMessageInfos(userIds);
-      if (userData) {
-        const newCache = userData.reduce(
-          (acc, user) => ({ ...acc, [user._id]: user }),
-          {}
-        );
-        setUserCache((prevCache) => ({
-          ...prevCache,
-          ...newCache,
-        }));
-      }
-    }
-  }, []);
 
   // fetch current user information
   useEffect(() => {
@@ -285,39 +268,17 @@ const Dashboard = () => {
       const response = await axios.get(
         `http://localhost:9000/api/messages/${channelId}/messages`
       );
-      console.log("Empfangene Nachrichten:", response.data); // Überprüfen Sie die Struktur der Nachrichten
       setMessages(response.data);
-      await preloadUserInfos(response.data); // Vorabladen der Benutzerdaten
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
-  }, [activeChannel, preloadUserInfos]);
+  }, [activeChannel]);
 
   useEffect(() => {
     if (activeChannel) {
       fetchMessages();
     }
   }, [activeChannel, fetchMessages]);
-
-  // Cache für Benutzerdaten
-  async function fetchMessageInfos(userIds) {
-    console.log("userIds:", userIds);
-    try {
-      console.log("Senden von userIds an das Backend:", userIds.join(",")); // Debugging
-      const token = localStorage.getItem("userToken");
-      const response = await axios.get(
-        `http://localhost:9000/api/users/by-ids`,
-        {
-          params: { userIds: userIds.join(",") }, // Stellen Sie sicher, dass es sich um ein Array handelt und in einen String umgewandelt wird
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Fehler beim Abrufen der Benutzerdaten:", error);
-      return null;
-    }
-  }
 
   // Function to decode messages
   function Message({ htmlContent }) {
@@ -326,15 +287,22 @@ const Dashboard = () => {
 
   // Neue sendMessage Funktion
   async function sendMessage() {
+    console.log("userData:", userData.name);
     const channelId = activeChannel;
     const workspaceId = selectedWorkspace._id;
     const token = localStorage.getItem("userToken");
-    const senderId = validateToken(token);
+    const senderName = userData.name; // Assuming userData contains the current user's name
+    const senderImage = userData.profileImage ? userData.profileImage : null; // Assuming userData contains the current user's image URL
     const Content = message;
     try {
       const response = await axios.post(
         `http://localhost:9000/api/messages/${workspaceId}/send`,
-        { content: Content, channelId: channelId, sender: senderId },
+        {
+          content: Content,
+          channelId: channelId,
+          senderName: senderName,
+          senderImage: senderImage,
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -544,21 +512,26 @@ const Dashboard = () => {
           <div className="space-y-4">
             {messages && messages.length > 0 ? (
               messages.map((message) => {
-                const userData = userCache[message.sender] || {
-                  name: "Loading...",
-                  avatar:
-                    "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg",
+                // Überprüfen, ob message.senderName und message.senderImage vorhanden sind
+                const userData = {
+                  senderName: message?.senderName
+                    ? message.senderName
+                    : "Loading...",
+                  senderImage: message?.senderImage
+                    ? message.senderImage
+                    : "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg",
                 };
+
                 return (
                   <div key={message._id} className="flex items-start space-x-2">
                     <img
-                      src={userData.avatar}
-                      alt={userData.name}
+                      src={userData.senderImage}
+                      alt={userData.sender}
                       className="w-10 h-10 rounded-full"
                     />
                     <div className="flex-1">
                       <div className="flex items-baseline justify-between">
-                        <p className="font-semibold">{userData.name}</p>
+                        <p className="font-semibold">{message.sender}</p>
                         <span className="text-xs text-gray-500">
                           {new Date(message.createdAt).toLocaleTimeString()}
                         </span>
@@ -569,11 +542,10 @@ const Dashboard = () => {
                 );
               })
             ) : (
-              <p>No messages to display</p>
+              <p>choose a channel</p>
             )}
           </div>
         </div>
-
         {/* message input area */}
         {activeChannel && (
           <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">
