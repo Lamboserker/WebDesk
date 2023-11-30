@@ -1,13 +1,14 @@
 import express from "express";
 import Message from "../models/ChatMessage.js";
-import Workspace from "../models/Workspace.js";
+import Auth from "../middleware/Auth.js";
 const router = express.Router();
 
 // send a message to a channel
-router.post("/:workspaceId/send", async (req, res) => {
+router.post("/:workspaceId/send", Auth, async (req, res) => {
   console.log(req.body);
   try {
-    const { content, channelId, senderId } = req.body;
+    const { content, channelId } = req.body;
+    const senderId = req.user.id;
 
     // Separate validation for each field
     if (!content) {

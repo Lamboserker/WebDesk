@@ -21,6 +21,7 @@
     "mongoose": "^8.0.1",
     "morgan": "^1.10.0",
     "node-fetch": "^3.3.2",
-    "react-modal": "^3.16.1"
+    "react-modal": "^3.16.1",
+    "socket.io": "^4.7.2"
   }
 }

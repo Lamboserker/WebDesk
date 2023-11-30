@@ -50,22 +50,6 @@ router.post("/register", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-// @route GET api/users
-// @desc Get all users
-// @access Public
-router.get("/:userId/users", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
-      return res.status(404).send("User not found");
-    }
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server error");
-  }
-});
 
 // @route POST api/users/login
 // @desc Authenticate user & get token
@@ -119,6 +103,14 @@ router.get("/user-workspaces", async (req, res) => {
   }
 });
 
+// @route GET api/users/validate-token
+// @desc Validate user's token
+// @access Private
+router.get("/validate-token", Auth, (req, res) => {
+  console.log("User in validate-token:", req.user);
+  res.json({ valid: true, userId: req.user.id });
+});
+
 // GET api/users/me
 // Beschreibung: Aktuellen Benutzer abrufen
 // Zugriff: Privat
@@ -135,11 +127,27 @@ router.get("/me", Auth, async (req, res) => {
   }
 });
 
-// @route GET api/users/validate-token
-// @desc Validate user's token
-// @access Private
-router.get("/validate-token", Auth, (req, res) => {
-  res.json({ valid: true, userId: req.user.id });
+// @route GET api/users/by-ids
+// @desc Get infos about authors
+// @access Public
+router.get("/by-ids", async (req, res) => {
+  try {
+    const userIds = req.query.userIds;
+    console.log("userIds: ", userIds);
+    // Überprüfen Sie, ob userIds vorhanden und ein Array ist
+    if (!userIds || !Array.isArray(userIds)) {
+      return res.status(400).send("Invalid userIds provided");
+    }
+
+    const users = await User.find({
+      _id: { $in: userIds },
+    }).select("-password");
+
+    res.json(users);
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server error");
+  }
 });
 
 export default router;

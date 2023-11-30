@@ -136,7 +136,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("userToken");
       const workspaceId = selectedWorkspace._id;
-      console.log(selectedWorkspace._id);
+      // console.log(selectedWorkspace._id);
       if (!workspaceId) {
         console.error("No workspace selected");
         return;
@@ -155,7 +155,7 @@ const Dashboard = () => {
           },
         }
       );
-      console.log(response.data);
+      // console.log(response.data);
       await fetchChannels();
     } catch (error) {
       console.error(error);
@@ -208,26 +208,6 @@ const Dashboard = () => {
     fetchWorkspaces();
   }, []);
 
-  // fetch user information
-  useEffect(() => {
-    const fetchUserData = async (userId) => {
-      try {
-        const token = localStorage.getItem("userToken");
-        const response = await axios.get("http://localhost:9000/api/users/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUserData({
-          name: response.data.name,
-          profileImage: response.data.profileImage,
-        });
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
   // Function to handle workspace change
   const changeWorkspace = (workspace) => {
     setSelectedWorkspace(workspace);
@@ -257,36 +237,46 @@ const Dashboard = () => {
     }
   }
 
-  const fetchMessageInfos = async (userId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:9000/api/users/${userId}/users`
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Fehler beim Abrufen der Benutzerdaten:", error);
-    }
-  };
-
   // Vorabladen und Caching der Benutzerdaten
-  const preloadUserInfos = useCallback(
-    async (messages) => {
-      const userIds = [...new Set(messages.map((msg) => msg.senderId))];
-      await Promise.all(
-        userIds.map(async (userId) => {
-          if (userId && !userCache[userId]) {
-            // Überprüfen Sie, ob userId definiert ist
-            const userData = await fetchMessageInfos(userId);
-            setUserCache((prevCache) => ({
-              ...prevCache,
-              [userId]: userData,
-            }));
-          }
-        })
-      );
-    },
-    [userCache]
-  );
+  const preloadUserInfos = useCallback(async (messages) => {
+    const userIds = [...new Set(messages.map((msg) => msg.senderId))];
+    console.log("Zu ladende userIds:", userIds); // Debugging
+    if (userIds.length > 0) {
+      const userData = await fetchMessageInfos(userIds);
+      if (userData) {
+        const newCache = userData.reduce(
+          (acc, user) => ({ ...acc, [user._id]: user }),
+          {}
+        );
+        setUserCache((prevCache) => ({
+          ...prevCache,
+          ...newCache,
+        }));
+      }
+    }
+  }, []);
+
+  // fetch current user information
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("userToken");
+        const userId = await validateToken();
+        const response = await axios.get("http://localhost:9000/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { userId: userId },
+        });
+        setUserData({
+          name: response.data.name,
+          profileImage: response.data.profileImage,
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Aktualisierte fetchMessages Funktion
   const fetchMessages = useCallback(async () => {
@@ -295,6 +285,7 @@ const Dashboard = () => {
       const response = await axios.get(
         `http://localhost:9000/api/messages/${channelId}/messages`
       );
+      console.log("Empfangene Nachrichten:", response.data); // Überprüfen Sie die Struktur der Nachrichten
       setMessages(response.data);
       await preloadUserInfos(response.data); // Vorabladen der Benutzerdaten
     } catch (error) {
@@ -308,33 +299,47 @@ const Dashboard = () => {
     }
   }, [activeChannel, fetchMessages]);
 
+  // Cache für Benutzerdaten
+  async function fetchMessageInfos(userIds) {
+    console.log("userIds:", userIds);
+    try {
+      console.log("Senden von userIds an das Backend:", userIds.join(",")); // Debugging
+      const token = localStorage.getItem("userToken");
+      const response = await axios.get(
+        `http://localhost:9000/api/users/by-ids`,
+        {
+          params: { userIds: userIds.join(",") }, // Stellen Sie sicher, dass es sich um ein Array handelt und in einen String umgewandelt wird
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Fehler beim Abrufen der Benutzerdaten:", error);
+      return null;
+    }
+  }
+
   // Function to decode messages
   function Message({ htmlContent }) {
     return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
   }
 
   // Neue sendMessage Funktion
-  async function sendMessage(content) {
-    const userId = await validateToken();
+  async function sendMessage() {
     const channelId = activeChannel;
-    console.log(channelId);
-    if (!userId) {
-      console.error("User ID not found. Token may be invalid.");
-      return; // Frühzeitiger Abbruch, wenn keine Benutzer-ID gefunden wird
-    }
-
+    const workspaceId = selectedWorkspace._id;
+    const token = localStorage.getItem("userToken");
+    const senderId = validateToken(token);
+    const Content = message;
     try {
       const response = await axios.post(
-        `http://localhost:9000/api/messages/${channelId}/send`,
-        {
-          content,
-          channelId,
-          senderId: userId,
-        }
+        `http://localhost:9000/api/messages/${workspaceId}/send`,
+        { content: Content, channelId: channelId, sender: senderId },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (response.status === 201) {
-        console.log("Message sent successfully:", response.data);
+        setMessages((prevMessages) => [...prevMessages, response.data.message]);
       } else {
         console.error("Failed to send message:", response);
       }
@@ -346,7 +351,6 @@ const Dashboard = () => {
   const handleSendMessage = async (event) => {
     event.preventDefault();
     if (message) {
-      setMessages([...messages, message]);
       await sendMessage(message);
       setMessage("");
     }
@@ -532,38 +536,41 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* chat history/ main area */}
+        {/* chat history/main area */}
         <div className="flex-1 p-4 overflow-y-auto bg-white">
           <h2 className="font-bold mb-2">
             {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
           </h2>
           <div className="space-y-4">
-            {messages.map((message) => {
-              console.log(message.sender);
-              const userData = userCache[message.sender] || {
-                name: "Loading...",
-                avatar:
-                  "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg?size=626&ext=jpg&ga=GA1.1.700948343.1701269311&semt=ais",
-              };
-              return (
-                <div key={message._id} className="flex items-start space-x-2">
-                  <img
-                    src={userData.avatar}
-                    alt={userData.name}
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-baseline justify-between">
-                      <p className="font-semibold">{userData.name}</p>
-                      <span className="text-xs text-gray-500">
-                        {new Date(message.createdAt).toLocaleTimeString()}
-                      </span>
+            {messages && messages.length > 0 ? (
+              messages.map((message) => {
+                const userData = userCache[message.sender] || {
+                  name: "Loading...",
+                  avatar:
+                    "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg",
+                };
+                return (
+                  <div key={message._id} className="flex items-start space-x-2">
+                    <img
+                      src={userData.avatar}
+                      alt={userData.name}
+                      className="w-10 h-10 rounded-full"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-baseline justify-between">
+                        <p className="font-semibold">{userData.name}</p>
+                        <span className="text-xs text-gray-500">
+                          {new Date(message.createdAt).toLocaleTimeString()}
+                        </span>
+                      </div>
+                      <Message htmlContent={message.content} />
                     </div>
-                    <Message htmlContent={message.content} />
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p>No messages to display</p>
+            )}
           </div>
         </div>
 
@@ -580,12 +587,10 @@ const Dashboard = () => {
 
             {/* Message Input with Emoji Picker */}
             <div className="flex items-center p-2 rounded-b-lg justify-end">
-              {" "}
-              {/* Adjust this line */}
               <button
                 className="text-gray-500 mx-1 z-50"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                style={{ fontSize: "24px" }} // Adjusting the size of emoji icon
+                style={{ fontSize: "24px" }}
               >
                 <span role="img" aria-label="emoji">
                   🙂
@@ -605,36 +610,24 @@ const Dashboard = () => {
                 </button>
                 {showMenu && (
                   <div className="dropdown-menu z-50">
-                    {
-                      <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                        <div
-                          className="py-1"
-                          role="menu"
-                          aria-orientation="vertical"
-                          aria-labelledby="options-menu"
-                        >
-                          {/* Menüoptionen hier */}
-                          <a
-                            href="/"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem"
-                          >
-                            Option 1
-                          </a>
-                          {/* Weitere Optionen */}
-                        </div>
-                      </div>
-                    }
+                    {/* Menüoptionen */}
+                    <a
+                      href="/"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      role="menuitem"
+                    >
+                      Option 1
+                    </a>
+                    {/* Weitere Optionen */}
                   </div>
                 )}
               </div>
               <button
                 onClick={handleSendMessage}
                 className="ml-2 text-gray-700 rounded-lg p-2 z-50"
-                style={{ fontSize: "24px" }} // Adjusting the size of send icon
+                style={{ fontSize: "24px" }}
               >
-                <PaperAirplaneIcon className="h-6 w-6" />{" "}
-                {/* Adjusting the size */}
+                <PaperAirplaneIcon className="h-6 w-6" />
               </button>
             </div>
           </div>

@@ -26,7 +26,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
-app.use("/api/google0auth", authGoogleRoutes); // Entfernen Sie `auth` von dieser Route
+app.use("/api/google0auth", authGoogleRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
