@@ -46,6 +46,7 @@ const Dashboard = () => {
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const dropdownRef = useRef(null);
+  const dividerStyle = "relative w-60 h-px bg-gray-400 my-4";
 
   const onEmojiClick = (emojiObject) => {
     if (messageInputRef.current) {
@@ -363,7 +364,7 @@ const Dashboard = () => {
 {/*bg-gradient-to-br from-indigo-900 to-gray-900*/}
   return (
     <>
-    <div className={`flex h-screen bg-gradient-to-r from-gray-800 to-violet-900 ${isDropdownOpen ? "blur-sm" :""}`}> 
+    <div className={`flex h-screen bg-gradient-to-r from-gray-800 to-violet-900 ${isDropdownOpen ? "blur-md" :""}`}> 
       {/* sidebar */}
       <div className="flex flex-col  text-white w-64 mt-16  ">
         {isWorkspaceModalOpen && (
@@ -403,10 +404,10 @@ const Dashboard = () => {
     
       {/* Channels Section */}
 <div className="px-4 mt-2 relative">
-<div className="absolute left-0 top-2 z-0 w-[calc(100%-4.25rem)] h-px bg-gray-400"></div>
+ <div className={dividerStyle}></div>
   <div className="flex items-center justify-between">
     
-    <h2 className="text-xs font-semibold text-gray-500 uppercase z-auto">
+    <h2 className="text-xs font-semibold text-gray-500 uppercase z-auto mb-5">
       Channels
     </h2>
     <button
@@ -451,12 +452,14 @@ const Dashboard = () => {
           </Modal>
         )}
         {/* Direct Messages Section */}
-        <div className="px-4 mt-4">
+        <div className="px-4  mt-24">
+        <div className={dividerStyle}></div>
           <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
             Direct Messages
           </h2>
           {/* List of DMs */}
           <div className="space-y-1">
+            
             {members.map((member, index) => (
               <button
                 key={index}
@@ -470,8 +473,8 @@ const Dashboard = () => {
         </div>
 
         {/* Secondary Navigation/Footer */}
-        <div className="px-4 mt-4 space-y-1">
-         
+        <div className="px-4 mt-4 space-y-1 mt-48">
+        <div className={dividerStyle}></div>
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700 w-full text-left">
             Preferences
           </button>
