@@ -1,10 +1,10 @@
 import colors from "tailwindcss/colors";
-
 module.exports = {
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   mode: "jit",
   theme: {
     colors: {
+      violet: colors.violet,
       rose: colors.rose,
       fuchsia: colors.fuchsia,
       indigo: colors.indigo,
@@ -106,7 +106,11 @@ module.exports = {
     },
   },
   variants: {
-    extend: {},
+    extend: {
+      
+    },
   },
-  plugins: [],
+  plugins: [
+    
+  ],
 };

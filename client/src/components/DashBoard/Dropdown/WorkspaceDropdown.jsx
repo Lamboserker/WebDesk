@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root"); // Für Accessibility-Zwecke
 
-const WorkspaceDropdown = ({ onSelectWorkspace }) => {
+const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
   const [workspaces, setWorkspaces] = useState([]);
   const [selectedWorkspace, setSelectedWorkspace] = useState("");
   const modalRef = useRef(null); // Referenz für das Modal
@@ -15,24 +15,23 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
   const handleWorkspaceClick = (workspace) => {
     setSelectedWorkspace(workspace._id);
     onSelectWorkspace(workspace);
+    onOpen(); // Rufen Sie hier onOpen auf
   };
 
   useEffect(() => {
-    // Event Listener, um Klicks außerhalb des Modals zu erkennen
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         setIsModalOpen(false);
+        onClose(); // Rufen Sie hier onClose auf
       }
     };
-
-    // Event Listener hinzufügen
+  
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup-Funktion
+  
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [onClose]);
 
   const openCreateWorkspaceModal = () => {
     navigate("/workspace-modal");
@@ -63,6 +62,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace }) => {
     setSelectedWorkspace(workspace._id);
     onSelectWorkspace(workspace);
     setIsModalOpen(false);
+    onClose(); 
   };
 
   const getWorkspaceName = () => {

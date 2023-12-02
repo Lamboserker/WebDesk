@@ -32,18 +32,41 @@ router.post("/create", async (req, res) => {
 });
 
 //show all members of the workspace
-router.get("/users", async (req, res) => {
+router.get("/:workspaceId/users", async (req, res) => {
   try {
     const workspaceId = req.params.workspaceId;
+
+    if (!workspaceId) {
+      return res.status(400).send("Workspace ID fehlt");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return res.status(400).send("Ungültige Workspace ID");
+    }
+
     const workspace = await Workspace.findById(workspaceId);
-    const members = workspace.members;
-    const users = await User.find({ _id: { $in: members } });
+    
+    if (!workspace) {
+      return res.status(404).send("Workspace nicht gefunden");
+    }
+
+    if (workspace.members.length === 0) {
+      return res.status(404).send("Keine Mitglieder im Workspace");
+    }
+
+    const users = await User.find({ _id: { $in: workspace.members } });
+
     res.json(users);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Fehler beim Abrufen der Mitglieder");
+    if (error instanceof mongoose.Error) {
+      console.error("Datenbankfehler:", error);
+      return res.status(500).send("Datenbankfehler beim Abrufen der Mitglieder");
+    }
+    console.error("Serverfehler:", error);
+    res.status(500).send("Serverfehler beim Abrufen der Mitglieder");
   }
 });
+
 
 // show all workspaces where the user is a member
 router.get("/list", async (req, res) => {

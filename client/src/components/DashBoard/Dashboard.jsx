@@ -17,6 +17,7 @@ import VideoApp from "../Video/VideoApp";
 import { modules, formats } from "./index";
 import axios from "axios";
 import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
+import 'react-quill/dist/quill.snow.css';
 
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -39,7 +40,8 @@ const Dashboard = () => {
   const [, setWorkspaces] = useState([]);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [imageLoadError, setImageLoadError] = useState(false);
-  const [userCache, setUserCache] = useState({});
+  const [members, setMembers] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
@@ -84,6 +86,20 @@ const Dashboard = () => {
     closeWorkspaceModal();
   };
 
+
+  const openPopUp = () => {
+    console.log("before", isDropdownOpen);
+    setIsDropdownOpen(true);
+    console.log("Is it open?", isDropdownOpen);
+  };
+  
+
+
+  const handleDropdownClose = () => {
+    setIsDropdownOpen(false);
+    console.log("Is it open?", isDropdownOpen);
+  };
+
   // Fetch all channels from the server
   const fetchChannels = async (workspaceId) => {
     const token = localStorage.getItem("userToken");
@@ -115,6 +131,35 @@ const Dashboard = () => {
       localStorage.setItem("lastVisitedWorkspace", selectedWorkspace._id);
     }
   }, [selectedWorkspace]);
+
+  useEffect(() => {
+    console.log("selectedWorkspace-Wert in useEffect:", selectedWorkspace);
+    if (selectedWorkspace && selectedWorkspace._id) {
+      fetchWorkspaceMembers();
+    }
+  }, [selectedWorkspace]);
+
+  const fetchWorkspaceMembers = async () => {
+    console.log("Aufruf von fetchWorkspaceMembers mit:", selectedWorkspace);
+    if (!selectedWorkspace || !selectedWorkspace._id) {
+      console.error("Kein ausgewählter Workspace oder Workspace ID fehlt.");
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("userToken");
+      const workspaceId = selectedWorkspace._id;
+      const response = await axios.get(
+        `http://localhost:9000/api/workspaces/${workspaceId}/users`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setMembers(response.data);
+    } catch (error) {
+      console.error("Error fetching workspace members:", error);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -173,14 +218,6 @@ const Dashboard = () => {
       setIsMenuOpen(false);
     }
   };
-
-  // function to open menu
-  useEffect(() => {
-    document.addEventListener("mousedown", closeMenu);
-    return () => {
-      document.removeEventListener("mousedown", closeMenu);
-    };
-  }, []);
 
   // Fetch workspaces
   const fetchWorkspaces = async () => {
@@ -282,7 +319,7 @@ const Dashboard = () => {
 
   // Function to decode messages
   function Message({ htmlContent }) {
-    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} />;
+    return <div dangerouslySetInnerHTML={{ __html: htmlContent }} className="text-white" />;
   }
 
   // Neue sendMessage Funktion
@@ -323,19 +360,12 @@ const Dashboard = () => {
       setMessage("");
     }
   };
-
+{/*bg-gradient-to-br from-indigo-900 to-gray-900*/}
   return (
-    <div className="flex h-screen bg-gradient-to-br from-indigo-900 to-gray-900">
+    <>
+    <div className={`flex h-screen bg-gradient-to-r from-gray-800 to-violet-900 ${isDropdownOpen ? "blur-sm" :""}`}> 
       {/* sidebar */}
-      <div className="flex flex-col  text-white w-64">
-        {/* Top Bar/Header */}
-        <div className="flex items-center justify-between h-16 px-4 shadow-md">
-          {/* Workspace Dropdown */}
-          <WorkspaceDropdown onSelectWorkspace={changeWorkspace} />
-          <div className="absolute left-0  bg-transparent  rounded-md shadow-md flex flex-col">
-            {/* Andere Menüpunkte */}
-          </div>
-        </div>
+      <div className="flex flex-col  text-white w-64 mt-16  ">
         {isWorkspaceModalOpen && (
           <div className="workspace-modal">
             <div className="workspace-modal-content">
@@ -361,8 +391,8 @@ const Dashboard = () => {
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
             Threads
           </button>
-          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
-            All DMs
+          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700 w-full text-left">
+            Files
           </button>
           <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
             Mentions & reactions
@@ -370,19 +400,22 @@ const Dashboard = () => {
           {/* ... more primary navigation items */}
         </div>
 
-        {/* Channels Section */}
-        <div className="px-4 mt-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-semibold text-gray-500 uppercase">
-              Channels
-            </h2>
-            <button
-              onClick={handleCreateChannel}
-              className="hover:bg-gray-700 rounded"
-            >
-              <PlusIcon className="h-5 w-5 text-white" />
-            </button>
-          </div>
+    
+      {/* Channels Section */}
+<div className="px-4 mt-2 relative">
+<div className="absolute left-0 top-2 z-0 w-[calc(100%-4.25rem)] h-px bg-gray-400"></div>
+  <div className="flex items-center justify-between">
+    
+    <h2 className="text-xs font-semibold text-gray-500 uppercase z-auto">
+      Channels
+    </h2>
+    <button
+      onClick={handleCreateChannel}
+      className="hover:bg-gray-700 rounded"
+    >
+      <PlusIcon className="h-5 w-5 text-white" />
+    </button>
+  </div>
           {/* Dialog oder Formular für neue Channel-Erstellung */}
           {isCreatingChannel && (
             <div>
@@ -418,31 +451,31 @@ const Dashboard = () => {
           </Modal>
         )}
         {/* Direct Messages Section */}
-        <div className="px-4 mt-2">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase">
+        <div className="px-4 mt-4">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase mb-2">
             Direct Messages
           </h2>
           {/* List of DMs */}
-          <div className="mt-1">
-            <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
-              User 1
-            </button>
-            <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
-              User 2
-            </button>
-            {/* ... more DMs */}
+          <div className="space-y-1">
+            {members.map((member, index) => (
+              <button
+                key={index}
+                className="flex items-center py-2 text-sm font-medium hover:bg-gray-700 w-full text-left"
+              >
+                {member.name}{" "}
+                {/* Annahme: 'name' ist das Feld, das den Namen des Mitglieds enthält */}
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Secondary Navigation/Footer */}
-        <div className="px-4 mt-2">
-          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
-            Files
-          </button>
-          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
+        <div className="px-4 mt-4 space-y-1">
+         
+          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700 w-full text-left">
             Preferences
           </button>
-          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700">
+          <button className="flex items-center py-2 text-sm font-medium hover:bg-gray-700 w-full text-left">
             Help
           </button>
         </div>
@@ -505,7 +538,7 @@ const Dashboard = () => {
         </div>
 
         {/* chat history/main area */}
-        <div className="flex-1 p-4 overflow-y-auto bg-white">
+        <div className="flex-1 p-4 overflow-y-auto bg-gray-700">
           <h2 className="font-bold mb-2">
             {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
           </h2>
@@ -531,12 +564,12 @@ const Dashboard = () => {
                     />
                     <div className="flex-1">
                       <div className="flex items-baseline justify-between">
-                        <p className="font-semibold">{message.sender}</p>
-                        <span className="text-xs text-gray-500">
+                        <p className="font-semibold text-white">{message.sender}</p>
+                        <span className="text-xs text-white">
                           {new Date(message.createdAt).toLocaleTimeString()}
                         </span>
                       </div>
-                      <Message htmlContent={message.content} />
+                      <Message htmlContent={message.content}/>
                     </div>
                   </div>
                 );
@@ -606,6 +639,15 @@ const Dashboard = () => {
         )}
       </div>
     </div>
+        {/* Top Bar/Header */}
+        <div className="flex items-center justify-between h-16 px-4 shadow-md absolute top-0 left-0 z-50" onClick={openPopUp}  >
+          {/* Workspace Dropdown */}
+          <WorkspaceDropdown onSelectWorkspace={changeWorkspace} onClose={handleDropdownClose} className="z-50"/>
+          <div className="absolute left-0  bg-transparent  rounded-md shadow-md flex flex-col">
+            {/* Andere Menüpunkte */}
+          </div>
+        </div>
+        </>
   );
 };
 
