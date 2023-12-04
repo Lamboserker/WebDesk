@@ -220,28 +220,7 @@ const Dashboard = () => {
     }
   };
 
-  // Fetch workspaces
-  const fetchWorkspaces = async () => {
-    const token = localStorage.getItem("userToken");
-    try {
-      const response = await axios.get(
-        "http://localhost:9000/api/workspaces/list",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setWorkspaces(response.data);
-      // Auto-select if there is only one workspace
-      if (response.data.length === 1) {
-        setSelectedWorkspace(response.data[0]);
-      }
-    } catch (error) {
-      console.error("Error fetching workspaces:", error);
-    }
-  };
-
+ cd
   useEffect(() => {
     fetchWorkspaces();
   }, []);
