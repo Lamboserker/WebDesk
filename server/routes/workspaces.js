@@ -1,8 +1,9 @@
 import express from "express";
+import mongoose from "mongoose";
 import Workspace from "../models/Workspace.js";
 import User from "../models/User.js";
-import mongoose from "mongoose";
 import Channel from "../models/Channel.js";
+import ChatMessage from "../models/ChatMessage.js";
 const router = express.Router();
 
 // create a Workspace
@@ -45,7 +46,7 @@ router.get("/:workspaceId/users", async (req, res) => {
     }
 
     const workspace = await Workspace.findById(workspaceId);
-    
+
     if (!workspace) {
       return res.status(404).send("Workspace nicht gefunden");
     }
@@ -60,13 +61,14 @@ router.get("/:workspaceId/users", async (req, res) => {
   } catch (error) {
     if (error instanceof mongoose.Error) {
       console.error("Datenbankfehler:", error);
-      return res.status(500).send("Datenbankfehler beim Abrufen der Mitglieder");
+      return res
+        .status(500)
+        .send("Datenbankfehler beim Abrufen der Mitglieder");
     }
     console.error("Serverfehler:", error);
     res.status(500).send("Serverfehler beim Abrufen der Mitglieder");
   }
 });
-
 
 // show all workspaces where the user is a member
 router.get("/list", async (req, res) => {
@@ -131,7 +133,9 @@ router.get("/:workspaceId/channels", async (req, res) => {
       return res.status(400).send("Invalid workspaceId");
     }
 
-    const workspace = await Workspace.findById(workspaceId).populate("channels");
+    const workspace = await Workspace.findById(workspaceId).populate(
+      "channels"
+    );
     if (!workspace) {
       return res.status(404).send("Workspace not found");
     }
@@ -143,7 +147,6 @@ router.get("/:workspaceId/channels", async (req, res) => {
   }
 });
 
-
 // create a channel within a workspace
 router.post("/:workspaceId/create-channel", async (req, res) => {
   try {
@@ -152,8 +155,7 @@ router.post("/:workspaceId/create-channel", async (req, res) => {
 
     if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
       return res.status(400).send("Invalid workspaceId");
-  }
-
+    }
 
     const newChannel = new Channel({
       name,
@@ -201,23 +203,39 @@ router.post(
   "/:workspaceId/channel/:channelId/send-message",
   async (req, res) => {
     try {
-      const channelId = req.params.channelId;
-      const { message } = req.body;
+      const { channelId } = req.params;
+      const { message, senderId, senderImage } = req.body; // Angenommen, senderId wird vom Frontend gesendet
 
-      // Ensure the channelId is valid
-      if (!mongoose.Types.ObjectId.isValid(channelId)) {
-        return res.status(400).send("Invalid channelId");
-      }
+      const newMessage = new ChatMessage({
+        content: message,
+        channel: channelId,
+        sender: senderId,
+        senderImage: senderImage,
+      });
+      await newMessage.save();
 
-      // Logic to send a message in a channel
-      // Placeholder logic - update with actual implementation
-      res.json({ message: "Nachricht gesendet" });
+      res.json(newMessage);
     } catch (error) {
       console.error(error);
-      res.status(500).send("Server error");
+      res.status(500).send("Fehler beim Senden der Nachricht");
     }
   }
 );
+
+// Get messages from a channel
+router.get("/:workspaceId/channel/:channelId/messages", async (req, res) => {
+  try {
+    const { channelId } = req.params;
+    const messages = await ChatMessage.find({ channel: channelId }).populate(
+      "sender",
+      "name"
+    );
+    res.json(messages);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Fehler beim Abrufen der Nachrichten");
+  }
+});
 
 // Delete a channel
 router.delete(

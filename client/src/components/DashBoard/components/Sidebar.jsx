@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import {
-    PlusIcon,
-    VideoCameraIcon,
-  } from "@heroicons/react/24/outline";
-  
-const SideBar = () => {
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { PlusIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
+import Modal from "../VideoModal";
+import VideoApp from "../../Video/VideoApp";
+import WorkspaceDropdown from "../Dropdown/WorkspaceDropdown";
+
+const SideBar = ({ activeChannel, onChannelChange }) => {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
@@ -17,9 +18,18 @@ const SideBar = () => {
   const [imageLoadError, setImageLoadError] = useState(false);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [members, setMembers] = useState([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-// Fetch all channels from the server
-const fetchChannels = async (workspaceId) => {
+  // Fetch channels and workspace members
+  useEffect(() => {
+    if (selectedWorkspace && selectedWorkspace._id) {
+      fetchChannels(selectedWorkspace._id);
+      fetchWorkspaceMembers(selectedWorkspace._id);
+    }
+  }, [fetchWorkspaceMembers, selectedWorkspace]);
+
+  // Fetch all channels from the server
+  const fetchChannels = async (workspaceId) => {
     const token = localStorage.getItem("userToken");
     try {
       const response = await axios.get(
@@ -35,7 +45,6 @@ const fetchChannels = async (workspaceId) => {
       console.error("Error fetching channels:", error);
     }
   };
-
 
   const fetchWorkspaceMembers = async () => {
     console.log("Aufruf von fetchWorkspaceMembers mit:", selectedWorkspace);
@@ -66,8 +75,6 @@ const fetchChannels = async (workspaceId) => {
   const closeVideoModal = () => {
     setIsVideoModalOpen(false);
   };
-
-
 
   const createWorkspace = () => {
     closeWorkspaceModal();
@@ -120,6 +127,9 @@ const fetchChannels = async (workspaceId) => {
     console.log("Is it open?", isDropdownOpen);
   };
 
+  const handleChannelClick = (channelId) => {
+    setActiveChannel(channelId);
+  };
 
   return (
     <>
@@ -255,11 +265,15 @@ const fetchChannels = async (workspaceId) => {
           </div>
         </div>
       </div>
-         {/* Workspace Dropdown */}
-         <WorkspaceDropdown onSelectWorkspace={changeWorkspace} onClose={handleDropdownClose} className="z-50"/>
-          <div className="absolute left-0  bg-transparent  rounded-md shadow-md flex flex-col">
-            {/* Andere Menüpunkte */}
-          </div>
+      {/* Workspace Dropdown */}
+      <WorkspaceDropdown
+        onSelectWorkspace={changeWorkspace}
+        onClose={handleDropdownClose}
+        className="z-50"
+      />
+      <div className="absolute left-0  bg-transparent  rounded-md shadow-md flex flex-col">
+        {/* Andere Menüpunkte */}
+      </div>
     </>
   );
 };

@@ -1,4 +1,6 @@
 import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
@@ -6,6 +8,7 @@ import messageRoutes from "./routes/messages.js";
 import workspaceRoutes from "./routes/workspaces.js";
 import auth from "./middleware/Auth.js";
 import authGoogleRoutes from "./routes/google0auth.js";
+import ChatMessage from "./models/ChatMessage.js"; // Importieren Sie Ihr ChatMessage-Modell
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
@@ -13,6 +16,13 @@ import morgan from "morgan";
 dotenv.config();
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(cors());
 app.use(express.json());
@@ -37,5 +47,33 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
+io.on("connection", (socket) => {
+  console.log("Ein Benutzer hat sich verbunden");
+
+  socket.on("joinChannel", ({ channelId }) => {
+    socket.join(`channel_${channelId}`);
+  });
+
+  socket.on(
+    "sendMessage",
+    async ({ channelId, content, sender, senderImage }) => {
+      try {
+        const message = new ChatMessage({
+          content,
+          channel: channelId,
+          sender,
+          senderImage: senderImage,
+          createdAt: new Date(),
+        });
+        await message.save();
+
+        io.to(`channel_${channelId}`).emit("newMessage", message);
+      } catch (error) {
+        console.error("Fehler beim Senden der Nachricht:", error);
+      }
+    }
+  );
+});
+
 const port = process.env.PORT || 9000;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+httpServer.listen(port, () => console.log(`Server läuft auf Port ${port}`));

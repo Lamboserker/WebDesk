@@ -1,10 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  MagnifyingGlassIcon,
+  Bars3Icon,
+} from "@heroicons/react/24/outline";
+
 
 const TopBar = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  
+
   const toggleDropdown = () => setShowDropdown(!showDropdown);
 
   const handleLogout = () => {
