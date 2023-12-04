@@ -1,9 +1,17 @@
 import colors from "tailwindcss/colors";
-module.exports = {
+import withMT from "@material-tailwind/react/utils/withMT";
+module.exports = withMT({
+  darkMode: 'class',
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   mode: "jit",
   theme: {
     colors: {
+      customLight: {
+        DEFAULT: '#000000', // Schwarz für Light-Modus
+      },
+      customDark: {
+        DEFAULT: '#FFFFFF', // Weiß für Dark-Modus
+      },
       violet: colors.violet,
       rose: colors.rose,
       fuchsia: colors.fuchsia,
@@ -113,4 +121,4 @@ module.exports = {
   plugins: [
     
   ],
-};
+});

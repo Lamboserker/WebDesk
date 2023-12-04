@@ -75,7 +75,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
       {/* Modal toggle */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="block text-2xl text-white focus:outline-none focus:ring-0 font-medium rounded-lg  px-5 py-2.5 text-center"
+        className="block text-2xl text-black dark:text-white focus:outline-none focus:ring-0 font-medium rounded-lg  px-5 py-2.5 text-center"
         type="button"
       >
         {getWorkspaceName()}
@@ -95,7 +95,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
               {/* Modal header */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 className=" w-full text-lg font-semibold text-gray-900 dark:text-white">
+                <h3 className=" w-full text-lg font-semibold text-black dark:text-white">
                   Select a Workspace
                 </h3>
                 <button
@@ -121,17 +121,17 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                  className="text-black dark:text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
                 >
                   {/* Close icon */}
                 </button>
               </div>
               {/* Modal body */}
               <div className="p-4 md:p-5">
-                <p className="text-gray-500 dark:text-gray-400 mb-4">
+                <p className="text-black  dark:text-white mb-4">
                   Select your workspace:
                 </p>
-                <ul className="space-y-4 mb-4">
+                <ul className="space-y-4 mb-4 text-black dark:text-white">
                   {workspaces.map((workspace) => (
                     <li key={workspace._id}>
                       <input
