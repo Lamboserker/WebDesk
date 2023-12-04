@@ -6,7 +6,7 @@ import LandingPage from "./components/Landing/LandingPage";
 import VideoApp from "./components/Video/VideoApp";
 import WorkspaceModal from "./components/Modal/WorkspaceModal";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRouteDashboard";
-import ProfileInfoPopover from "./components/userProfile/ProfileMenu";
+import ProfileMenu from "./components/userProfile/ProfileMenu";
 function App() {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
 
@@ -40,7 +40,8 @@ function App() {
               ) : null
             }
           />
-          
+          <Route path="/my-profile" element={<ProfileMenu />} />
+
         </Routes>
       </BrowserRouter>
     </div>
