@@ -4,10 +4,10 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Auth from "../middleware/Auth.js";
+import fs from "fs";
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' }); // Konfigurieren Sie Multer entsprechend Ihren Anforderungen
-
+const upload = multer({ dest: "profileImage/" }); // Konfigurieren Sie Multer entsprechend Ihren Anforderungen
 
 // @route POST api/users/register
 // @desc Register a new user
@@ -58,25 +58,34 @@ router.post("/register", async (req, res) => {
 // @desc Update user's profile image
 // @access Private
 // Route zum Hochladen eines Profilbildes
-router.post('/upload-profile-picture', upload.single('profileImage'), async (req, res) => {
-  try {
-    const userId = req.user.id; // Angenommen, Sie erhalten die Benutzer-ID aus dem JWT-Token
-    const user = await User.findById(userId);
+router.post(
+  "/upload-profile-picture",
+  Auth,
+  upload.single("profileImage"),
+  async (req, res) => {
+    try {
+      const userId = req.user.id; // Angenommen, Sie erhalten die Benutzer-ID aus dem JWT-Token
+      const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      if (!user) {
+        return res.status(404).json({ msg: "User not found" });
+      }
+
+      // Altes Bild löschen, falls vorhanden
+      if (user.profileImage && fs.existsSync(user.profileImage)) {
+        fs.unlinkSync(user.profileImage);
+      }
+
+      user.profileImage = req.file.path; // Pfad des hochgeladenen Bildes
+      await user.save();
+
+      res.json({ profileImage: user.profileImage });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Error updating profile image");
     }
-
-    user.profileImage = req.file.path; // Pfad des hochgeladenen Bildes
-    await user.save();
-
-    res.json({ profileImage: user.profileImage });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error updating profile image");
   }
-});
-
+);
 
 // @route POST api/users/login
 // @desc Authenticate user & get token

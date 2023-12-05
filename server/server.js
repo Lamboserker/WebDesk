@@ -12,6 +12,8 @@ import ChatMessage from "./models/ChatMessage.js"; // Importieren Sie Ihr ChatMe
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 
@@ -23,6 +25,8 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
   },
 });
+// __dirname in ES-Modulen emulieren
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(cors());
 app.use(express.json());
@@ -37,6 +41,9 @@ app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
 app.use("/api/google0auth", authGoogleRoutes);
+
+// Statischen Ordner einrichten
+app.use("/profileImage", express.static(path.join(__dirname, "profileImage")));
 
 app.get("/", (req, res) => {
   res.send("API is running...");

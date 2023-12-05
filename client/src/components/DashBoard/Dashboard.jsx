@@ -286,7 +286,7 @@ const Dashboard = () => {
         console.error("Error fetching user data:", error);
       }
     };
-  
+
     fetchUserData();
   }, []);
   // Aktualisierte fetchMessages Funktion
@@ -525,7 +525,7 @@ const Dashboard = () => {
                     >
                       <img
                         src={
-                          member.profileImage ||
+                          `http://localhost:9000/${member.profileImage}` || member.profileImage ||
                           "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg"
                         }
                         alt="Profile"
@@ -559,9 +559,9 @@ const Dashboard = () => {
                     <MenuHandler>
                       <Avatar
                         variant="circular"
-                        alt="tania andrew"
+                        alt="User"
                         className="cursor-pointer h-10 w-10 rounded-full border-2 border-gray-300 object-cover"
-                        src={userData.profileImage}
+                        src={`http://localhost:9000/${userData.profileImage}`}
                       />
                     </MenuHandler>
                     <MenuList className="bg-white dark:bg-gray-700">
