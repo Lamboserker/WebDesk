@@ -11,7 +11,7 @@ import '../styles/modalstyles.css';
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed top-0 left-0 w-full h-full flex items-center justify-center"
+          className="fixed top-0 left-0 w-6/12 h-6/12 flex items-center justify-center"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         >
           <motion.div

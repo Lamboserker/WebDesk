@@ -9,6 +9,7 @@ import {
   MagnifyingGlassIcon,
   VideoCameraIcon,
   Bars3Icon,
+  Bars3BottomLeftIcon,
 } from "@heroicons/react/24/outline";
 import {
   Menu,
@@ -53,6 +54,8 @@ const Dashboard = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMessages, setFilteredMessages] = useState([]);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
@@ -417,14 +420,29 @@ const Dashboard = () => {
     navigate(path);
   };
 
+  useEffect(() => {
+    function handleResize() {
+      setIsMobileView(window.innerWidth < 1024);
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   return (
     <>
       <div
         className={`flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
-        ${isDropdownOpen ? "blur-md" : ""}`}
+    ${isDropdownOpen && !isMobileView ? "blur-md" : ""}`}
       >
         {/* sidebar */}
-        <div className="flex flex-col text-white dark:text-gray-200 w-64 mt-16  ">
+        <div
+          className={`flex flex-col text-white dark:text-gray-200 w-64 mt-16 lg:w-64 md:w-48 sm:w-32 xs:w-full ${
+            isMobileSidebarOpen ? "block" : "hidden"
+          } lg:block`}
+        >
           {isWorkspaceModalOpen && (
             <div className="workspace-modal">
               <div className="workspace-modal-content">
@@ -492,7 +510,12 @@ const Dashboard = () => {
                 key={channel._id}
                 className="flex items-center justify-between py-2 text-sm text-black font-medium hover:bg-gray-700 dark:text-white"
               >
-                <button onClick={() => handleChannelClick(channel._id)}>
+                <button
+                  onClick={() => {
+                    handleChannelClick(channel._id);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                >
                   # {channel.name}
                 </button>
                 <button onClick={openVideoModal}>
@@ -525,7 +548,8 @@ const Dashboard = () => {
                     >
                       <img
                         src={
-                          `http://localhost:9000/${member.profileImage}` || member.profileImage ||
+                          `http://localhost:9000/${member.profileImage}` ||
+                          member.profileImage ||
                           "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg"
                         }
                         alt="Profile"
@@ -541,17 +565,18 @@ const Dashboard = () => {
           </div>
 
           {/* Secondary Navigation/Footer */}
-          <div className="px-4  space-y-1 mt-48">
+          <div className="px-4 space-y-1 mt-auto">
             <div className={dividerStyle}></div>
             <button className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left">
               Preferences
             </button>
-            <button className="flex items-center py-2 text-sm  text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left">
+            <button className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left">
               Help
             </button>
           </div>
+
           {/* User Profile Section */}
-          <div className="mt-auto px-4 py-2">
+          <div className="absolute bottom-0 px-4 py-2">
             <div className="flex items-center space-x-3">
               {!imageLoadError && userData.profileImage ? (
                 <>
@@ -695,9 +720,9 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 ml-0 lg:ml-64 md:ml-48 sm:ml-32 xs:ml-0">
           {/* Searchbar */}
-          <div className="relative p-4 flex items-center">
+          <div className="relative p-4  items-center lg:block hidden">
             {/* Search icon inside the input field */}
             <div className="absolute left-4 inset-y-0 flex items-center pointer-events-none">
               <MagnifyingGlassIcon className="h-5 w-5 ml-2 text-gray-800" />
@@ -740,7 +765,7 @@ const Dashboard = () => {
 
           {/* chat history/main area */}
           <div className="flex-1 p-4 overflow-y-auto bg-white dark:bg-gray-700">
-            <h2 className="font-bold mb-2">
+            <h2 className="font-bold text-center text-2xl ">
               {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
             </h2>
             <div className="space-y-4">
@@ -782,7 +807,7 @@ const Dashboard = () => {
                   );
                 })
               ) : (
-                <p>Keine Nachrichten gefunden</p>
+                <p className="text-center">Keine Nachrichten gefunden</p>
               )}
             </div>
           </div>
@@ -846,21 +871,30 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
       {/* Top Bar/Header */}
       <div
-        className="flex items-center justify-between h-16 px-4  absolute top-0 left-0"
+        className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 z-50 lg:justify-start"
         onClick={openPopUp}
       >
-        {/* Workspace Dropdown */}
-        <WorkspaceDropdown
-          onSelectWorkspace={changeWorkspace}
-          onClose={handleDropdownClose}
-          className="z-50"
-        />
-        <div className="absolute left-0  bg-transparent  rounded-md shadow-md flex flex-col">
-          {/* Andere Menüpunkte */}
+        {/* Hamburger-Menü-Icon */}
+        <div className="lg:hidden relative sidebar-icon-background">
+            <button
+              className="z-10 relative"
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+            >
+              <Bars3BottomLeftIcon className="w-6 h-6 text-black dark:text-white" />
+            </button>
+          </div>
         </div>
-      </div>
+
+        {/* Workspace-Name in der normalen Ansicht */}
+        <div className="hidden lg:block lg:absolute top-0 left-0">
+          <WorkspaceDropdown
+            onSelectWorkspace={changeWorkspace}
+            onClose={handleDropdownClose}
+          />
+        </div>
     </>
   );
 };

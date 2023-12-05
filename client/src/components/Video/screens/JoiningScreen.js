@@ -2,10 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MeetingDetailsScreen } from "../MeetingDetailsScreen";
 import { createMeeting, getToken, validateMeeting } from "../api";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
-
 import SettingDialogueBox from "../SettingDialogueBox";
 import ConfirmBox from "../ConfirmBox";
-import { Constants } from "@videosdk.live/react-sdk";
 import useIsMobile from "../hooks/useIsMobile";
 import { createPopper } from "@popperjs/core";
 import WebcamOffIcon from "../icons/WebcamOffIcon";
@@ -149,50 +147,46 @@ export function JoiningScreen({
   };
 
   const getDefaultMediaTracks = async ({ mic, webcam, firstTime }) => {
-    if (mic) {
-      const audioConstraints = {
-        audio: true,
-      };
+    try {
+      if (mic) {
+        const audioConstraints = { audio: true };
+        const audioStream = await navigator.mediaDevices.getUserMedia(
+          audioConstraints
+        );
+        const audioTracks = audioStream.getAudioTracks();
+        const audioTrack = audioTracks.length ? audioTracks[0] : null;
 
-      const stream = await navigator.mediaDevices.getUserMedia(
-        audioConstraints
-      );
-      const audioTracks = stream.getAudioTracks();
-
-      const audioTrack = audioTracks.length ? audioTracks[0] : null;
-
-      setAudioTrack(audioTrack);
-      if (firstTime) {
-        setSelectedMic({
-          id: audioTrack?.getSettings()?.deviceId,
-        });
+        setAudioTrack(audioTrack);
+        if (firstTime) {
+          setSelectedMic({
+            id: audioTrack?.getSettings()?.deviceId,
+          });
+        }
       }
-    }
 
-    if (webcam) {
-      const videoConstraints = {
-        video: {
-          width: 1280,
-          height: 720,
-        },
-      };
+      if (webcam) {
+        const videoConstraints = { video: { width: 1280, height: 720 } };
+        const videoStream = await navigator.mediaDevices.getUserMedia(
+          videoConstraints
+        );
+        const videoTracks = videoStream.getVideoTracks();
+        const videoTrack = videoTracks.length ? videoTracks[0] : null;
 
-      const stream = await navigator.mediaDevices.getUserMedia(
-        videoConstraints
-      );
-      const videoTracks = stream.getVideoTracks();
-
-      const videoTrack = videoTracks.length ? videoTracks[0] : null;
-      setVideoTrack(videoTrack);
-      if (firstTime) {
-        setSelectedWebcam({
-          id: videoTrack?.getSettings()?.deviceId,
-        });
+        setVideoTrack(videoTrack);
+        if (firstTime) {
+          setSelectedWebcam({
+            id: videoTrack?.getSettings()?.deviceId,
+          });
+        }
       }
+    } catch (error) {
+      console.log("Fehler beim Zugriff auf Medienhardware: ", error);
+      // Fehlerbehandlung, z. B. Anzeigen einer Benachrichtigung
+      // dass der Benutzer die Medienberechtigungen aktivieren muss
     }
   };
 
-  async function startMuteListener() {
+  const startMuteListener = () => {
     const currentAudioTrack = audioTrackRef.current;
 
     if (currentAudioTrack) {
@@ -200,11 +194,11 @@ export function JoiningScreen({
         setDlgMuted(true);
       }
 
-      currentAudioTrack.addEventListener("mute", (ev) => {
+      currentAudioTrack.addEventListener("mute", () => {
         setDlgMuted(true);
       });
     }
-  }
+  };
 
   const getDevices = async ({ micEnabled, webcamEnabled }) => {
     try {
@@ -290,7 +284,7 @@ export function JoiningScreen({
 
   useEffect(() => {
     getDevices({ micEnabled, webcamEnabled });
-  }, []);
+  }, [getDevices, micEnabled, webcamEnabled]);
 
   const ButtonWithTooltip = ({ onClick, onState, OnIcon, OffIcon, mic }) => {
     const [tooltipShow, setTooltipShow] = useState(false);

@@ -31,6 +31,23 @@ router.get("/get-token", (req, res) => {
   }
 });
 
+// POST /api/video/create-room
+router.post("/create-room", async (req, res) => {
+  try {
+    const token = process.env.VIDEOSDK_SECRET_KEY; 
+    const result = await createMeeting({ token }); // Ihre Funktion zum Erstellen eines Meetings
+
+    if (result.roomId) {
+      res.json({ roomId: result.roomId });
+    } else {
+      res.status(400).send("Fehler beim Erstellen des Raums");
+    }
+  } catch (error) {
+    console.error("Fehler bei der Erstellung des Videochat-Raums", error);
+    res.status(500).send("Interner Serverfehler");
+  }
+});
+
 //
 router.post("/create-meeting", (req, res) => {
   const { token, region } = req.body;

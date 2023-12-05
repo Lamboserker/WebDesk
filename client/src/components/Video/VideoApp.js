@@ -5,6 +5,7 @@ import { MeetingAppProvider } from "./MeetingAppContextDef";
 import { MeetingContainer } from "./meeting/MeetingContainer";
 import { LeaveScreen } from "./screens/LeaveScreen";
 import { JoiningScreen } from "./screens/JoiningScreen";
+import axios from "axios";
 
 function VideoApp() {
   const [token, setToken] = useState("");
@@ -31,6 +32,36 @@ function VideoApp() {
       window.onbeforeunload = () => {
         return "Are you sure you want to exit?";
       };
+    }
+  }, [isMobile]);
+
+   // Funktion, um den Teilnehmernamen zu holen
+   const fetchParticipantName = async () => {
+    // Logik zum Abrufen des Teilnehmernamens
+    setParticipantName("Ihr Teilnehmername");
+  };
+
+  // Funktion, um Meeting-Informationen zu holen
+  const fetchMeetingInfo = async () => {
+    try{
+    // Logik zum Abrufen von Meeting-ID und Token
+    const token =  localStorage.getItem("userToken");
+     const response = await axios.get("http://localhost:9000/api/users/me", {
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify({ token }),
+     });
+     const data =  response.data;
+     setMeetingId(data.meetingId);
+     setToken(data.token);
+  } catch (error) {
+    console.error("Meeting info error:", error);
+  }
+};
+
+  useEffect(() => {
+    fetchParticipantName();
+    if (isMobile) {
+      window.onbeforeunload = () => "Are you sure you want to exit?";
     }
   }, [isMobile]);
 
@@ -92,6 +123,7 @@ function VideoApp() {
           setSelectedWebcam={setSelectedWebcam}
           setWebcamOn={setWebcamOn}
           onClickStartMeeting={() => {
+            fetchMeetingInfo();
             setMeetingStarted(true);
           }}
           startMeeting={isMeetingStarted}
