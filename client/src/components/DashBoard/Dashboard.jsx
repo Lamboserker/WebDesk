@@ -464,6 +464,7 @@ const Dashboard = () => {
     }
 
     setIsCallActive(true);
+    openVideoModal();
   };
 
 

@@ -64,27 +64,29 @@ router.post("/create-meeting", (req, res) => {
     .catch((error) => console.error("error", error));
 });
 
-//
 router.post("/validate-meeting/:meetingId", async (req, res) => {
-  const token = req.body.token;
+  const token = req.headers.authorization;
   const meetingId = req.params.meetingId;
-  const channelId = req.body.channelId; // Retrieve channelId from request body
+  const { channelId } = req.body;
 
-  // Perform the validation by checking if the provided meetingId is associated with the channelId
+  // Prüfe, ob alle erforderlichen Daten vorhanden sind
+  if (!token || !channelId) {
+    return res.status(400).send("Token und Channel-ID erforderlich");
+  }
+
   try {
-    // Assuming you have a function that fetches the channelId associated with the meetingId
+    // Hole die Channel-ID, die mit der Meeting-ID verknüpft ist
     const associatedChannelId = await getChannelIdByMeetingId(meetingId);
 
+    // Vergleiche die Channel-IDs
     if (associatedChannelId === channelId) {
-      // Meeting is valid for the channelId
       res.json({ valid: true });
     } else {
-      // Meeting is not valid for the channelId
       res.json({ valid: false });
     }
   } catch (error) {
-    console.error("Error during meeting validation:", error);
-    res.status(500).send("Internal Server Error");
+    console.error("Fehler bei der Validierung des Meetings:", error);
+    res.status(500).send("Interner Serverfehler");
   }
 });
 
