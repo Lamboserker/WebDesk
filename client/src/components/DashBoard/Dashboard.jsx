@@ -29,6 +29,8 @@ import axios from "axios";
 import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
 import "react-quill/dist/quill.snow.css";
 import Switcher from "../../Switcher";
+import { getToken, createMeeting, validateMeeting } from '../Video/api'; // import the functions
+
 const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
 const Dashboard = () => {
   let navigate = useNavigate();
@@ -56,6 +58,9 @@ const Dashboard = () => {
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
+  const [isCallActive, setIsCallActive] = useState(false);
+  const [currentChannel, setCurrentChannel] = useState(null);
+  const [meetingId, setMeetingId] = useState(null);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
   const emojiPickerRef = useRef(null);
@@ -275,7 +280,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem("userToken");
         const userId = await validateToken();
-        console.log("Aktuelle Benutzer-ID:", userId); // Zur Diagnose hinzugefügt
+        // console.log("Aktuelle Benutzer-ID:", userId); // Zur Diagnose hinzugefügt
         const response = await axios.get("http://localhost:9000/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
           params: { userId: userId },
@@ -431,6 +436,38 @@ const Dashboard = () => {
     };
   }, []);
 
+  // Handler for camera icon click
+  const handleCameraClick = (channelId) => {
+    setCurrentChannel(channelId);
+    setIsCallActive(true);
+    // Additional logic to create/join a meeting
+  };
+
+  // Define getToken and createMeeting functions here
+  // ...
+
+   // Handler for clicking on the video camera icon in a channel
+   const handleVideoCallClick = async (channelId) => {
+    setCurrentChannel(channelId);
+
+    // Check if a meeting already exists for this channel
+    // If not, create a new meeting
+    let token = await getToken();
+     let existingMeetingId = meetingId;
+    let isValidMeeting = existingMeetingId ? await validateMeeting({ roomId: existingMeetingId, token }) : false;
+
+    if (!isValidMeeting) {
+      let newMeetingId = await createMeeting({ token });
+      setMeetingId(newMeetingId);
+    } else {
+      setMeetingId(existingMeetingId);
+    }
+
+    setIsCallActive(true);
+  };
+
+
+
   return (
     <>
       <div
@@ -510,15 +547,10 @@ const Dashboard = () => {
                 key={channel._id}
                 className="flex items-center justify-between py-2 text-sm text-black font-medium hover:bg-gray-700 dark:text-white"
               >
-                <button
-                  onClick={() => {
-                    handleChannelClick(channel._id);
-                    setIsMobileSidebarOpen(false);
-                  }}
-                >
+                <button onClick={() => handleChannelClick(channel._id)}>
                   # {channel.name}
                 </button>
-                <button onClick={openVideoModal}>
+                <button onClick={() => handleVideoCallClick(channel._id)}>
                   <VideoCameraIcon className="h-5 w-5 text-black dark:text-white" />
                 </button>
               </div>
@@ -526,10 +558,15 @@ const Dashboard = () => {
           </div>
 
           {isVideoModalOpen && (
-            <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
-              <VideoApp />
-            </Modal>
-          )}
+      <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
+        <VideoApp
+          getToken={getToken}
+          createMeeting={createMeeting}
+          channel={currentChannel}
+          meetingId={meetingId}
+        />
+      </Modal>
+    )}
           {/* Direct Messages Section */}
           <div className="px-4 mt-24">
             <div className={dividerStyle}></div>
@@ -879,22 +916,22 @@ const Dashboard = () => {
       >
         {/* Hamburger-Menü-Icon */}
         <div className="lg:hidden relative sidebar-icon-background">
-            <button
-              className="z-10 relative"
-              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-            >
-              <Bars3BottomLeftIcon className="w-6 h-6 text-black dark:text-white" />
-            </button>
-          </div>
+          <button
+            className="z-10 relative"
+            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          >
+            <Bars3BottomLeftIcon className="w-6 h-6 text-black dark:text-white" />
+          </button>
         </div>
+      </div>
 
-        {/* Workspace-Name in der normalen Ansicht */}
-        <div className="hidden lg:block lg:absolute top-0 left-0">
-          <WorkspaceDropdown
-            onSelectWorkspace={changeWorkspace}
-            onClose={handleDropdownClose}
-          />
-        </div>
+      {/* Workspace-Name in der normalen Ansicht */}
+      <div className="hidden lg:block lg:absolute top-0 left-0">
+        <WorkspaceDropdown
+          onSelectWorkspace={changeWorkspace}
+          onClose={handleDropdownClose}
+        />
+      </div>
     </>
   );
 };

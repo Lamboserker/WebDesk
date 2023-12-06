@@ -220,6 +220,7 @@ export const CornerDisplayName = ({
 
   return (
     <>
+
       <div
         className="absolute bottom-2 left-2 rounded-md flex items-center justify-center p-2"
         style={{

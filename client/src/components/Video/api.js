@@ -25,31 +25,28 @@ export const getToken = async () => {
   }
 };
 
-export const createMeeting = async ({ token }) => {
-  const url = `${API_BASE_URL}/v2/rooms`;
+export const createMeeting = async ({ token, channelId }) => {
+  const url = `${API_BASE_URL}/api/video/create-room`;
   const options = {
     method: "POST",
     headers: { Authorization: token, "Content-Type": "application/json" },
+    body: JSON.stringify({ channelId }), // Include channelId in the request body
   };
 
-  const { roomId } = await fetch(url, options)
-    .then((response) => response.json())
-    .catch((error) => console.error("error", error));
-
-  return roomId;
+  const response = await fetch(url, options);
+  const result = await response.json();
+  return result.roomId;
 };
 
-export const validateMeeting = async ({ roomId, token }) => {
-  const url = `${API_BASE_URL}/v2/rooms/validate/${roomId}`;
-
+export const validateMeeting = async ({ roomId, token, channelId }) => {
+  const url = `${API_BASE_URL}/api/video/validate-meeting/${roomId}`;
   const options = {
-    method: "GET",
+    method: "POST",
     headers: { Authorization: token, "Content-Type": "application/json" },
+    body: JSON.stringify({ channelId }), // Include channelId in the request body
   };
 
-  const result = await fetch(url, options)
-    .then((response) => response.json()) //result will have meeting id
-    .catch((error) => console.error("error", error));
-
-  return result ? result.roomId === roomId : false;
+  const response = await fetch(url, options);
+  const result = await response.json();
+  return result.isValid;
 };

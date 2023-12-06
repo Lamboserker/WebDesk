@@ -34,7 +34,7 @@ router.get("/get-token", (req, res) => {
 // POST /api/video/create-room
 router.post("/create-room", async (req, res) => {
   try {
-    const token = process.env.VIDEOSDK_SECRET_KEY; 
+    const token = process.env.VIDEOSDK_SECRET_KEY;
     const result = await createMeeting({ token }); // Ihre Funktion zum Erstellen eines Meetings
 
     if (result.roomId) {
@@ -65,21 +65,27 @@ router.post("/create-meeting", (req, res) => {
 });
 
 //
-router.post("/validate-meeting/:meetingId", (req, res) => {
+router.post("/validate-meeting/:meetingId", async (req, res) => {
   const token = req.body.token;
   const meetingId = req.params.meetingId;
+  const channelId = req.body.channelId; // Retrieve channelId from request body
 
-  const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings/${meetingId}`;
+  // Perform the validation by checking if the provided meetingId is associated with the channelId
+  try {
+    // Assuming you have a function that fetches the channelId associated with the meetingId
+    const associatedChannelId = await getChannelIdByMeetingId(meetingId);
 
-  const options = {
-    method: "POST",
-    headers: { Authorization: token },
-  };
-
-  fetch(url, options)
-    .then((response) => response.json())
-    .then((result) => res.json(result)) // result will contain meetingId
-    .catch((error) => console.error("error", error));
+    if (associatedChannelId === channelId) {
+      // Meeting is valid for the channelId
+      res.json({ valid: true });
+    } else {
+      // Meeting is not valid for the channelId
+      res.json({ valid: false });
+    }
+  } catch (error) {
+    console.error("Error during meeting validation:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 export default router;

@@ -23,6 +23,8 @@ export function JoiningScreen({
   webcamEnabled,
   setWebcamOn,
   setMicOn,
+  meetingId,
+  token,
 }) {
   const [setting, setSetting] = useState("video");
   const [{ webcams, mics }, setDevices] = useState({
@@ -237,6 +239,12 @@ export function JoiningScreen({
       audioTrackRef.current = null;
     };
   }, [audioTrack]);
+
+  useEffect(() => {
+    if (meetingId && token) {
+      onClickStartMeeting();
+    }
+  }, [meetingId, token]);
 
   useEffect(() => {
     videoTrackRef.current = videoTrack;

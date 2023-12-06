@@ -7,7 +7,7 @@ import { LeaveScreen } from "./screens/LeaveScreen";
 import { JoiningScreen } from "./screens/JoiningScreen";
 import axios from "axios";
 
-function VideoApp() {
+function VideoApp({ getToken, createMeeting }) {
   const [token, setToken] = useState("");
   const [meetingId, setMeetingId] = useState("");
   const [participantName, setParticipantName] = useState("");
@@ -27,6 +27,24 @@ function VideoApp() {
     "only screen and (max-width: 768px)"
   ).matches;
 
+  // Hinzugefügte Funktion, um automatisch ein Meeting zu starten
+  useEffect(() => {
+    const autoStartMeeting = async () => {
+      try {
+        const token = await getToken();
+        const meetingId = await createMeeting({ token });
+        setToken(token);
+        setMeetingId(meetingId);
+        setMeetingStarted(true);
+      } catch (error) {
+        console.error("Fehler beim Starten des Meetings:", error);
+      }
+    };
+
+    fetchParticipantName();
+    autoStartMeeting();
+  }, []);
+
   useEffect(() => {
     if (isMobile) {
       window.onbeforeunload = () => {
@@ -35,28 +53,51 @@ function VideoApp() {
     }
   }, [isMobile]);
 
-   // Funktion, um den Teilnehmernamen zu holen
-   const fetchParticipantName = async () => {
+  // Funktion, um den Teilnehmernamen zu holen
+  const fetchParticipantName = async () => {
     // Logik zum Abrufen des Teilnehmernamens
     setParticipantName("Ihr Teilnehmername");
   };
 
-  // Funktion, um Meeting-Informationen zu holen
-  const fetchMeetingInfo = async () => {
-    try{
-    // Logik zum Abrufen von Meeting-ID und Token
-    const token =  localStorage.getItem("userToken");
-     const response = await axios.get("http://localhost:9000/api/users/me", {
-       headers: { "Content-Type": "application/json" },
-       body: JSON.stringify({ token }),
-     });
-     const data =  response.data;
-     setMeetingId(data.meetingId);
-     setToken(data.token);
-  } catch (error) {
-    console.error("Meeting info error:", error);
+  async function validateToken() {
+    try {
+      const response = await axios.get(
+        "http://localhost:9000/api/users/validate-token",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+
+      if (response.data.valid) {
+        return response.data.userId;
+      } else {
+        throw new Error("Invalid token");
+      }
+    } catch (error) {
+      console.error("Token validation error:", error);
+      return null;
+    }
   }
-};
+
+  // fetch current user information
+  const fetchMeetingInfo = async () => {
+    try {
+      const token = localStorage.getItem("userToken");
+      const userId = await validateToken();
+      const response = await axios.get("http://localhost:9000/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { userId: userId },
+      });
+      setParticipantName(response.data.name);
+      console.log("Aktuelle Benutzer-ID:", participantName); // Zur Diagnose hinzugefügt
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  fetchMeetingInfo();
 
   useEffect(() => {
     fetchParticipantName();
@@ -112,6 +153,8 @@ function VideoApp() {
         <LeaveScreen setIsMeetingLeft={setIsMeetingLeft} />
       ) : (
         <JoiningScreen
+          meetingId={meetingId}
+          token={token}
           participantName={participantName}
           setParticipantName={setParticipantName}
           setMeetingId={setMeetingId}
