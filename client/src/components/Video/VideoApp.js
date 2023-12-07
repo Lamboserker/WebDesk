@@ -21,7 +21,7 @@ function VideoApp(channelId) {
   );
 
   const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
-  const [isMeetingStarted, setMeetingStarted] = useState(false);
+  const [isMeetingStarted, setIsMeetingStarted] = useState(false);
   const [isMeetingLeft, setIsMeetingLeft] = useState(false);
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
@@ -46,33 +46,31 @@ function VideoApp(channelId) {
     };
 
     const autoStartMeeting = async () => {
+      if (isMeetingStarted=== true) {
+        return;
+      };
       try {
-        // Zuerst Benutzerinformationen abrufen
-        await fetchMeetingInfo();
-
         // Überprüfen, ob ein aktives Meeting vorhanden ist
         const existingMeetingResponse = await axios.get(
           `http://localhost:9000/api/channels/${channelId.channelId}/meetingId`
         );
-
-        setMeetingId(existingMeetingResponse.data.meetingId);
-
+       
+        
+       
         // Wenn keine Meeting-ID vorhanden ist, wird ein neues Meeting erstellt
-        if (meetingId === null) {
+        if (meetingId === "") {
           const token = await getToken();
-          const newMeetingResponse = await createMeeting({ token });
-          setMeetingId(newMeetingResponse.meetingId);
-        }
-
-        // Überprüfen, ob eine gültige Meeting-ID vorhanden ist, bevor das Meeting gestartet wird
-        if (meetingId) {
+          const meetingId = await createMeeting({ token });
           setToken(token);
           setMeetingId(meetingId);
-          setMeetingStarted(true);
-          console.log("meetingID: ", meetingId);
-          await postMeetingIdToBackend(meetingId);
+          postMeetingIdToBackend(meetingId);
+          setIsMeetingStarted(true);	
         } else {
-          console.error("Keine gültige Meeting-ID erhalten");
+          fetchMeetingInfo();
+          const token = await getToken();
+          setToken(token);
+          setMeetingId(existingMeetingResponse.data.meetingId);
+          setIsMeetingStarted(true);
         }
       } catch (error) {
         console.error("Fehler beim Starten des Meetings:", error);
@@ -89,11 +87,6 @@ function VideoApp(channelId) {
         `http://localhost:9000/api/channels/${channelId.channelId}/addMeeting`,
         {
           meetingId: meetingId,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
-          },
         }
       );
       console.log("Meeting-ID an Backend gesendet:", response.data.meetingId);
@@ -109,12 +102,6 @@ function VideoApp(channelId) {
       };
     }
   }, [isMobile]);
-
-  // Funktion, um den Teilnehmernamen zu holen
-  const fetchParticipantName = async () => {
-    // Logik zum Abrufen des Teilnehmernamens
-    setParticipantName("Ihr Teilnehmername");
-  };
 
   async function validateToken() {
     try {
@@ -139,7 +126,6 @@ function VideoApp(channelId) {
   }
 
   useEffect(() => {
-    fetchParticipantName();
     if (isMobile) {
       window.onbeforeunload = () => "Are you sure you want to exit?";
     }
@@ -159,7 +145,7 @@ function VideoApp(channelId) {
               meetingId,
               micEnabled: micOn,
               webcamEnabled: webcamOn,
-              name: participantName ? participantName : "TestUser",
+              name: participantName,
 
               multiStream: true,
             }}
@@ -174,7 +160,7 @@ function VideoApp(channelId) {
                 setParticipantName("");
                 setWebcamOn(false);
                 setMicOn(false);
-                setMeetingStarted(false);
+                setIsMeetingStarted(false);
               }}
               setIsMeetingLeft={setIsMeetingLeft}
               selectedMic={selectedMic}
@@ -206,7 +192,7 @@ function VideoApp(channelId) {
           setWebcamOn={setWebcamOn}
           onClickStartMeeting={() => {
             // fetchMeetingInfo();
-            setMeetingStarted(true);
+            setIsMeetingStarted(true);
           }}
           startMeeting={isMeetingStarted}
           setIsMeetingLeft={setIsMeetingLeft}

@@ -336,6 +336,12 @@ const Dashboard = ({ channelId }) => {
     );
   }
 
+  const htmlToText = (html) => {
+    const tempDivElement = document.createElement("div");
+    tempDivElement.innerHTML = html;
+    return tempDivElement.textContent || tempDivElement.innerText || "";
+  };
+
   // Neue sendMessage Funktion
   const sendMessage = useCallback(() => {
     const senderImage = userData.profileImage ? userData.profileImage : null;
@@ -390,11 +396,7 @@ const Dashboard = ({ channelId }) => {
     navigate("/user-profile");
   };
 
-  const htmlToText = (html) => {
-    const tempDivElement = document.createElement("div");
-    tempDivElement.innerHTML = html;
-    return tempDivElement.textContent || tempDivElement.innerText || "";
-  };
+
 
   // Filterfunktion, um Nachrichten basierend auf dem Suchbegriff zu filtern
   const filterMessages = useCallback(() => {
@@ -438,45 +440,8 @@ const Dashboard = ({ channelId }) => {
 
   // In the part where you handle video calls:
   const handleVideoCallClick = async (channelId) => {
-    console.log("current channel is: ", channelId);
-    try {
-      let token = await getToken();
-
-      // Neue Anfrage, um zu überprüfen, ob ein aktives Meeting vorhanden ist
-      const existingMeetingResponse = await axios.get(
-        `http://localhost:9000/api/channels/${channelId}/meetingId`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      let meetingId = existingMeetingResponse.data.meetingId;
-
-      // Wenn bereits eine Meeting-ID vorhanden ist, wird der Benutzer direkt in das Meeting weitergeleitet
-      if (meetingId) {
-        setMeetingId(meetingId);
-        setIsCallActive(true);
-        openVideoModal(meetingId);
-      } else {
-        // Wenn keine Meeting-ID vorhanden ist, wird ein neues Meeting erstellt
-        const createMeetingResponse = await axios.post(
-          `http://localhost:9000/api/video/create-meeting/${channelId}`,
-          { token: token, region: "eu-central-1" }
-        );
-
-        meetingId = createMeetingResponse.data.meetingId;
-
-        if (meetingId) {
-          setMeetingId(meetingId);
-          setIsCallActive(true);
-          openVideoModal(meetingId);
-        } else {
-          console.error("Meeting konnte nicht erstellt oder gefunden werden.");
-        }
-      }
-    } catch (error) {
-      console.error("Fehler beim Handhaben des Videoanruf-Klicks:", error);
-    }
+   openVideoModal(channelId);
   };
-  console.log("ATTENTION: ", activeChannel);
 
   return (
     <>
