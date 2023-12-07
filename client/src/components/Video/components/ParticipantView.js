@@ -4,13 +4,13 @@ import { useParticipant } from "@videosdk.live/react-sdk";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import { useMediaQuery } from "react-responsive";
-import useIsMobile from "./hooks/useIsMobile";
-import useIsTab from "./hooks/useIsTab";
-import useWindowSize from "./hooks/useWindowSize";
-import MicOffSmallIcon from "./icons/MicOffSmallIcon";
-import NetworkIcon from "./icons/NetworkIcon";
-import SpeakerIcon from "./icons/SpeakerIcon";
-import { getQualityScore, nameTructed } from "./utils/common";
+import useIsMobile from "../hooks/useIsMobile";
+import useIsTab from "../hooks/useIsTab";
+import useWindowSize from "../hooks/useWindowSize";
+import MicOffSmallIcon from "../icons/MicOffSmallIcon";
+import NetworkIcon from "../icons/NetworkIcon";
+import SpeakerIcon from "../icons/SpeakerIcon";
+import { getQualityScore, nameTructed } from "../utils/common";
 import * as ReactDOM from "react-dom";
 
 export const CornerDisplayName = ({
@@ -220,7 +220,6 @@ export const CornerDisplayName = ({
 
   return (
     <>
-
       <div
         className="absolute bottom-2 left-2 rounded-md flex items-center justify-center p-2"
         style={{

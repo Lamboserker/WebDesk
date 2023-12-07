@@ -24,7 +24,6 @@ export const getToken = async () => {
     console.error("Error: ", Error("Please add a token or Auth Server URL"));
   }
 };
-
 export const createMeeting = async ({ token }) => {
   const url = `${API_BASE_URL}/v2/rooms`;
   const options = {
@@ -32,25 +31,34 @@ export const createMeeting = async ({ token }) => {
     headers: { Authorization: token, "Content-Type": "application/json" },
   };
 
-  const { roomId } = await fetch(url, options)
-    .then((response) => response.json())
-    .catch((error) => console.error("error", error));
-
-  return roomId;
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.roomId; // Assuming the response contains a roomId
+  } catch (error) {
+    console.error("Error creating meeting:", error.message);
+    return null; // Return null or appropriate error handling
+  }
 };
-
 export const validateMeeting = async ({ roomId, token }) => {
   const url = `${API_BASE_URL}/v2/rooms/validate/${roomId}`;
-
   const options = {
     method: "GET",
     headers: { Authorization: token, "Content-Type": "application/json" },
   };
 
-  const result = await fetch(url, options)
-    .then((response) => response.json()) //result will have meeting id
-    .catch((error) => console.error("error", error));
-
-  return result ? result.roomId === roomId : false;
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    const result = await response.json();
+    return result && result.roomId === roomId; // Verify if the response matches the roomId
+  } catch (error) {
+    console.error("Error validating meeting:", error.message);
+    return false; // Return false or appropriate error handling
+  }
 };
-

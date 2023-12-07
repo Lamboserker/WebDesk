@@ -29,10 +29,11 @@ import axios from "axios";
 import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
 import "react-quill/dist/quill.snow.css";
 import Switcher from "../../Switcher";
-import { getToken, createMeeting, validateMeeting } from '../Video/api'; // import the functions
+import { getToken, createMeeting, validateMeeting } from "../Video/api"; // import the functions
 
 const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
-const Dashboard = () => {
+
+const Dashboard = ({ channelId }) => {
   let navigate = useNavigate();
   const [activeChannel, setActiveChannel] = useState(null);
   const [message, setMessage] = useState("");
@@ -390,10 +391,8 @@ const Dashboard = () => {
   };
 
   const htmlToText = (html) => {
-    // Erstellen eines neuen DOM-Elements und Einfügen des HTML-Inhalts
     const tempDivElement = document.createElement("div");
     tempDivElement.innerHTML = html;
-    // Rückgabe des Textinhalts, HTML-Tags werden entfernt
     return tempDivElement.textContent || tempDivElement.innerText || "";
   };
 
@@ -418,7 +417,6 @@ const Dashboard = () => {
     filterMessages();
   }, [searchTerm, messages, filterMessages]);
 
-  // Entscheiden, welche Nachrichten angezeigt werden sollen
   const displayedMessages = searchTerm ? filteredMessages : messages;
 
   const navigateTo = (path) => {
@@ -436,38 +434,49 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Handler for camera icon click
-  const handleCameraClick = (channelId) => {
-    setCurrentChannel(channelId);
-    setIsCallActive(true);
-    // Additional logic to create/join a meeting
-  };
+  console.log("channel is: ", activeChannel);
 
-  // Define getToken and createMeeting functions here
-  // ...
+  // In the part where you handle video calls:
+  const handleVideoCallClick = async (channelId) => {
+    console.log("current channel is: ", channelId);
+    try {
+      let token = await getToken();
 
-   // Handler for clicking on the video camera icon in a channel
-   const handleVideoCallClick = async (channelId) => {
-    setCurrentChannel(channelId);
+      // Neue Anfrage, um zu überprüfen, ob ein aktives Meeting vorhanden ist
+      const existingMeetingResponse = await axios.get(
+        `http://localhost:9000/api/channels/${channelId}/meetingId`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    // Check if a meeting already exists for this channel
-    // If not, create a new meeting
-    let token = await getToken();
-     let existingMeetingId = meetingId;
-    let isValidMeeting = existingMeetingId ? await validateMeeting({ roomId: existingMeetingId, token }) : false;
+      let meetingId = existingMeetingResponse.data.meetingId;
 
-    if (!isValidMeeting) {
-      let newMeetingId = await createMeeting({ token });
-      setMeetingId(newMeetingId);
-    } else {
-      setMeetingId(existingMeetingId);
+      // Wenn bereits eine Meeting-ID vorhanden ist, wird der Benutzer direkt in das Meeting weitergeleitet
+      if (meetingId) {
+        setMeetingId(meetingId);
+        setIsCallActive(true);
+        openVideoModal(meetingId);
+      } else {
+        // Wenn keine Meeting-ID vorhanden ist, wird ein neues Meeting erstellt
+        const createMeetingResponse = await axios.post(
+          `http://localhost:9000/api/video/create-meeting/${channelId}`,
+          { token: token, region: "eu-central-1" }
+        );
+
+        meetingId = createMeetingResponse.data.meetingId;
+
+        if (meetingId) {
+          setMeetingId(meetingId);
+          setIsCallActive(true);
+          openVideoModal(meetingId);
+        } else {
+          console.error("Meeting konnte nicht erstellt oder gefunden werden.");
+        }
+      }
+    } catch (error) {
+      console.error("Fehler beim Handhaben des Videoanruf-Klicks:", error);
     }
-
-    setIsCallActive(true);
-    openVideoModal();
   };
-
-
+  console.log("ATTENTION: ", activeChannel);
 
   return (
     <>
@@ -557,17 +566,6 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-
-          {isVideoModalOpen && (
-      <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
-        <VideoApp
-          getToken={getToken}
-          createMeeting={createMeeting}
-          channel={currentChannel}
-          meetingId={meetingId}
-        />
-      </Modal>
-    )}
           {/* Direct Messages Section */}
           <div className="px-4 mt-24">
             <div className={dividerStyle}></div>
@@ -933,6 +931,11 @@ const Dashboard = () => {
           onClose={handleDropdownClose}
         />
       </div>
+      {isVideoModalOpen && (
+        <Modal isToggled={isVideoModalOpen} onClose={closeVideoModal}>
+          <VideoApp channelId={activeChannel} />
+        </Modal>
+      )}
     </>
   );
 };

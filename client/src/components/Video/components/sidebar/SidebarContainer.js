@@ -1,7 +1,7 @@
 import { useMeeting } from "@videosdk.live/react-sdk";
 import React, { Fragment } from "react";
-import useIsMobile from "../useIsMobile";
-import useIsTab from "../useIsTab";
+import useIsMobile from "../../hooks/useIsMobile";
+import useIsTab from "../../hooks/useIsTab";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ChatPanel } from "./ChatPanel";
 import { ParticipantPanel } from "./ParticipantPanel";

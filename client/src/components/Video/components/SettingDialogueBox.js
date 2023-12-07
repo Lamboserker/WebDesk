@@ -2,7 +2,7 @@ import { Dialog, Popover } from "@headlessui/react";
 import { Transition } from "@headlessui/react";
 import { ChevronDownIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import useWindowSize from "./hooks/useWindowSize";
+import useWindowSize from "../hooks/useWindowSize";
 import ConfirmBox from "./ConfirmBox";
 
 const AudioAnalyser = ({ audioTrack }) => {

@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MeetingDetailsScreen } from "../MeetingDetailsScreen";
-import { createMeeting, getToken, validateMeeting } from "../api";
+import { createMeeting, getToken, validateMeeting } from "../../api";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import SettingDialogueBox from "../SettingDialogueBox";
 import ConfirmBox from "../ConfirmBox";
-import useIsMobile from "../hooks/useIsMobile";
+import useIsMobile from "../../hooks/useIsMobile";
 import { createPopper } from "@popperjs/core";
-import WebcamOffIcon from "../icons/WebcamOffIcon";
-import WebcamOnIcon from "../icons/Bottombar/WebcamOnIcon";
-import MicOffIcon from "../icons/MicOffIcon";
-import MicOnIcon from "../icons/Bottombar/MicOnIcon";
+import WebcamOffIcon from "../../icons/WebcamOffIcon";
+import WebcamOnIcon from "../../icons/Bottombar/WebcamOnIcon";
+import MicOffIcon from "../../icons/MicOffIcon";
+import MicOnIcon from "../../icons/Bottombar/MicOnIcon";
 
 export function JoiningScreen({
   participantName,
@@ -292,7 +292,7 @@ export function JoiningScreen({
 
   useEffect(() => {
     getDevices({ micEnabled, webcamEnabled });
-  }, [getDevices, micEnabled, webcamEnabled]);
+  }, [micEnabled, webcamEnabled]);
 
   const ButtonWithTooltip = ({ onClick, onState, OnIcon, OffIcon, mic }) => {
     const [tooltipShow, setTooltipShow] = useState(false);

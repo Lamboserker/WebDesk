@@ -6,6 +6,7 @@ import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
 import messageRoutes from "./routes/messages.js";
 import workspaceRoutes from "./routes/workspaces.js";
+import channelRoutes from "./routes/channels.js";
 import auth from "./middleware/Auth.js";
 import authGoogleRoutes from "./routes/google0auth.js";
 import ChatMessage from "./models/ChatMessage.js"; // Importieren Sie Ihr ChatMessage-Modell
@@ -40,6 +41,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/video", videoRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/workspaces", auth, workspaceRoutes);
+app.use("/api/channels", channelRoutes);
 app.use("/api/google0auth", authGoogleRoutes);
 
 // Statischen Ordner einrichten

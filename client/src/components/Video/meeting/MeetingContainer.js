@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, createRef } from "react";
 import { Constants, useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { BottomBar } from "./components/BottomBar";
-import { SidebarConatiner } from "../hooks/sidebar/SidebarContainer";
+import { SidebarConatiner } from "../components/sidebar/SidebarContainer";
 import MemorizedParticipantView from "./components/ParticipantView";
-import { PresenterView } from "../PresenterView";
+import { PresenterView } from "../components/PresenterView";
 import { nameTructed, trimSnackBarText } from "../utils/helper";
-import WaitingToJoinScreen from "../screens/WaitingToJoinScreen";
-import ConfirmBox from "../ConfirmBox";
+import WaitingToJoinScreen from "../components/screens/WaitingToJoinScreen";
+import ConfirmBox from "../components/ConfirmBox";
 import useIsMobile from "../hooks/useIsMobile";
 import useIsTab from "../hooks/useIsTab";
 import { useMediaQuery } from "react-responsive";
