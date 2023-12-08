@@ -1,5 +1,5 @@
 .dropdown-menu {
-  z-index: 100;
+  
   position: absolute;
   right: 0;
   bottom: 100%; /* Platzieren Sie es über dem Icon */
@@ -49,8 +49,20 @@
 }
 
 .drag-handler {
-  width: 5px;
+  cursor: col-resize;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 10px; /* Anpassbare Griffbreite */
   height: 100%;
-  background: #ccc;
-  /* Weitere Styles nach Bedarf */
+  background: #ccc; /* Anpassbare Hintergrundfarbe */
+  z-index: 10;
+}
+
+
+.sidebar {
+  resize: horizontal;
+  overflow: auto;
+  max-width: 100%;  /* Maximale Breite */
+  min-width: 50px;  /* Minimale Breite */
 }

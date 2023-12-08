@@ -29,7 +29,7 @@ import axios from "axios";
 import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
 import "react-quill/dist/quill.snow.css";
 import Switcher from "../../Switcher";
-
+import UserDropdown from "./Dropdown/UserDropdown";
 const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
 
 const Dashboard = ({ channelId }) => {
@@ -451,13 +451,13 @@ const Dashboard = ({ channelId }) => {
         className={`flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
            `}>
         <div ref={sidebarRef} style={{ width: `${sidebarWidth}px` }}
-      className={`flex flex-col justify-between h-full overflow-y-auto border-r-2 border-black ${
+      className={`flex flex-col justify-between h-full  border-r-2 border-black ${
         isMobileSidebarOpen ? "block" : "hidden"
       } lg:block`}
     >
           {/* sidebar */}
           <div
-           onMouseDown={startResizing} className="cursor-col-resize p-2 h-screen"
+           onMouseDown={startResizing} className="cursor-col-resize p-2 h-screen z-50 overflow-hidden mt-20"
             style={{ cursor: "col-resize" }}>
             
             {isWorkspaceModalOpen && (
@@ -542,12 +542,12 @@ const Dashboard = ({ channelId }) => {
               <h2 className="text-xs font-semibold text-black dark:text-white uppercase mb-5">
                 Direct Messages
               </h2>
-              <div className="space-y-1">
-                {console.log("members: ", members)}
+              
+              <div className="relative space-y-1">
                 {members.map((member, index) => {
-                  console.log("Mitglieder-ID:", member._id);
                   if (member._id !== userData._id) {
                     return (
+                      <UserDropdown key={index} userId={member._id}>
                       <button
                         key={index}
                         className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left"
@@ -563,11 +563,14 @@ const Dashboard = ({ channelId }) => {
                         />
                         {member.name}
                       </button>
+                      </UserDropdown>
+                      
                     );
                   }
                   return null; // Nichts rendern, wenn es der eigene Account ist
                 })}
               </div>
+              
             </div>
 
             {/* Secondary Navigation/Footer */}
@@ -726,7 +729,7 @@ const Dashboard = ({ channelId }) => {
           </div>
         </div>
         {/* Main Content */}
-        <div className="flex flex-col flex-1 overflow-y-auto">
+        <div className="flex flex-col flex-1 ">
           {/* Searchbar */}
           <div className="relative p-4  items-center lg:block hidden">
             {/* Search icon inside the input field */}
