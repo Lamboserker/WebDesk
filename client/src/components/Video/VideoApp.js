@@ -46,17 +46,13 @@ function VideoApp(channelId) {
     };
 
     const autoStartMeeting = async () => {
-      if (isMeetingStarted=== true) {
-        return;
-      };
       try {
         // Überprüfen, ob ein aktives Meeting vorhanden ist
         const existingMeetingResponse = await axios.get(
           `http://localhost:9000/api/channels/${channelId.channelId}/meetingId`
         );
-       
-        
-       
+        setMeetingId(existingMeetingResponse.data.meetingId);
+        const meetingId = existingMeetingResponse.data.meetingId;
         // Wenn keine Meeting-ID vorhanden ist, wird ein neues Meeting erstellt
         if (meetingId === "") {
           const token = await getToken();
@@ -64,12 +60,12 @@ function VideoApp(channelId) {
           setToken(token);
           setMeetingId(meetingId);
           postMeetingIdToBackend(meetingId);
-          setIsMeetingStarted(true);	
+          fetchMeetingInfo();
+          setIsMeetingStarted(true);
         } else {
           fetchMeetingInfo();
           const token = await getToken();
           setToken(token);
-          setMeetingId(existingMeetingResponse.data.meetingId);
           setIsMeetingStarted(true);
         }
       } catch (error) {

@@ -24,24 +24,21 @@
   border-top: none;
 }
 
-
-
 .custom-quill .ql-editor {
   font-size: 18px;
 }
 
-
 /* main.css oder eine ähnliche Datei */
 .sidebar-icon-background::before {
-  content: '';
+  content: "";
   background: linear-gradient(
     to right,
-    rgba(128, 0, 128, 0),    /* Transparentes Lila */
-    rgba(128, 0, 128, 0.2) 20%, 
-    rgba(128, 0, 128, 0.4) 40%, 
-    rgba(128, 0, 128, 0.6) 60%, 
-    rgba(128, 0, 128, 0.911) 80%, 
-    rgba(128, 0, 128, 1) 100%  /* Volles Lila */
+    rgba(128, 0, 128, 0),
+    /* Transparentes Lila */ rgba(128, 0, 128, 0.2) 20%,
+    rgba(128, 0, 128, 0.4) 40%,
+    rgba(128, 0, 128, 0.6) 60%,
+    rgba(128, 0, 128, 0.911) 80%,
+    rgba(128, 0, 128, 1) 100% /* Volles Lila */
   );
   position: absolute;
   top: 0;
@@ -49,4 +46,11 @@
   right: -150%; /* Erweitert den Hintergrund nach rechts */
   bottom: 0;
   z-index: -1; /* Stellt sicher, dass der Hintergrund hinter dem Button ist */
+}
+
+.drag-handler {
+  width: 5px;
+  height: 100%;
+  background: #ccc;
+  /* Weitere Styles nach Bedarf */
 }

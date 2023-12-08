@@ -1,41 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
-Modal.setAppElement("#root"); // Für Accessibility-Zwecke
+Modal.setAppElement("#root");
 
-const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
+const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   const [workspaces, setWorkspaces] = useState([]);
-  const [selectedWorkspace, setSelectedWorkspace] = useState("");
-  const modalRef = useRef(null); // Referenz für das Modal
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [error, setError] = useState("");
+  const modalRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-
-  const handleWorkspaceClick = (workspace) => {
-    setSelectedWorkspace(workspace._id);
-    onSelectWorkspace(workspace);
-    onOpen(); // Rufen Sie hier onOpen auf
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
-        setIsModalOpen(false);
-        onClose(); // Rufen Sie hier onClose auf
-      }
-    };
-  
-    document.addEventListener("mousedown", handleClickOutside);
-  
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [onClose]);
-
-  const openCreateWorkspaceModal = () => {
-    navigate("/workspace-modal");
-  };
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -50,19 +27,38 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
           }
         );
         setWorkspaces(response.data);
-        setSelectedWorkspace(response.data[0]._id);
+        setSelectedWorkspace(response.data[0]?._id || null);
       } catch (error) {
-        console.error("Fehler beim Abrufen der Workspaces", error);
+        console.error("Error fetching workspaces", error);
+        setError("Could not fetch workspaces.");
       }
     };
+
     fetchWorkspaces();
   }, []);
+
+  const handleClickOutside = useCallback(
+    (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setIsModalOpen(false);
+        onClose();
+      }
+    },
+    [onClose]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [handleClickOutside]);
+
+  const openCreateWorkspaceModal = () => navigate("/workspace-modal");
 
   const handleSelectionChange = (workspace) => {
     setSelectedWorkspace(workspace._id);
     onSelectWorkspace(workspace);
     setIsModalOpen(false);
-    onClose(); 
+    onClose();
   };
 
   const getWorkspaceName = () => {
@@ -72,6 +68,9 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
 
   return (
     <>
+      {/* Error Message */}
+      {error && <div className="error-message">{error}</div>}
+
       {/* Modal toggle */}
       <button
         onClick={() => setIsModalOpen(true)}
@@ -139,7 +138,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
                         id={`workspace-${workspace._id}`}
                         name="workspace"
                         value={workspace._id}
-                        className="hidden peer"
+                        className="hidden"
                         checked={selectedWorkspace === workspace._id}
                         onChange={() => handleSelectionChange(workspace)}
                       />
@@ -181,6 +180,11 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onOpen, onClose }) => {
       )}
     </>
   );
+};
+
+WorkspaceDropdown.propTypes = {
+  onSelectWorkspace: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default WorkspaceDropdown;
