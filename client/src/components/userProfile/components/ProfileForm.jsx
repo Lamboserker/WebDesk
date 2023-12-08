@@ -412,7 +412,7 @@ const ProfileForm = () => {
       </main>
       {/* Crop Modal */}
       {cropModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-5 rounded-lg">
             {profileImagePreview && (
               <ReactCrop
@@ -439,7 +439,7 @@ const ProfileForm = () => {
               </div>
             )}
 
-            <button onClick={() => setCropModalOpen(false)} className="mt-2">
+            <button onClick={() => setCropModalOpen(false)} className="mb-8">
               Close
             </button>
           </div>

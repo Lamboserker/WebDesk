@@ -29,7 +29,6 @@ import axios from "axios";
 import WorkspaceDropdown from "./Dropdown/WorkspaceDropdown";
 import "react-quill/dist/quill.snow.css";
 import Switcher from "../../Switcher";
-import { getToken, createMeeting, validateMeeting } from "../Video/api"; // import the functions
 
 const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
 
@@ -59,7 +58,9 @@ const Dashboard = ({ channelId }) => {
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
-  const [sidebarWidth, setSidebarWidth] = useState(200); // Anfangsbreite der Sidebar
+  const [sidebarWidth, setSidebarWidth] = useState(
+    parseInt(localStorage.getItem("sidebarWidth")) || 200
+  );
   const sidebarRef = useRef(null);
   const menuRef = useRef();
   const messageInputRef = useRef(null);
@@ -94,23 +95,22 @@ const Dashboard = ({ channelId }) => {
     };
   }, []);
 
-  const startDragging = (e) => {
-    document.addEventListener("mousemove", onDrag);
-    document.addEventListener("mouseup", stopDragging);
+  const startResizing = (e) => {
+    e.preventDefault();
+    window.addEventListener("mousemove", onResize);
+    window.addEventListener("mouseup", stopResizing);
   };
 
-  const onDrag = (e) => {
+  const onResize = (e) => {
     const newWidth =
       e.clientX - sidebarRef.current.getBoundingClientRect().left;
-    if (newWidth > 100 && newWidth < 400) {
-      // Begrenzung der Breite
-      setSidebarWidth(newWidth);
-    }
+    setSidebarWidth(newWidth);
+    localStorage.setItem("sidebarWidth", newWidth); // Speichern der Breite
   };
 
-  const stopDragging = () => {
-    document.removeEventListener("mousemove", onDrag);
-    document.removeEventListener("mouseup", stopDragging);
+  const stopResizing = () => {
+    window.removeEventListener("mousemove", onResize);
+    window.removeEventListener("mouseup", stopResizing);
   };
 
   const openVideoModal = () => {
@@ -441,20 +441,6 @@ const Dashboard = ({ channelId }) => {
     navigate(path);
   };
 
-  useEffect(() => {
-    function handleResize() {
-      setIsMobileView(window.innerWidth < 1024);
-    }
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  console.log("channel is: ", activeChannel);
-
-  // In the part where you handle video calls:
   const handleVideoCallClick = async (channelId) => {
     openVideoModal(channelId);
   };
@@ -462,18 +448,18 @@ const Dashboard = ({ channelId }) => {
   return (
     <>
       <div
-        className={`flex m-0 p-o h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
-    ${isDropdownOpen && !isMobileView ? "blur-md" : ""}`}
-      >
-        <div ref={sidebarRef} className="">
+        className={`flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
+           `}>
+        <div ref={sidebarRef} style={{ width: `${sidebarWidth}px` }}
+      className={`flex flex-col justify-between h-full overflow-y-auto border-r-2 border-black ${
+        isMobileSidebarOpen ? "block" : "hidden"
+      } lg:block`}
+    >
           {/* sidebar */}
           <div
-            onMouseDown={startDragging}
-            style={{ cursor: "col-resize" }}
-            className={`w-[${sidebarWidth}px] border-r-2 border-black overflow-y-auto mt-20 ${
-              isMobileSidebarOpen ? "block" : "hidden"
-            } lg:block`}
-          >
+           onMouseDown={startResizing} className="cursor-col-resize p-2 h-screen"
+            style={{ cursor: "col-resize" }}>
+            
             {isWorkspaceModalOpen && (
               <div className="workspace-modal">
                 <div className="workspace-modal-content">
@@ -596,7 +582,7 @@ const Dashboard = ({ channelId }) => {
             </div>
 
             {/* User Profile Section */}
-            <div className="absolute bottom-0 px-4 py-2">
+            <div className=" px-4 py-2">
               <div className="flex items-center space-x-3">
                 {!imageLoadError && userData.profileImage ? (
                   <>
@@ -740,7 +726,7 @@ const Dashboard = ({ channelId }) => {
           </div>
         </div>
         {/* Main Content */}
-        <div className="flex flex-col flex-1  ">
+        <div className="flex flex-col flex-1 overflow-y-auto">
           {/* Searchbar */}
           <div className="relative p-4  items-center lg:block hidden">
             {/* Search icon inside the input field */}
