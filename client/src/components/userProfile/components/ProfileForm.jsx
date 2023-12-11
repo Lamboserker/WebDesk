@@ -134,12 +134,14 @@ const ProfileForm = () => {
         const croppedBlob = await getCroppedImg(
           profileImagePreview,
           crop,
-          "newFile.jpeg"
+          "newFile.jpeg" // Setzen Sie hier einen sinnvollen Dateinamen mit Dateiendung
         );
         const croppedImageUrl = URL.createObjectURL(croppedBlob);
         setCroppedImageUrl(croppedImageUrl);
-        setCroppedPreview(croppedImageUrl); // Aktualisierung der Vorschau
-        setCroppedFile(croppedBlob); // Speichern des Blob-Objekts für das Hochladen
+        setCroppedPreview(croppedImageUrl);
+        setCroppedFile(
+          new File([croppedBlob], "newFile.jpeg", { type: "image/jpeg" })
+        ); // Erstellen eines File-Objekts aus dem Blob
       } catch (error) {
         console.error("Fehler beim Zuschneiden des Bildes:", error);
       }
@@ -153,6 +155,9 @@ const ProfileForm = () => {
 
   const handleImageUpload = async () => {
     const userId = await validateToken();
+    console.log("UserID:", userId); // Loggen der Benutzer-ID
+    console.log("Cropped File:", croppedFile); // Loggen des zugeschnittenen Bildes
+
     if (!userId || !croppedFile) {
       console.error("User ID oder zugeschnittenes Bild fehlen");
       return;
@@ -170,7 +175,6 @@ const ProfileForm = () => {
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         }

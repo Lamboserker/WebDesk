@@ -5,9 +5,27 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import Auth from "../middleware/Auth.js";
 import fs from "fs";
+import path from "path";
 
 const router = express.Router();
-const upload = multer({ dest: "profileImage/" }); // Konfigurieren Sie Multer entsprechend Ihren Anforderungen
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "profileImage/"); // Ihr Zielverzeichnis
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = path.extname(file.originalname);
+    console.log(
+      "Original file name:",
+      file.originalname,
+      "Extension:",
+      extension
+    );
+    cb(null, file.fieldname + "-" + uniqueSuffix + extension);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 // @route POST api/users/register
 // @desc Register a new user

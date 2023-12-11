@@ -47,19 +47,9 @@
   z-index: -1; /* Stellt sicher, dass der Hintergrund hinter dem Button ist */
 }
 
-.drag-handler {
-  cursor: col-resize;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 10px; /* Anpassbare Griffbreite */
-  height: 100%;
-  background: #ccc; /* Anpassbare Hintergrundfarbe */
-  z-index: 10;
-}
-
 .sidebar {
   resize: horizontal;
+                    /*veränderung nur durch border*/
   overflow: auto;
   min-width: 200px; /* Minimale Breite */
   max-width: 100%; /* Maximale Breite */

@@ -66,7 +66,7 @@ const Dashboard = ({ channelId }) => {
   const emojiPickerRef = useRef(null);
   const dropdownRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const dividerStyle = "relative w-60 h-px bg-gray-400 my-4";
+  const dividerStyle = "relative w-40 h-px bg-gray-400 my-4 mb-10";
   const MIN_SIDEBAR_WIDTH = 200; // Mindestbreite in Pixel
 
   const onEmojiClick = (emojiObject) => {
@@ -453,14 +453,11 @@ const Dashboard = ({ channelId }) => {
 
   return (
     <>
-      <div
-        className={`flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
-           `}
-      >
+      <div className="flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900">
         <div
           ref={sidebarRef}
           style={{ width: `${sidebarWidth}px` }}
-          className={`flex flex-col justify-between h-full  border-r-2 border-black ${
+          className={`flex flex-col justify-between h-full border-r-2 border-black ${
             isMobileSidebarOpen ? "block" : "hidden"
           } lg:block`}
         >
@@ -468,7 +465,7 @@ const Dashboard = ({ channelId }) => {
 
           <div
             onMouseDown={startResizing}
-            className="cursor-col-resize p-2 h-screen z-50  mt-20 sidebar"
+            className="cursor-col-resize p-2 h-screen z-50"
             style={{ cursor: "col-resize" }}
           >
             {isWorkspaceModalOpen && (
@@ -492,7 +489,7 @@ const Dashboard = ({ channelId }) => {
             )}
 
             {/* Primary Navigation */}
-            <div className="flex flex-col px-4 mt-2">
+            <div className="flex flex-col px-4 mt-20">
               <button className="flex items-center py-2 text-sm  text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
                 Threads
               </button>
@@ -548,7 +545,7 @@ const Dashboard = ({ channelId }) => {
               ))}
             </div>
             {/* Direct Messages Section */}
-            <div className="px-4 mt-24">
+            <div className="px-4">
               <div className={dividerStyle}></div>
               <h2 className="text-xs font-semibold text-black dark:text-white uppercase mb-5">
                 Direct Messages
@@ -594,7 +591,7 @@ const Dashboard = ({ channelId }) => {
             </div>
 
             {/* User Profile Section */}
-            <div className=" px-4 py-2">
+            <div className=" px-4 py-2 mt-auto relative bottom-0 left-0">
               <div className="flex items-center space-x-3">
                 {!imageLoadError && userData.profileImage ? (
                   <>
@@ -805,7 +802,7 @@ const Dashboard = ({ channelId }) => {
                       className="flex items-start space-x-2"
                     >
                       <img
-                        src={userData.senderImage}
+                        src={`http://localhost:9000/${userData.senderImage}`}
                         alt={userData.sender}
                         className="w-10 h-10 rounded-full"
                       />
