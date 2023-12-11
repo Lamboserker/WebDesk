@@ -57,7 +57,6 @@ const Dashboard = ({ channelId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(window.innerWidth < 1024);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
@@ -68,6 +67,7 @@ const Dashboard = ({ channelId }) => {
   const dropdownRef = useRef(null);
   const messagesEndRef = useRef(null);
   const dividerStyle = "relative w-60 h-px bg-gray-400 my-4";
+  const MIN_SIDEBAR_WIDTH = 200; // Mindestbreite in Pixel
 
   const onEmojiClick = (emojiObject) => {
     if (messageInputRef.current) {
@@ -102,10 +102,13 @@ const Dashboard = ({ channelId }) => {
   };
 
   const onResize = (e) => {
-    const newWidth =
-      e.clientX - sidebarRef.current.getBoundingClientRect().left;
+    let newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
+
+    // Überprüfen, ob die neue Breite unter dem Mindestwert liegt
+    newWidth = Math.max(newWidth, MIN_SIDEBAR_WIDTH);
+
     setSidebarWidth(newWidth);
-    localStorage.setItem("sidebarWidth", newWidth); // Speichern der Breite
+    localStorage.setItem("sidebarWidth", newWidth.toString());
   };
 
   const stopResizing = () => {
@@ -126,6 +129,9 @@ const Dashboard = ({ channelId }) => {
 
   const handleChannelClick = (channelId) => {
     setActiveChannel(channelId);
+    if (window.innerWidth < 768) {
+      setIsMobileSidebarOpen(false);
+    }
   };
 
   const createWorkspace = () => {
@@ -449,17 +455,22 @@ const Dashboard = ({ channelId }) => {
     <>
       <div
         className={`flex h-screen bg-gradient-to-r from-gray-100 via-purple-900 to-gray-100 dark:bg-gradient-to-r dark:from-slate-900 dark:via-purple-900 dark:to-slate-900
-           `}>
-        <div ref={sidebarRef} style={{ width: `${sidebarWidth}px` }}
-      className={`flex flex-col justify-between h-full  border-r-2 border-black ${
-        isMobileSidebarOpen ? "block" : "hidden"
-      } lg:block`}
-    >
+           `}
+      >
+        <div
+          ref={sidebarRef}
+          style={{ width: `${sidebarWidth}px` }}
+          className={`flex flex-col justify-between h-full  border-r-2 border-black ${
+            isMobileSidebarOpen ? "block" : "hidden"
+          } lg:block`}
+        >
           {/* sidebar */}
+
           <div
-           onMouseDown={startResizing} className="cursor-col-resize p-2 h-screen z-50 overflow-hidden mt-20"
-            style={{ cursor: "col-resize" }}>
-            
+            onMouseDown={startResizing}
+            className="cursor-col-resize p-2 h-screen z-50  mt-20 sidebar"
+            style={{ cursor: "col-resize" }}
+          >
             {isWorkspaceModalOpen && (
               <div className="workspace-modal">
                 <div className="workspace-modal-content">
@@ -542,35 +553,33 @@ const Dashboard = ({ channelId }) => {
               <h2 className="text-xs font-semibold text-black dark:text-white uppercase mb-5">
                 Direct Messages
               </h2>
-              
+
               <div className="relative space-y-1">
                 {members.map((member, index) => {
                   if (member._id !== userData._id) {
                     return (
                       <UserDropdown key={index} userId={member._id}>
-                      <button
-                        key={index}
-                        className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left"
-                      >
-                        <img
-                          src={
-                            `http://localhost:9000/${member.profileImage}` ||
-                            member.profileImage ||
-                            "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg"
-                          }
-                          alt="Profile"
-                          className="rounded-full w-6 h-6 mr-2"
-                        />
-                        {member.name}
-                      </button>
+                        <button
+                          key={index}
+                          className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left"
+                        >
+                          <img
+                            src={
+                              `http://localhost:9000/${member.profileImage}` ||
+                              member.profileImage ||
+                              "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg"
+                            }
+                            alt="Profile"
+                            className="rounded-full w-6 h-6 mr-2"
+                          />
+                          {member.name}
+                        </button>
                       </UserDropdown>
-                      
                     );
                   }
                   return null; // Nichts rendern, wenn es der eigene Account ist
                 })}
               </div>
-              
             </div>
 
             {/* Secondary Navigation/Footer */}

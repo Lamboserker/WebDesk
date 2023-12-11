@@ -1,5 +1,4 @@
 .dropdown-menu {
-  
   position: absolute;
   right: 0;
   bottom: 100%; /* Platzieren Sie es über dem Icon */
@@ -59,10 +58,9 @@
   z-index: 10;
 }
 
-
 .sidebar {
   resize: horizontal;
   overflow: auto;
-  max-width: 100%;  /* Maximale Breite */
-  min-width: 50px;  /* Minimale Breite */
+  min-width: 200px; /* Minimale Breite */
+  max-width: 100%; /* Maximale Breite */
 }
