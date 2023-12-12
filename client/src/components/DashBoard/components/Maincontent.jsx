@@ -309,23 +309,33 @@ const Maincontent = ({ activeChannel }) => {
           </div>
 
           {/* Dropdown menu */}
-          {showDropdown && (
-            <div
-              ref={dropdownRef}
-              className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-md flex flex-col"
-            >
-              {/* Add menu items here */}
-              <button
-                className="text-black dark:text-white p-2 hover:bg-gray-100"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+           {/* Dropdown-Menü */}
+      {showDropdown && (
+        <div
+          ref={dropdownRef}
+          className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-md"
+        >
+          <div className="grid grid-cols-2 grid-rows-4 gap-x-0 gap-y-0">
+            {/* Grid-Layout Inhalte */}
+            <div className="row-start-4 col-start-1 col-end-2">
+              
+            </div>
+            <div className="row-start-4 col-start-2 col-end-3">
               <button className="bg-white dark:bg-gray-700 p-2 hover:bg-gray-100">
                 <Switcher />
               </button>
             </div>
-          )}
+            <div className="row-start-1 col-start-1 col-span-2">Inhalt 3</div>
+            <div className="row-start-2 col-start-1 col-span-2">Inhalt 4</div>
+            <div className="row-start-3 col-start-1 col-span-2"><button
+                className="w-full h-full text-black text-xl dark:text-white p-2 hover:bg-gray-100"
+                onClick={handleLogout}
+              >
+                Logout
+              </button></div>
+          </div>
+        </div>
+      )}
         </div>
 
         {/* chat history/main area */}
