@@ -7,7 +7,6 @@ import "tailwindcss/tailwind.css";
 const WorkspaceModal = ({ onClose }) => {
   const [workspaceName, setWorkspaceName] = useState("");
   const [workspaceDescription, setWorkspaceDescription] = useState("");
-  const [userHasWorkspace] = useState(false);
   const navigate = useNavigate();
   // Funktion zum Erstellen eines neuen Workspaces
   const createWorkspace = async () => {
@@ -36,7 +35,7 @@ const WorkspaceModal = ({ onClose }) => {
     }
   };
 
-  if (userHasWorkspace) return null;
+  
 
   return (
     <AnimatePresence>

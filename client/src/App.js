@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./components/DashBoard/Dashboard";
+import Dashboard from "./components/DashBoard/components/Dashboard";
 import AuthContainer from "./components/Auth/AuthContainer";
 import LandingPage from "./components/Landing/LandingPage";
 import VideoApp from "./components/Video/VideoApp";
@@ -41,7 +41,6 @@ function App() {
             }
           />
           <Route path="/my-profile" element={<ProfileMenu />} />
-
         </Routes>
       </BrowserRouter>
     </div>

@@ -17,8 +17,8 @@ import {
   Avatar,
   Typography,
 } from "@material-tailwind/react";
-import UserDropdown from "../Dropdown/UserDropdown";
-
+import HoverComponent from "../Dropdown/UserDropdown";
+import "../../styles/dashboard.css";
 const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -94,6 +94,49 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     console.log("Is it open?", isDropdownOpen);
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    const fetchWorkspaces = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:9000/api/workspaces/list",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const workspaces = response.data;
+
+        if (workspaces.length === 1) {
+          setSelectedWorkspace(workspaces[0]);
+        } else {
+          const lastVisitedWorkspaceId = localStorage.getItem(
+            "lastVisitedWorkspace"
+          );
+          if (lastVisitedWorkspaceId) {
+            const lastVisitedWorkspace = workspaces.find(
+              (ws) => ws._id === lastVisitedWorkspaceId
+            );
+            setSelectedWorkspace(lastVisitedWorkspace || workspaces[0]);
+          } else {
+            setSelectedWorkspace(workspaces[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching workspaces:", error);
+      }
+    };
+
+    fetchWorkspaces();
+  }, []);
+
+  useEffect(() => {
+    if (selectedWorkspace && selectedWorkspace._id) {
+      fetchChannels(selectedWorkspace._id);
+      fetchWorkspaceMembers();
+      localStorage.setItem("lastVisitedWorkspace", selectedWorkspace._id);
+    }
+  }, [selectedWorkspace]);
+
   // Fetch all channels from the server
   const fetchChannels = async (workspaceId) => {
     const token = localStorage.getItem("userToken");
@@ -163,7 +206,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     try {
       const token = localStorage.getItem("userToken");
       const workspaceId = selectedWorkspace._id;
-      // console.log(selectedWorkspace._id);
       if (!workspaceId) {
         console.error("No workspace selected");
         return;
@@ -182,12 +224,15 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           },
         }
       );
-      // console.log(response.data);
-      await fetchChannels();
+
+      // Fügen Sie den neu erstellten Channel zum State hinzu
+      setChannels((prevChannels) => [...prevChannels, response.data]);
+      setIsCreatingChannel(false);
     } catch (error) {
       console.error(error);
     }
   };
+
   const handleLogout = () => {
     // Remove the token from LocalStorage
     localStorage.removeItem("userToken");
@@ -272,16 +317,16 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       >
         {/* sidebar */}
 
-        <div className="p-2 h-screen z-50">
+        <div className="p-2 h-screen ">
           {/* Top Bar/Header */}
           <div
-            className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 z-50 lg:justify-start"
+            className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 lg:justify-start"
             onClick={openPopUp}
           >
             {/* Hamburger-Menü-Icon */}
             <div className="lg:hidden relative sidebar-icon-background">
               <button
-                className="z-10 relative"
+                className="relative"
                 onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
               >
                 <Bars3BottomLeftIcon className="w-6 h-6 text-black dark:text-white" />
@@ -312,7 +357,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
 
           {/* Channels Section */}
-          <div className="px-4 mt-2 relative">
+          <div className="px-4 mt-2 relative overflow-y-auto max-h-72">
             <div className={dividerStyle}></div>
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-xs font-semibold text-black uppercase z-auto dark:text-white">
@@ -327,14 +372,25 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             </div>
             {/* Dialog oder Formular für neue Channel-Erstellung */}
             {isCreatingChannel && (
-              <div>
-                <input
-                  className="text-black dark:text-white w-full"
-                  type="text"
-                  value={newChannelName}
-                  onChange={(e) => setNewChannelName(e.target.value)}
-                />
-                <button onClick={saveNewChannel}>Channel erstellen</button>
+              <div className="w-40">
+                <div className="relative w-full min-w-[200px] h-10">
+                  <input
+                    className=" peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-200"
+                    placeholder=""
+                    type="text"
+                    value={newChannelName}
+                    onChange={(e) => setNewChannelName(e.target.value)}
+                  />{" "}
+                  <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-200 before:border-blue-gray-200 peer-focus:before:!border-gray-200 after:border-blue-gray-200 peer-focus:after:!border-gray-200">
+                    channel name
+                  </label>
+                </div>
+                <button
+                  className="text-black dark:text-white"
+                  onClick={saveNewChannel}
+                >
+                  create channel
+                </button>
               </div>
             )}
 
@@ -355,16 +411,16 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             <div className={dividerStyle}></div>
           </div>
           {/* Direct Messages Section */}
-          <div className="px-4 mt-2 relative">
+          <div className="px-4 mt-2 relative overflow-y-auto  max-h-72">
             <h2 className="text-xs font-semibold text-black dark:text-white uppercase mb-5">
               Direct Messages
             </h2>
 
-            <div className="relative space-y-1">
+            <div className="space-y-1">
               {members.map((member, index) => {
                 if (member._id !== userData._id) {
                   return (
-                    <UserDropdown key={index} userId={member._id}>
+                    <HoverComponent key={index} userId={member._id}>
                       <button
                         key={index}
                         className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left"
@@ -380,7 +436,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         />
                         {member.name}
                       </button>
-                    </UserDropdown>
+                    </HoverComponent>
                   );
                 }
                 return null; // Nichts rendern, wenn es der eigene Account ist
@@ -550,7 +606,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
         {/* Resize-Bar (Drag Handle) innerhalb der Sidebar */}
         <div
           onMouseDown={handleMouseDownOnResizeBar}
-          
           className=" w-1 absolute top-0 right-0 h-full bg-gray-700 opacity-50 hover:opacity-100 cursor-col-resize"
         ></div>
       </div>

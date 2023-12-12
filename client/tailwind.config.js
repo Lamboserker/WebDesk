@@ -1,16 +1,16 @@
 import colors from "tailwindcss/colors";
 import withMT from "@material-tailwind/react/utils/withMT";
-module.exports = withMT({
-  darkMode: 'class',
+export default withMT({
+  darkMode: "class",
   purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   mode: "jit",
   theme: {
     colors: {
       customLight: {
-        DEFAULT: '#000000', // Schwarz für Light-Modus
+        DEFAULT: "#000000", // Schwarz für Light-Modus
       },
       customDark: {
-        DEFAULT: '#FFFFFF', // Weiß für Dark-Modus
+        DEFAULT: "#FFFFFF", // Weiß für Dark-Modus
       },
       violet: colors.violet,
       rose: colors.rose,
@@ -47,21 +47,10 @@ module.exports = withMT({
       },
 
       colors: {
-        gray: {
-          100: "#FFFFFF",
-          150: "#3f4046",
-          200: "#EFEFEF",
-          300: "#DADADA",
-          400: "#818181",
-          500: "#6F767E",
-          600: "#404B53",
-          650: "#202427",
-          700: "#232830", //"#26282C", //"#2B3034",
-          750: "#1A1C22",
-          800: "#050A0E",
-          850: "#26282C",
-          900: "#95959E",
-        },
+        sidebarblue: { 200: "#1c2534" },
+        mainContent: { 200: "#39424f" },
+        searchbar: { 200: "#414b59" },
+
         orange: {
           250: "#FF5810",
           350: "#FF5D5D",
@@ -96,29 +85,11 @@ module.exports = withMT({
         blue: {
           350: "#76d9e6",
         },
-        customGray: {
-          100: "#252A34",
-          150: "#31353B",
-          200: "#1E1E1E",
-          300: "#454545",
-          350: "#2B303499",
-          400: "#282828",
-          500: "#848484",
-          600: "#C4C4C4",
-          700: "#272727",
-          800: "#343434",
-          850: "#9E9DA6",
-          900: "#373C43",
-        },
       },
     },
   },
   variants: {
-    extend: {
-      
-    },
+    extend: {},
   },
-  plugins: [
-    
-  ],
+  plugins: [],
 });

@@ -13,6 +13,9 @@
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-bottom: none; /* Entfernt die untere Umrandung der Toolbar */
+  box-shadow: 0px -2px 2px 1px rgba(181, 181, 181, 0.75);
+  -webkit-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
+  -moz-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
 }
 
 .custom-quill .ql-container {
@@ -21,36 +24,20 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   border-top: none;
+  box-shadow: 0px -2px 2px 1px rgba(181, 181, 181, 0.75);
+  -webkit-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
+  -moz-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
 }
 
 .custom-quill .ql-editor {
   font-size: 18px;
+  box-shadow: 0px -2px 2px 1px rgba(181, 181, 181, 0.75);
+  -webkit-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
+  -moz-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
+  
 }
 
-/* main.css oder eine ähnliche Datei */
-.sidebar-icon-background::before {
-  content: "";
-  background: linear-gradient(
-    to right,
-    rgba(128, 0, 128, 0),
-    /* Transparentes Lila */ rgba(128, 0, 128, 0.2) 20%,
-    rgba(128, 0, 128, 0.4) 40%,
-    rgba(128, 0, 128, 0.6) 60%,
-    rgba(128, 0, 128, 0.911) 80%,
-    rgba(128, 0, 128, 1) 100% /* Volles Lila */
-  );
-  position: absolute;
-  top: 0;
-  left: -150%; /* Erweitert den Hintergrund nach links */
-  right: -150%; /* Erweitert den Hintergrund nach rechts */
-  bottom: 0;
-  z-index: -1; /* Stellt sicher, dass der Hintergrund hinter dem Button ist */
-}
 
-.sidebar {
-  resize: horizontal;
-                    /*veränderung nur durch border*/
-  overflow: auto;
-  min-width: 200px; /* Minimale Breite */
-  max-width: 100%; /* Maximale Breite */
+.custom-quill .ql-editor:focus{
+  outline: none;
 }
