@@ -4,7 +4,31 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
+import { motion, AnimatePresence } from "framer-motion";
+import "../../styles/workspacedropdown.css";
 Modal.setAppElement("#root");
+
+function getBrightness(backgroundColor) {
+  const rgb = backgroundColor.match(/\d+/g);
+  if (!rgb) return 0;
+  return (
+    (parseInt(rgb[0], 10) * 299 +
+      parseInt(rgb[1], 10) * 587 +
+      parseInt(rgb[2], 10) * 114) /
+    1000
+  );
+}
+
+function setContrastColor(element) {
+  if (!element) return;
+
+  const backgroundColor = window
+    .getComputedStyle(element)
+    .getPropertyValue("background-color");
+  const brightness = getBrightness(backgroundColor);
+
+  element.style.color = brightness > 128 ? "black" : "white";
+}
 
 const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   const [workspaces, setWorkspaces] = useState([]);
@@ -12,8 +36,17 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   const [error, setError] = useState("");
   const modalRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const defaultImageUrl =
+    "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  const baseUrl = "http://localhost:9000/";
   const navigate = useNavigate();
-  const {openModal} = useWorkspaceModal();
+  const { openModal } = useWorkspaceModal();
+
+  useEffect(() => {
+    const element = document.querySelector(".hidden-description");
+    setContrastColor(element);
+  }, []);
+
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
@@ -34,7 +67,9 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
       }
     };
 
-    fetchWorkspaces();
+    fetchWorkspaces().then(() => {
+      document.querySelectorAll(".hidden-description").forEach(setContrastColor);
+    });
   }, []);
 
   const handleClickOutside = useCallback(
@@ -67,6 +102,24 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
     return workspace ? workspace.name : "Select a Workspace";
   };
 
+  // Individual workspace item animation
+  const itemVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1, // staggered animation
+      },
+    }),
+    whileHover: { scale: 1.1 }, // hover effect
+  };
+
+  const handleSelectWorkspace = (workspace) => {
+    setSelectedWorkspace(workspace);
+    onSelectWorkspace(workspace);
+  };
+
   return (
     <>
       {/* Error Message */}
@@ -75,7 +128,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
       {/* Modal toggle */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="block text-2xl text-black dark:text-white focus:outline-none focus:ring-0 font-medium rounded-lg  px-5 py-2.5 text-center"
+        className="block text-2xl text-black dark:text-white focus:outline-none focus:ring-0 font-medium rounded-lg px-5 py-2.5 text-center"
         type="button"
       >
         {getWorkspaceName()}
@@ -95,7 +148,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
             <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
               {/* Modal header */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 className=" w-full text-lg font-semibold text-black dark:text-white">
+                <h3 className="w-full text-lg font-semibold text-black dark:text-white">
                   Select a Workspace
                 </h3>
                 <button
@@ -118,61 +171,48 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
                     />
                   </svg>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="text-black dark:text-white bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  {/* Close icon */}
-                </button>
               </div>
               {/* Modal body */}
               <div className="p-4 md:p-5">
-                <p className="text-black  dark:text-white mb-4">
+                <p className="text-black dark:text-white mb-4">
                   Select your workspace:
                 </p>
                 <ul className="space-y-4 mb-4 text-black dark:text-white">
-                  {workspaces.map((workspace) => (
-                    <li key={workspace._id}>
-                      <input
-                        type="radio"
-                        id={`workspace-${workspace._id}`}
-                        name="workspace"
-                        value={workspace._id}
-                        className="hidden"
-                        checked={selectedWorkspace === workspace._id}
-                        onChange={() => handleSelectionChange(workspace)}
-                      />
-                      <label
-                        htmlFor={`workspace-${workspace._id}`}
-                        className="inline-flex items-center justify-between w-full p-5 text-gray-900 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-500 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-900 hover:bg-gray-100 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-500"
-                      >
-                        <div className="block">
-                          <div className="w-full text-lg font-semibold">
-                            {workspace.name}
-                          </div>
-                          <div className="w-full text-gray-500 dark:text-gray-400">
-                            Description or details here
-                          </div>
-                        </div>
-                        <svg
-                          className="w-4 h-4 ms-3 rtl:rotate-180 text-gray-500 dark:text-gray-400"
-                          aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 14 10"
+                  <AnimatePresence>
+                    {workspaces.map((workspace, index) => {
+                      const imageUrl = workspace.image
+                        ? `${baseUrl}${workspace.image.replace(/\\/g, "/")}`
+                        : defaultImageUrl;
+
+                      return (
+                        <motion.li
+                          variants={itemVariants}
+                          key={workspace._id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          whileHover={{ backgroundPosition: "left" }}
+                          style={{
+                            backgroundImage: `url(${imageUrl})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            overflow: "hidden",
+                          }}
+                          className="rounded-lg relative cursor-pointer workspace-item"
+                          onClick={() => handleSelectionChange(workspace)}
                         >
-                          <path
-                            stroke="currentColor"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M1 5h12m0 0L9 1m4 4L9 9"
-                          />
-                        </svg>
-                      </label>
-                    </li>
-                  ))}
+                          <div className="p-5 text-gray-900 border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-500 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-900  dark:text-white">
+                            <div className="w-full text-lg font-semibold">
+                              {workspace.name}
+                            </div>
+                            <div className="w-full text-black dark:text-black hidden-description">
+                              {workspace.description}
+                            </div>
+                          </div>
+                        </motion.li>
+                      );
+                    })}
+                  </AnimatePresence>
                 </ul>
               </div>
             </div>

@@ -8,10 +8,10 @@ import WorkspaceModal from "./components/Modal/WorkspaceModal";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRouteDashboard";
 import ProfileMenu from "./components/userProfile/ProfileMenu";
 import {
-  WorkspaceModalProvider, useWorkspaceModal
+  WorkspaceModalProvider,
+  useWorkspaceModal,
 } from "./Context/WorkspaceModalContext";
 function App() {
- 
   return (
     <WorkspaceModalProvider>
       <div className="App">
@@ -24,7 +24,10 @@ function App() {
               element={<ProtectedRoute component={Dashboard} />}
             />
             <Route path="/videoapp" element={<VideoApp />} />
-            <Route path="/workspace-modal" element={<WorkspaceModalWrapper />} />
+            <Route
+              path="/workspace-modal"
+              element={<WorkspaceModalWrapper />}
+            />
 
             <Route path="/my-profile" element={<ProfileMenu />} />
           </Routes>

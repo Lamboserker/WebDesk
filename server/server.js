@@ -46,7 +46,8 @@ app.use("/api/google0auth", authGoogleRoutes);
 
 // Statischen Ordner einrichten
 app.use("/profileImage", express.static(path.join(__dirname, "profileImage")));
-app.use("/workspaceImage", express.static(path.join(__dirname, "workspaceImage")));
+app.use("/workspaceImages", express.static("workspaceImages"));
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });

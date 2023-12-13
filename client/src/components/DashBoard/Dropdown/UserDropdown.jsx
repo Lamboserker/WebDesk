@@ -41,7 +41,7 @@ const HoverComponent = ({ children, userId }) => {
   return (
     <div
       ref={targetRef}
-      className="relative z-50"
+      className="relative"
       onMouseEnter={() => {
         setIsVisible(true);
         calculatePopoverPosition();

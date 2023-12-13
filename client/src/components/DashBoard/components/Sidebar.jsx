@@ -364,7 +364,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           <div className="px-4 mt-2 relative overflow-y-auto max-h-72">
             <div className={dividerStyle}></div>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xs font-semibold text-black uppercase z-auto dark:text-white">
+              <h2 className="text-xs font-semibold text-black uppercase  dark:text-white">
                 Channels
               </h2>
               <button

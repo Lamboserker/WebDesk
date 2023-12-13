@@ -6,7 +6,7 @@ import { PhotoIcon } from "@heroicons/react/24/outline";
 import ReactCrop from "react-image-crop";
 import "tailwindcss/tailwind.css";
 import "react-image-crop/dist/ReactCrop.css";
-
+import { useWorkspaceModal } from "../../Context/WorkspaceModalContext";
 export const getCroppedImg = (imageSrc, crop, fileName) => {
   return new Promise((resolve, reject) => {
     const image = new Image();
@@ -63,11 +63,9 @@ const WorkspaceModal = ({ onClose }) => {
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [croppedFile, setCroppedFile] = useState(null);
   const [croppedPreview, setCroppedPreview] = useState(null);
+  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
   const navigate = useNavigate();
-
-  const handleImageCrop = (newCrop) => {
-    setCrop(newCrop);
-  };
+  const { closeModal } = useWorkspaceModal();
 
   const handleDropzoneFileChange = (e) => {
     const file = e.target.files[0];
@@ -79,45 +77,57 @@ const WorkspaceModal = ({ onClose }) => {
     }
   };
 
-  const onImageLoaded = (image) => {
-    setImageRef(image);
+  const handleImageCrop = (newCrop) => {
+    setCrop(newCrop);
   };
 
   const makeClientCrop = async (crop) => {
-    if (imageRef && crop.width && crop.height) {
-      const croppedImageUrl = await getCroppedImg(
-        imageRef.src,
-        crop,
-        "newFile.jpeg"
-      );
-      setCompletedCrop(croppedImageUrl);
-      console.log("HAALLO:", croppedImageUrl);
+    if (workspaceImagePreview && crop.width && crop.height) {
+      try {
+        const croppedBlob = await getCroppedImg(
+          workspaceImagePreview,
+          crop,
+          "newFile.jpeg" // Setzen Sie hier einen sinnvollen Dateinamen mit Dateiendung
+        );
+        const croppedImageUrl = URL.createObjectURL(croppedBlob);
+        setCroppedImageUrl(croppedImageUrl);
+        setCroppedPreview(croppedImageUrl);
+        setCroppedFile(
+          new File([croppedBlob], "newFile.jpeg", { type: "image/jpeg" })
+        ); // Erstellen eines File-Objekts aus dem Blob
+      } catch (error) {
+        console.error("Fehler beim Zuschneiden des Bildes:", error);
+      }
     }
+  };
+
+  const onImageLoaded = (image) => {
+    setImageRef(image);
   };
 
   // Funktion zum Erstellen eines neuen Workspaces
   const createWorkspace = async () => {
     const formData = new FormData();
-    formData.append("profileImage", croppedFile);
+    formData.append("workspaceImages", croppedFile); // Append the image file
+    formData.append("name", workspaceName); // Append other fields
+    formData.append("description", workspaceDescription);
+
     const token = localStorage.getItem("userToken");
     try {
       console.log("workspaceImage:", croppedFile);
       const response = await axios.post(
         "http://localhost:9000/api/workspaces/create",
-        {
-          name: workspaceName,
-          description: workspaceDescription,
-          image: formData,
-        },
+        formData, // Pass the entire formData object
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            // Don't set 'Content-Type': 'multipart/form-data', Axios will set it automatically
           },
         }
       );
 
       console.log("Workspace erstellt:", response.data);
-      onClose();
+      closeModal();
       navigate("/dashboard");
     } catch (error) {
       console.error("Fehler beim Erstellen des Workspaces:", error);

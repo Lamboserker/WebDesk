@@ -11,7 +11,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "workspaceImages/"); // Ihr Zielverzeichnis
+    cb(null, "workspaceImages"); // Ihr Zielverzeichnis
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -29,21 +29,23 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // create a Workspace
-router.post("/create",upload.single("workspaceImages"), async (req, res) => {
+router.post("/create", upload.single("workspaceImages"), async (req, res) => {
   try {
-    
     const owner = req.user.id; // User ID aus dem JWT-Token
-    const newWorkspace = {
+
+    // Create a new instance of the Workspace model
+    const workspace = new Workspace({
       name: req.body.name,
       description: req.body.description,
       image: req.file.path, // Pfad des hochgeladenen Bildes
-      owner: req.body.owner, // oder req.user.id, abhängig von Ihrer Authentifizierungslogik
+      owner: owner, // Verwenden Sie hier `owner` statt `req.body.owner`, es sei denn, die Logik erfordert etwas anderes
       members: [owner],
       channels: [],
       chatMessages: [],
-    };
+    });
 
-    const savedWorkspace = await newWorkspace.save();
+    // Save the new workspace instance
+    const savedWorkspace = await workspace.save();
 
     // Aktualisieren des User-Modells
     await User.findByIdAndUpdate(owner, {
@@ -53,9 +55,10 @@ router.post("/create",upload.single("workspaceImages"), async (req, res) => {
     res.status(201).json(savedWorkspace);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Fehler beim Erstellen des Workspaces");
+    res.status(500).send("Fehler beim Erstellen des Workspaces: " + error.message);
   }
 });
+
 
 //show all members of the workspace
 router.get("/:workspaceId/users", async (req, res) => {
