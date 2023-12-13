@@ -5,6 +5,14 @@ const WorkspaceSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: false,
+  },
+  image: {
+    type: String,
+    required: false,
+  },
   owner: {
     type: Types.ObjectId,
     required: true,

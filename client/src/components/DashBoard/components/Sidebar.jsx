@@ -19,6 +19,8 @@ import {
 } from "@material-tailwind/react";
 import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
+import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
+
 const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -41,6 +43,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10";
   const MIN_SIDEBAR_WIDTH = 230; // Mindestbreite in Pixel
   let navigate = useNavigate();
+  const { openModal } = useWorkspaceModal();
 
   const handleMouseDownOnResizeBar = (e) => {
     e.preventDefault();
@@ -311,7 +314,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       <div
         ref={sidebarRef}
         style={{ width: `${sidebarWidth}px` }}
-        className={`relative flex flex-col justify-between h-full border-r-2 border-black ${
+        className={`relative flex flex-col justify-between h-full border-r-2 border-slate-900 ${
           isMobileSidebarOpen ? "block" : "hidden"
         } lg:block`}
       >
@@ -337,6 +340,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           {/* Workspace-Name in der normalen Ansicht */}
           <div className="hidden lg:block lg:absolute top-0 left-0">
             <WorkspaceDropdown
+              openModal={openModal}
               onSelectWorkspace={changeWorkspace}
               onClose={handleDropdownClose}
             />
@@ -606,7 +610,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
         {/* Resize-Bar (Drag Handle) innerhalb der Sidebar */}
         <div
           onMouseDown={handleMouseDownOnResizeBar}
-          className=" w-1 absolute top-0 right-0 h-full bg-gray-700 opacity-50 hover:opacity-100 cursor-col-resize"
+          className=" w-1 absolute top-0 right-0 h-full bg-transparent opacity-50 hover:opacity-100 cursor-col-resize"
         ></div>
       </div>
 

@@ -1,22 +1,47 @@
 import express from "express";
 import mongoose from "mongoose";
+import multer from "multer";
 import Workspace from "../models/Workspace.js";
 import User from "../models/User.js";
 import Channel from "../models/Channel.js";
 import ChatMessage from "../models/ChatMessage.js";
+import path from "path";
+import fs from "fs";
 const router = express.Router();
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "workspaceImages/"); // Ihr Zielverzeichnis
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const extension = path.extname(file.originalname);
+    console.log(
+      "Original file name:",
+      file.originalname,
+      "Extension:",
+      extension
+    );
+    cb(null, file.fieldname + "-" + uniqueSuffix + extension);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // create a Workspace
-router.post("/create", async (req, res) => {
+router.post("/create",upload.single("workspaceImages"), async (req, res) => {
   try {
-    const { name, description } = req.body;
+    
     const owner = req.user.id; // User ID aus dem JWT-Token
-    const newWorkspace = new Workspace({
-      name,
-      description,
-      owner,
+    const newWorkspace = {
+      name: req.body.name,
+      description: req.body.description,
+      image: req.file.path, // Pfad des hochgeladenen Bildes
+      owner: req.body.owner, // oder req.user.id, abhängig von Ihrer Authentifizierungslogik
       members: [owner],
-    });
+      channels: [],
+      chatMessages: [],
+    };
 
     const savedWorkspace = await newWorkspace.save();
 

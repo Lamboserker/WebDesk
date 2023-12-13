@@ -1,9 +1,6 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFacebookF,
-  faLinkedinIn,
-} from "@fortawesome/free-brands-svg-icons";
+import { faFacebookF, faLinkedinIn } from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +15,7 @@ const SignIn = ({ onLoginSuccess }) => {
     try {
       const response = await axios.post(
         "http://localhost:9000/api/users/login",
-        { 
+        {
           email,
           password,
         }
@@ -27,7 +24,7 @@ const SignIn = ({ onLoginSuccess }) => {
       const token = response.data.token;
       localStorage.setItem("userToken", token);
       await checkUserWorkspace();
-      onLoginSuccess();	// Aufrufen der onLoginSuccess-Methode, um die den User zum Dashboard weiterzuleiten
+      onLoginSuccess(); // Aufrufen der onLoginSuccess-Methode, um die den User zum Dashboard weiterzuleiten
     } catch (error) {
       console.error(error);
     }
@@ -36,29 +33,37 @@ const SignIn = ({ onLoginSuccess }) => {
   const checkUserWorkspace = async () => {
     try {
       const token = localStorage.getItem("userToken");
-      const response = await axios.get("http://localhost:9000/api/workspaces/workspace-status", {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        "http://localhost:9000/api/workspaces/workspace-status",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      // Prüfen Sie, ob der Benutzer Mitglied in einem Workspace ist
       if (response.data.hasWorkspace) {
-        navigate("/dashboard");  // Leiten Sie zum Dashboard um, wenn der Benutzer Mitglied ist
+        navigate("/dashboard");
       } else {
-        navigate("/workspace-modal");  // Leiten Sie zur WorkspaceModal Komponente um, wenn nicht
+        navigate("/workspace-modal");
       }
     } catch (error) {
-      console.error('Fehler beim Abrufen des Workspace-Status (Fehlercode 1):', error);
+      console.error(
+        "Fehler beim Abrufen des Workspace-Status (Fehlercode 1):",
+        error
+      );
     }
   };
 
   const handleGoogleSignIn = async (credentialResponse) => {
     try {
       // Senden des Google Tokens an Ihren Server
-      const res = await axios.post('http://localhost:9000/api/google0auth/google-auth', {
-        token: credentialResponse.credential,
-      });
+      const res = await axios.post(
+        "http://localhost:9000/api/google0auth/google-auth",
+        {
+          token: credentialResponse.credential,
+        }
+      );
 
       // Speichern des JWT-Tokens, das von Ihrem Server zurückgegeben wird
       const token = res.data.token;
@@ -66,12 +71,12 @@ const SignIn = ({ onLoginSuccess }) => {
 
       // Überprüfen Sie den Workspace-Status des Benutzers
       await checkUserWorkspace();
-      onLoginSuccess();	// Aufrufen der onLoginSuccess-Methode, um den User zum Dashboard weiterzuleiten
+      onLoginSuccess(); // Aufrufen der onLoginSuccess-Methode, um den User zum Dashboard weiterzuleiten
     } catch (error) {
-      console.error('Fehler bei der Google-Anmeldung:', error);
+      console.error("Fehler bei der Google-Anmeldung:", error);
     }
   };
-  
+
   return (
     <div className="myApp-form-container myApp-sign-in-container">
       <form className="myApp-form" onSubmit={(e) => e.preventDefault()}>
@@ -79,13 +84,12 @@ const SignIn = ({ onLoginSuccess }) => {
         <div className="myApp-social-container">
           <FontAwesomeIcon icon={faFacebookF} className="myApp-social-icon" />
           <button id="signInButton">
-          <GoogleLogin
-            onSuccess={handleGoogleSignIn}
-            onError={() => {
-              console.log("Login Failed");
-            }}
-          />
-            
+            <GoogleLogin
+              onSuccess={handleGoogleSignIn}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
           </button>
           <FontAwesomeIcon icon={faLinkedinIn} className="myApp-social-icon" />
         </div>

@@ -47,7 +47,7 @@ export default withMT({
       },
 
       colors: {
-        sidebarblue: { 200: "#1c2534" },
+        sidebarblue: { 200: "#1c2633" },
         mainContent: { 200: "#39424f" },
         searchbar: { 200: "#414b59" },
 

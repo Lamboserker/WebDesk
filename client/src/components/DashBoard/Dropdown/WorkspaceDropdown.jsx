@@ -3,7 +3,7 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
-
+import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
 Modal.setAppElement("#root");
 
 const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
@@ -13,7 +13,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   const modalRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
-
+  const {openModal} = useWorkspaceModal();
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
@@ -53,6 +53,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   }, [handleClickOutside]);
 
   const openCreateWorkspaceModal = () => navigate("/workspace-modal");
+  openModal();
 
   const handleSelectionChange = (workspace) => {
     setSelectedWorkspace(workspace._id);
