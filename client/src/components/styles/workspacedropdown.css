@@ -1,49 +1,16 @@
-@keyframes dropAnimation {
-  0% {
-    opacity: 0;
-    transform: translateX(100%) scale(0);
-  }
-  50% {
-    transform: translateX(50%) scale(1.2);
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0%) scale(1);
-  }
+.cube {
+  width: 200px; /* Setze eine geeignete Größe */
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
 }
 
-
-
-.workspace-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-   
-    z-index: 1;
-  }
-
-.hidden-description {
+.face {
+  width: 200px; /* Gleiche Größe wie der Würfel */
+  height: 200px;
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  overflow: hidden;
-  transform: translateX(100%) scale(0);
-  opacity: 0;
-  transition: all 0.5s ease-in-out;
-}
-
-.workspace-item{
-    position: relative;
-}
-
-.workspace-item:hover .hidden-description {
-  animation: dropAnimation 0.5s ease forwards;
+  left: 13rem;
+  top: 13rem;
+  border: 1px solid #333;
+  /* Rest des Styles */
 }

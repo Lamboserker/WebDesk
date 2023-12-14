@@ -1,5 +1,4 @@
 import React, { useRef } from "react";
-import { ScrollToPlugin } from "gsap/all";
 import { useMotionValue, motion, useSpring, useTransform } from "framer-motion";
 import { FiArrowRight } from "react-icons/fi";
 

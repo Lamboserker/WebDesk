@@ -338,13 +338,13 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
 
           {/* Workspace-Name in der normalen Ansicht */}
-          <div className="hidden lg:block lg:absolute top-0 left-0">
+         
             <WorkspaceDropdown
               openModal={openModal}
               onSelectWorkspace={changeWorkspace}
               onClose={handleDropdownClose}
             />
-          </div>
+         
 
           {/* Primary Navigation */}
           <div className="flex flex-col px-4 mt-20">
