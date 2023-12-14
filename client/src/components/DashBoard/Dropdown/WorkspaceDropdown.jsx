@@ -6,7 +6,9 @@ import PropTypes from "prop-types";
 import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/workspacedropdown.css";
+import { HoverImageLinks } from "./HoverImageLinks";
 Modal.setAppElement("#root");
+
 
 function getBrightness(backgroundColor) {
   const rgb = backgroundColor.match(/\d+/g);
@@ -36,16 +38,19 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
   const [error, setError] = useState("");
   const modalRef = useRef(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const defaultImageUrl =
-    "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-  const baseUrl = "http://localhost:9000/";
+  // const [currentIndex, setCurrentIndex] = useState(0);
+  // const containerRef = useRef(null);
+  // const dropdownRef = useRef(null);
+  // const defaultImageUrl =
+  //   "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+  // const baseUrl = "http://localhost:9000/";
   const navigate = useNavigate();
   const { openModal } = useWorkspaceModal();
 
-  useEffect(() => {
-    const element = document.querySelector(".hidden-description");
-    setContrastColor(element);
-  }, []);
+  // useEffect(() => {
+  //   const element = document.querySelector(".hidden-description");
+  //   setContrastColor(element);
+  // }, []);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -68,7 +73,9 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
     };
 
     fetchWorkspaces().then(() => {
-      document.querySelectorAll(".hidden-description").forEach(setContrastColor);
+      document
+        .querySelectorAll(".hidden-description")
+        .forEach(setContrastColor);
     });
   }, []);
 
@@ -102,23 +109,44 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
     return workspace ? workspace.name : "Select a Workspace";
   };
 
-  // Individual workspace item animation
-  const itemVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1, // staggered animation
-      },
-    }),
-    whileHover: { scale: 1.1 }, // hover effect
-  };
+  // // Individual workspace item animation
+  // const itemVariants = {
+  //   initial: { opacity: 0, y: 20 },
+  //   animate: (i) => ({
+  //     opacity: 1,
+  //     y: 0,
+  //     transition: {
+  //       delay: i * 0.1, // staggered animation
+  //     },
+  //   }),
+  //   whileHover: { scale: 1.1 }, // hover effect
+  // };
 
   const handleSelectWorkspace = (workspace) => {
     setSelectedWorkspace(workspace);
     onSelectWorkspace(workspace);
   };
+
+  //  // Funktion, um zum nächsten Element zu scrollen
+  //  const scrollToNextItem = (currentItemIndex) => {
+  //   const nextItemIndex = (currentItemIndex + 1) % workspaces.length;
+  //   const nextItemRef = itemRefs.current.get(workspaces[nextItemIndex].id);
+  //   if (nextItemRef) {
+  //     nextItemRef.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  //   }
+  // };
+
+  // // Scroll-Event-Handler
+  // const handleScroll = (e) => {
+  //   if (!canScroll) return;
+  //   setCanScroll(false);
+  //   setTimeout(() => setCanScroll(true), 500); // Verzögerung von 0,5 Sekunden
+
+  //   const currentItemIndex = workspaces.findIndex(workspace => 
+  //     itemRefs.current.get(workspace.id) === e.target
+  //   );
+  //   scrollToNextItem(currentItemIndex);
+  // };
 
   return (
     <>
@@ -128,7 +156,7 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
       {/* Modal toggle */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="block text-2xl text-black dark:text-white focus:outline-none focus:ring-0 font-medium rounded-lg px-5 py-2.5 text-center"
+        className="block text-4xl text-black dark:text-white focus:outline-none focus:ring-0 font-bold rounded-lg px-5 py-2.5 text-center"
         type="button"
       >
         {getWorkspaceName()}
@@ -138,14 +166,14 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
       {isModalOpen && (
         <div
           id="select-modal"
-          className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full h-[12rem] md:h-[17rem] lg:h-[22rem]"
         >
           <div
             ref={modalRef}
             className="relative p-4 w-full max-w-md max-h-full"
           >
             {/* Modal content */}
-            <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <div className="relative bg-white rounded-lg shadow dark:bg-black">
               {/* Modal header */}
               <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
                 <h3 className="w-full text-lg font-semibold text-black dark:text-white">
@@ -174,12 +202,9 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
               </div>
               {/* Modal body */}
               <div className="p-4 md:p-5">
-                <p className="text-black dark:text-white mb-4">
-                  Select your workspace:
-                </p>
                 <ul className="space-y-4 mb-4 text-black dark:text-white">
                   <AnimatePresence>
-                    {workspaces.map((workspace, index) => {
+                    {/* {workspaces.map((workspace, index) => {
                       const imageUrl = workspace.image
                         ? `${baseUrl}${workspace.image.replace(/\\/g, "/")}`
                         : defaultImageUrl;
@@ -211,7 +236,11 @@ const WorkspaceDropdown = ({ onSelectWorkspace, onClose }) => {
                           </div>
                         </motion.li>
                       );
-                    })}
+                    })} */}
+                    <HoverImageLinks
+                      handleSelectionChange={handleSelectWorkspace}
+                      workspaces={workspaces}
+                    />
                   </AnimatePresence>
                 </ul>
               </div>
