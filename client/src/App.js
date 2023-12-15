@@ -11,8 +11,10 @@ import {
   WorkspaceModalProvider,
   useWorkspaceModal,
 } from "./Context/WorkspaceModalContext";
+import { WorkspaceProvider, useWorkspace } from "./Context/WorkspaceContext";
 function App() {
   return (
+    <WorkspaceProvider>
     <WorkspaceModalProvider>
       <div className="App">
         <BrowserRouter>
@@ -34,6 +36,7 @@ function App() {
         </BrowserRouter>
       </div>
     </WorkspaceModalProvider>
+    </WorkspaceProvider>
   );
 }
 // A wrapper component for WorkspaceModal to use the context

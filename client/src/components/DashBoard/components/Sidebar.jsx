@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import Modal from "../VideoModal";
 import VideoApp from "../../Video/VideoApp";
@@ -20,14 +20,13 @@ import {
 import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
 import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
+import { WorkspaceContext } from "../../../Context/WorkspaceContext";
+import { set } from "mongoose";
 
 const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [newChannelName, setNewChannelName] = useState("");
-  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
-  const [workspaceName, setWorkspaceName] = useState("");
-  const [workspaceDescription, setWorkspaceDescription] = useState("");
   const [isCreatingChannel, setIsCreatingChannel] = useState(false);
   const [channels, setChannels] = useState([]);
   const [imageLoadError, setImageLoadError] = useState(false);
@@ -39,12 +38,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
   const sidebarRef = useRef(null);
-
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10";
   const MIN_SIDEBAR_WIDTH = 230; // Mindestbreite in Pixel
   let navigate = useNavigate();
   const { openModal } = useWorkspaceModal();
-
+  const { selectedWorkspace, setSelectedWorkspace } = useContext(WorkspaceContext);
   const handleMouseDownOnResizeBar = (e) => {
     e.preventDefault();
     window.addEventListener("mousemove", onResize);
@@ -82,66 +80,21 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     }
   };
 
-  const createWorkspace = () => {
-    closeWorkspaceModal();
-  };
-
   const openPopUp = () => {
     console.log("before", isDropdownOpen);
     setIsDropdownOpen(true);
     console.log("Is it open?", isDropdownOpen);
   };
 
-  const handleDropdownClose = () => {
-    setIsDropdownOpen(false);
-    console.log("Is it open?", isDropdownOpen);
-  };
-
   useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    const fetchWorkspaces = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:9000/api/workspaces/list",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        const workspaces = response.data;
-
-        if (workspaces.length === 1) {
-          setSelectedWorkspace(workspaces[0]);
-        } else {
-          const lastVisitedWorkspaceId = localStorage.getItem(
-            "lastVisitedWorkspace"
-          );
-          if (lastVisitedWorkspaceId) {
-            const lastVisitedWorkspace = workspaces.find(
-              (ws) => ws._id === lastVisitedWorkspaceId
-            );
-            setSelectedWorkspace(lastVisitedWorkspace || workspaces[0]);
-          } else {
-            setSelectedWorkspace(workspaces[0]);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching workspaces:", error);
-      }
-    };
-
-    fetchWorkspaces();
+    const savedWorkspaceId = localStorage.getItem('lastVisitedWorkspace');
+    if (savedWorkspaceId) {
+      setSelectedWorkspace(savedWorkspaceId);
+    }
   }, []);
 
-  useEffect(() => {
-    if (selectedWorkspace && selectedWorkspace._id) {
-      fetchChannels(selectedWorkspace._id);
-      fetchWorkspaceMembers();
-      localStorage.setItem("lastVisitedWorkspace", selectedWorkspace._id);
-    }
-  }, [selectedWorkspace]);
-
-  // Fetch all channels from the server
   const fetchChannels = async (workspaceId) => {
+    console.log("workspace here is:", workspaceId);
     const token = localStorage.getItem("userToken");
     try {
       const response = await axios.get(
@@ -158,37 +111,9 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     }
   };
 
-  useEffect(() => {
-    const lastVisitedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
-    if (lastVisitedWorkspaceId) {
-      setSelectedWorkspace({ _id: lastVisitedWorkspaceId });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (selectedWorkspace && selectedWorkspace._id) {
-      fetchChannels(selectedWorkspace._id);
-      localStorage.setItem("lastVisitedWorkspace", selectedWorkspace._id);
-    }
-  }, [selectedWorkspace]);
-
-  useEffect(() => {
-    console.log("selectedWorkspace-Wert in useEffect:", selectedWorkspace);
-    if (selectedWorkspace && selectedWorkspace._id) {
-      fetchWorkspaceMembers();
-    }
-  }, [selectedWorkspace]);
-
-  const fetchWorkspaceMembers = async () => {
-    console.log("Aufruf von fetchWorkspaceMembers mit:", selectedWorkspace);
-    if (!selectedWorkspace || !selectedWorkspace._id) {
-      console.error("Kein ausgewählter Workspace oder Workspace ID fehlt.");
-      return;
-    }
-
+  const fetchWorkspaceMembers = async (workspaceId) => {
+    const token = localStorage.getItem("userToken");
     try {
-      const token = localStorage.getItem("userToken");
-      const workspaceId = selectedWorkspace._id;
       const response = await axios.get(
         `http://localhost:9000/api/workspaces/${workspaceId}/users`,
         {
@@ -200,6 +125,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       console.error("Error fetching workspace members:", error);
     }
   };
+
+  useEffect(() => {
+    fetchChannels(selectedWorkspace);
+    fetchWorkspaceMembers(selectedWorkspace);
+  }, [selectedWorkspace]);
 
   const handleCreateChannel = () => {
     setIsCreatingChannel(true);
@@ -240,13 +170,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     // Remove the token from LocalStorage
     localStorage.removeItem("userToken");
     navigate("/");
-  };
-
-  // Function to handle workspace change
-  const changeWorkspace = (workspace) => {
-    setSelectedWorkspace(workspace);
-    localStorage.setItem("lastVisitedWorkspaceId", workspace._id);
-    fetchChannels(workspace._id);
   };
 
   async function validateToken() {
@@ -338,16 +261,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
 
           {/* Workspace-Name in der normalen Ansicht */}
-         
-            <WorkspaceDropdown
-              openModal={openModal}
-              onSelectWorkspace={changeWorkspace}
-              onClose={handleDropdownClose}
-            />
-         
+
+          <WorkspaceDropdown />
 
           {/* Primary Navigation */}
-          <div className="flex flex-col px-4 mt-20">
+          <div className="flex flex-col px-4 mt-6">
             <button className="flex items-center py-2 text-sm  text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
               Threads
             </button>

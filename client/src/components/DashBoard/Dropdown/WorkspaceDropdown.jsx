@@ -1,15 +1,31 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
+import { WorkspaceContext } from "../../../Context/WorkspaceContext";
+
 const WorkspaceDropdown = () => {
+  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState("");
   const [rotation, setRotation] = useState(0);
-  const [items, setItems] = useState([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const allowScroll = useRef(true);
   const [workspaces, setWorkspaces] = useState([]);
-  const [selectedWorkspaceIndex, setSelectedWorkspaceIndex] = useState(0);
   const defaultImageUrl =
     "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   const baseUrl = "http://localhost:9000/";
+  const { selectedWorkspace, setSelectedWorkspace } =
+    useContext(WorkspaceContext);
+
+  useEffect(() => {
+    // Laden des gespeicherten Workspace beim Initialisieren
+    const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
+    if (savedWorkspaceId) {
+      setSelectedWorkspace(savedWorkspaceId); // Stellen Sie sicher, dass dieser Aufruf korrekt den Workspace setzt
+    }
+  }, []);
+
+  useEffect(() => {
+    // Speichern des ausgewählten Workspace im localStorage
+    localStorage.setItem("lastVisitedWorkspace", selectedWorkspace);
+  }, [selectedWorkspace]);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -32,34 +48,16 @@ const WorkspaceDropdown = () => {
     fetchWorkspaces();
   }, []);
 
-  const handleWorkspaceClick = (index) => {
-    setSelectedWorkspaceIndex(index);
-    // Weitere Aktionen, um den ausgewählten Workspace zu setzen, können hier hinzugefügt werden
-  };
-
   useEffect(() => {
-    const fetchWorkspaces = async () => {
-      try {
-        const token = localStorage.getItem("userToken");
-        const response = await axios.get(
-          "http://localhost:9000/api/workspaces/list",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setWorkspaces(response.data);
-      } catch (error) {
-        console.error("Error fetching workspaces", error);
-      }
-    };
-
-    fetchWorkspaces();
-  }, []);
+    if (workspaces.length > 0 && workspaces[selectedIndex]) {
+      setSelectedWorkspace(workspaces[selectedIndex]._id);
+      // Setzen des Workspace-Namens
+      setSelectedWorkspaceName(workspaces[selectedIndex].name);
+    }
+  }, [selectedIndex, workspaces]);
 
   const handleScroll = (e) => {
-    if (!allowScroll.current) return;
+    if (!allowScroll.current || workspaces.length === 0) return;
 
     allowScroll.current = false;
     setTimeout(() => {
@@ -68,24 +66,35 @@ const WorkspaceDropdown = () => {
 
     if (e.deltaY > 0) {
       setRotation((prevRotation) => prevRotation - 90);
+      setSelectedIndex((prevIndex) => (prevIndex + 1) % workspaces.length);
     } else {
       setRotation((prevRotation) => prevRotation + 90);
+      setSelectedIndex(
+        (prevIndex) => (prevIndex - 1 + workspaces.length) % workspaces.length
+      );
     }
   };
 
   useEffect(() => {
-    const cubeElement = document.querySelector(".cube");
-    cubeElement.addEventListener("wheel", handleScroll);
+    if (workspaces.length > 0 && workspaces[selectedIndex]) {
+      setSelectedWorkspace(workspaces[selectedIndex]._id);
+    }
+  }, [selectedIndex, workspaces]);
 
+  useEffect(() => {
+    const cubeElement = document.querySelector(".cube");
+    if (cubeElement) {
+      cubeElement.addEventListener("wheel", handleScroll);
+    }
     return () => {
       cubeElement.removeEventListener("wheel", handleScroll);
     };
-  }, []);
+  }, [workspaces]);
 
   const cubeStyle = {
-    width: "10em",
-    height: "10em",
-    perspective: "10em",
+    width: "7.5em",
+    height: "7.5em",
+    perspective: "7.5em",
   };
 
   const cubeInnerStyle = {
@@ -98,20 +107,15 @@ const WorkspaceDropdown = () => {
   };
 
   const faceStyle = {
-
     boxShadow: "0px 25px 20px -20px rgba(0,0,0,0.45)",
     width: "100%",
     height: "100%",
     position: "absolute",
     border: "1px solid #333",
     color: "#FFF",
-    lineHeight: "10em",
+    lineHeight: "3.75em",
     textAlign: "center",
-  };
-
-  const calculateRotationAngle = (index, total) => {
-    const angle = 360 / total;
-    return index * angle;
+    fontWeight: "bold",
   };
 
   // Anpassung für das Anzeigen von Workspaces in den Seiten des Würfels
@@ -123,17 +127,17 @@ const WorkspaceDropdown = () => {
 
       switch (faces[faceIndex]) {
         case "front":
-          transform = "rotateY(0deg) translateZ(5em) rotateX(0deg)";
+          transform = "rotateY(0deg) translateZ(3.75em) rotateX(0deg)";
           break;
         case "back":
           transform =
-            "rotateY(180deg) translateZ(5em) rotateY(180deg) rotateX(180deg)";
+            "rotateY(180deg) translateZ(3.75em) rotateY(180deg) rotateX(180deg)";
           break;
         case "top":
-          transform = "rotateX(90deg) translateZ(5em) rotateZ(360deg)";
+          transform = "rotateX(90deg) translateZ(3.75em) rotateZ(360deg)";
           break;
         case "bottom":
-          transform = "rotateX(-90deg) translateZ(5em) rotateZ(360deg)";
+          transform = "rotateX(-90deg) translateZ(3.75em) rotateZ(360deg)";
           break;
         default:
           transform = "";
@@ -151,18 +155,24 @@ const WorkspaceDropdown = () => {
             backgroundImage: `url(${imageUrl})`,
             backgroundSize: "cover",
           }}
-          onClick={() => handleWorkspaceClick(index)}
-        >
-          {workspace.name}
-        </div>
+        ></div>
       );
     });
   };
 
   return (
-    <div style={cubeStyle}>
-      <div className="cube" style={cubeInnerStyle}>
-        {renderFaces()}
+    <div className="w-full ">
+      <div style={cubeStyle}>
+        <div className="cube" style={cubeInnerStyle}>
+          {renderFaces()}
+        </div>
+      </div>
+      {/* Gedrehter Name des ausgewählten Workspaces rechts neben dem Würfel */}
+      <div
+        className="flex flex-col mt-10 mr-10"
+        style={{ transform: "rotate(90deg)", transformOrigin: "right bottom" }}
+      >
+        <span className="font-semibold text-black dark:text-gray-200">{selectedWorkspaceName}</span>
       </div>
     </div>
   );
