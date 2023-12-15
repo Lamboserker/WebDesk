@@ -243,7 +243,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       >
         {/* sidebar */}
 
-        <div className="p-2 h-screen ">
+        <div className="h-screen ">
           {/* Top Bar/Header */}
           <div
             className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 lg:justify-start"

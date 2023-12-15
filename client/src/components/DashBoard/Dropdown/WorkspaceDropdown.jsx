@@ -3,7 +3,6 @@ import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 
 const WorkspaceDropdown = () => {
-  const [selectedWorkspaceName, setSelectedWorkspaceName] = useState("");
   const [rotation, setRotation] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const allowScroll = useRef(true);
@@ -47,14 +46,6 @@ const WorkspaceDropdown = () => {
 
     fetchWorkspaces();
   }, []);
-
-  useEffect(() => {
-    if (workspaces.length > 0 && workspaces[selectedIndex]) {
-      setSelectedWorkspace(workspaces[selectedIndex]._id);
-      // Setzen des Workspace-Namens
-      setSelectedWorkspaceName(workspaces[selectedIndex].name);
-    }
-  }, [selectedIndex, workspaces]);
 
   const handleScroll = (e) => {
     if (!allowScroll.current || workspaces.length === 0) return;
@@ -155,24 +146,19 @@ const WorkspaceDropdown = () => {
             backgroundImage: `url(${imageUrl})`,
             backgroundSize: "cover",
           }}
-        ></div>
+        >
+          {workspace.name}
+        </div>
       );
     });
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <div style={cubeStyle}>
         <div className="cube" style={cubeInnerStyle}>
           {renderFaces()}
         </div>
-      </div>
-      {/* Gedrehter Name des ausgewählten Workspaces rechts neben dem Würfel */}
-      <div
-        className="flex flex-col mt-10 mr-10"
-        style={{ transform: "rotate(90deg)", transformOrigin: "right bottom" }}
-      >
-        <span className="font-semibold text-black dark:text-gray-200">{selectedWorkspaceName}</span>
       </div>
     </div>
   );
