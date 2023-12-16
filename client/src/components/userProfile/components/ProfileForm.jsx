@@ -56,7 +56,7 @@ const ProfileForm = () => {
     x: 0,
     y: 0,
   });
-  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+  const [, setCroppedImageUrl] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -227,7 +227,7 @@ const ProfileForm = () => {
 
   return (
     <>
-      <main className="bg-white dark:bg-gray-700 w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
+      <main className="bg-luckyPoint-200 dark:bg-luckyPoint-700 w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
         <div className="p-2 md:p-4">
           <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
             <h2 className="pl-6 text-2xl font-bold sm:text-xl">
@@ -237,14 +237,14 @@ const ProfileForm = () => {
             <div className="grid max-w-2xl mx-auto mt-8">
               <div className="mb-6">
                 <img
-                  className="object-cover w-40 h-40 p-1 rounded-full ring-2 ring-indigo-300 dark:ring-indigo-500"
+                  className="object-cover w-40 h-40 p-1 rounded-full ring-2 ring-luckyPoint-300 dark:ring-luckyPoint-500"
                   src={`http://localhost:9000/${userData.profileImage}`}
                   alt="Profile Avatar"
                 />
                 <button
                   onClick={handleProfileImageChange}
                   type="button"
-                  className="py-3.5 px-7 text-base font-medium text-indigo-900 focus:outline-none bg-white rounded-lg border border-indigo-200 hover:bg-indigo-100 hover:text-[#202142] focus:z-10 focus:ring-4 focus:ring-indigo-200 "
+                  className="py-3.5 px-7 text-base font-medium text-luckyPoint-900 focus:outline-none bg-luckyPoint-200 rounded-lg border border-luckyPoint-100 hover:bg-luckyPoint-50 hover:text-[#202142] focus:z-10 focus:ring-4 focus:ring-luckyPoint-200 "
                 >
                   Delete picture
                 </button>
@@ -254,7 +254,7 @@ const ProfileForm = () => {
             <div className="mb-6">
               <label
                 htmlFor="dropzone-file"
-                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50  dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                className="flex flex-col items-center justify-center w-full h-64 border-2 border-luckyPoint-300 border-dashed rounded-lg cursor-pointer bg-luckyPoint-50  dark:bg-luckyPoint-700 hover:bg-luckyPoint-100 dark:border-gray-600 dark:hover:border-luckyPoint-500 dark:hover:bg-luckyPoint-600"
               >
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   {profileImagePreview ? (
@@ -266,7 +266,7 @@ const ProfileForm = () => {
                   ) : (
                     <>
                       <svg
-                        className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                        className="w-8 h-8 mb-4 text-luckyPoint-500 dark:text-luckyPoint-400"
                         aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -280,11 +280,11 @@ const ProfileForm = () => {
                           d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 A5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                         />
                       </svg>
-                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <p className="mb-2 text-sm text-luckyPoint-500 dark:text-luckyPoint-400">
                         <span className="font-semibold">Click to upload</span>{" "}
                         or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                      <p className="text-xs text-luckyPoint-500 dark:text-luckyPoint-400">
                         SVG, PNG, JPG or GIF (MAX. 800x400px)
                       </p>
                     </>
@@ -301,7 +301,7 @@ const ProfileForm = () => {
               {profileImage && (
                 <button
                   onClick={handleImageUpload}
-                  className="mt-4 py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700"
+                  className="mt-4 py-2 px-4 bg-luckyPoint-500 text-luckyPoint-200 rounded hover:bg-luckyPoint-700"
                 >
                   Upload Image
                 </button>
@@ -315,14 +315,14 @@ const ProfileForm = () => {
               <div className="w-full">
                 <label
                   htmlFor="first_name"
-                  className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-luckyPoint-900 dark:text-luckyPoint-200"
                 >
                   Your first name
                 </label>
                 <input
                   type="text"
                   id="firstName"
-                  className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                  className="bg-luckyPoint-50 border border-luckyPoint-300 text-luckyPoint-900 text-sm rounded-lg focus:ring-luckyPoint-500 focus:border-luckyPoint-500 block w-full p-2.5 "
                   value={formData.firstName}
                   onChange={handleInputChange}
                   placeholder="Your first name"
@@ -333,14 +333,14 @@ const ProfileForm = () => {
               <div className="w-full">
                 <label
                   htmlFor="last_name"
-                  className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                  className="block mb-2 text-sm font-medium text-luckyPoint-900 dark:text-luckyPoint-200"
                 >
                   Your last name
                 </label>
                 <input
                   type="text"
                   id="last_name"
-                  className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                  className="bg-luckyPoint-50 border border-luckyPoint-300 text-luckyPoint-900 text-sm rounded-lg focus:ring-luckyPoint-500 focus:border-luckyPoint-500 block w-full p-2.5 "
                   value={formData.lastName}
                   onChange={handleInputChange}
                   placeholder="Your last name"
@@ -352,14 +352,14 @@ const ProfileForm = () => {
             <div className="mb-2 sm:mb-6">
               <label
                 htmlFor="email"
-                className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-luckyPoint-900 dark:text-luckyPoint-200"
               >
                 Your email
               </label>
               <input
                 type="email"
                 id="email"
-                className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                className="bg-luckyPoint-50 border border-luckyPoint-300 text-luckyPoint-900 text-sm rounded-lg focus:ring-luckyPoint-500 focus:border-luckyPoint-500 block w-full p-2.5 "
                 placeholder="your.email@mail.com"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -370,14 +370,14 @@ const ProfileForm = () => {
             <div className="mb-2 sm:mb-6">
               <label
                 htmlFor="profession"
-                className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-luckyPoint-900 dark:text-luckyPoint-200"
               >
                 Profession
               </label>
               <input
                 type="text"
                 id="profession"
-                className="bg-indigo-50 border border-indigo-300 text-indigo-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 "
+                className="bg-luckyPoint-50 border border-luckyPoint-300 text-luckyPoint-900 text-sm rounded-lg focus:ring-luckyPoint-500 focus:border-indigo-500 block w-full p-2.5 "
                 placeholder="your profession"
                 value={formData.profession}
                 onChange={handleInputChange}
@@ -388,14 +388,14 @@ const ProfileForm = () => {
             <div className="mb-6">
               <label
                 htmlFor="message"
-                className="block mb-2 text-sm font-medium text-indigo-900 dark:text-white"
+                className="block mb-2 text-sm font-medium text-luckyPoint-900 dark:text-luckyPoint-200"
               >
                 Bio
               </label>
               <textarea
                 id="message"
                 rows="4"
-                className="block p-2.5 w-full text-sm text-indigo-900 bg-indigo-50 rounded-lg border border-indigo-300 focus:ring-indigo-500 focus:border-indigo-500 "
+                className="block p-2.5 w-full text-sm text-inluckyPointdigo-900 bg-luckyPoint-50 rounded-lg border border-luckyPoint-300 focus:ring-luckyPoint-500 focus:border-luckyPoint-500 "
                 placeholder="Write your bio here..."
                 value={formData.bio}
                 onChange={handleInputChange}
@@ -405,7 +405,7 @@ const ProfileForm = () => {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="text-white bg-indigo-700  hover:bg-indigo-800 focus:ring-4 focus:outline-none focus:ring-indigo-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-indigo-800"
+                className="text-luckyPoint-200 bg-luckyPoint-700  hover:bg-luckyPoint-900 focus:ring-4 focus:outline-none focus:ring-luckyPoint-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-luckyPoint-600 dark:hover:bg-luckyPoint-900 dark:focus:ring-luckyPoint-800"
                 onSubmit={handleSubmit}
               >
                 Save
@@ -417,7 +417,7 @@ const ProfileForm = () => {
       {/* Crop Modal */}
       {cropModalOpen && (
         <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-5 rounded-lg">
+          <div className="bg-luckyPoint-200 p-5 rounded-lg">
             {profileImagePreview && (
               <ReactCrop
                 crop={crop}

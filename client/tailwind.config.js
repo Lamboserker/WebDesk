@@ -47,9 +47,22 @@ export default withMT({
       },
 
       colors: {
-        sidebarblue: { 200: "#1c2633" },
-        mainContent: { 200: "#39424f" },
-        searchbar: { 200: "#414b59" },
+        luckyPoint: {
+          50: "#f4f6fe",
+          100: "#eaedfd",
+          200: "#d9dffb",
+          300: "#bac3f8",
+          400: "#939df2",
+          500: "#676eeb",
+          600: "#4947e0",
+          700: "#3a34cd",
+          800: "#302cab",
+          900: "#29258d",
+          950: "#16165f",
+        },
+        sidebarblue: { 200: "#16165f" },
+        mainContent: { 200: "#f4f6fe" },
+        searchbar: { 200: "#eaedfd" },
 
         orange: {
           250: "#FF5810",

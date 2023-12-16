@@ -56,8 +56,8 @@ const WorkspaceModal = ({ onClose }) => {
     x: 0,
     y: 0,
   });
-  const [completedCrop, setCompletedCrop] = useState(null);
-  const [imageRef, setImageRef] = useState(null);
+
+  const [, setImageRef] = useState(null);
   const [workspaceImage, setWorkspaceImage] = useState(null);
   const [workspaceImagePreview, setWorkspaceImagePreview] = useState(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
@@ -142,38 +142,38 @@ const WorkspaceModal = ({ onClose }) => {
         <div className="p-5">
           <div className="flex justify-between items-center mb-5">
             <h2 className="text-xl font-semibold">Create Workspace</h2>
-            <PhotoIcon className="h-6 w-6 text-gray-500" /> {/* Heroicon */}
+            <PhotoIcon className="h-6 w-6 text-luckyPoint-500" /> {/* Heroicon */}
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-luckyPoint-700">
               Workspace Name
             </label>
             <input
               type="text"
               value={workspaceName}
               onChange={(e) => setWorkspaceName(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 block w-full border border-luckyPoint-300 rounded-md shadow-sm focus:border-luckyPoint-500 focus:ring focus:ring-luckyPoint-200 focus:ring-opacity-50"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-luckyPoint-700">
               Description
             </label>
             <textarea
               value={workspaceDescription}
               onChange={(e) => setWorkspaceDescription(e.target.value)}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 block w-full border border-luckyPoint-300 rounded-md shadow-sm focus:border-luckyPoint-500 focus:ring focus:ring-luckyPoint-200 focus:ring-opacity-50"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-luckyPoint-700">
               Workspace Image
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleDropzoneFileChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="mt-1 block w-full border border-luckyPoint-300 rounded-md shadow-sm focus:border-luckyPoint-500 focus:ring focus:ring-luckyPoint-200 focus:ring-opacity-50"
             />
 
             {workspaceImagePreview && (
@@ -186,14 +186,14 @@ const WorkspaceModal = ({ onClose }) => {
           </div>
           <button
             onClick={createWorkspace}
-            className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-luckyPoint-600 text-base font-medium text-luckyPoint-200 hover:bg-luckyPoint-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-luckyPoint-500"
           >
             Create Workspace
           </button>
         </div>
         {cropModalOpen && (
           <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-5 rounded-lg">
+            <div className="bg-luckyPoint-200 p-5 rounded-lg">
               {workspaceImagePreview && (
                 <ReactCrop
                   src={workspaceImage}

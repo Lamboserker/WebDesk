@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/DashBoard/components/Dashboard";
 import AuthContainer from "./components/Auth/AuthContainer";
@@ -11,31 +11,44 @@ import {
   WorkspaceModalProvider,
   useWorkspaceModal,
 } from "./Context/WorkspaceModalContext";
-import { WorkspaceProvider, useWorkspace } from "./Context/WorkspaceContext";
+import { WorkspaceProvider } from "./Context/WorkspaceContext";
+
 function App() {
+
+  useEffect (() => {
+  const checkDarkMode = () => {
+    const theme = localStorage.getItem("theme");
+    if (theme === "dark") {
+      return document.body.classList.toggle("dark");
+    } else if (theme === "light") {
+      return document.body.classList.toggle("light");
+    }
+  };
+  checkDarkMode();
+}, []);
   return (
     <WorkspaceProvider>
-    <WorkspaceModalProvider>
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthContainer />} />
-            <Route
-              path="/dashboard"
-              element={<ProtectedRoute component={Dashboard} />}
-            />
-            <Route path="/videoapp" element={<VideoApp />} />
-            <Route
-              path="/workspace-modal"
-              element={<WorkspaceModalWrapper />}
-            />
+      <WorkspaceModalProvider>
+        <div className="App">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth" element={<AuthContainer />} />
+              <Route
+                path="/dashboard"
+                element={<ProtectedRoute component={Dashboard} />}
+              />
+              <Route path="/videoapp" element={<VideoApp />} />
+              <Route
+                path="/workspace-modal"
+                element={<WorkspaceModalWrapper />}
+              />
 
-            <Route path="/my-profile" element={<ProfileMenu />} />
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </WorkspaceModalProvider>
+              <Route path="/my-profile" element={<ProfileMenu />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </WorkspaceModalProvider>
     </WorkspaceProvider>
   );
 }

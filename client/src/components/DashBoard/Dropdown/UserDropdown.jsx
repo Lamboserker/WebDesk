@@ -60,7 +60,7 @@ const HoverComponent = ({ children, userId }) => {
               zIndex: 1000,
             }}
           >
-            <div className="bg-white shadow-lg rounded-2xl w-80 dark:bg-gray-800">
+            <div className="bg-luckyPoint-200 shadow-lg rounded-2xl w-80 dark:bg-luckyPoint-800">
               <img
                 alt="profil"
                 src="https://images.unsplash.com/photo-1511300636408-a63a89df3482?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGxhbmRzY2FwZSUyMGNhcnRvb258ZW58MHx8MHx8fDA%3D"
@@ -77,12 +77,12 @@ const HoverComponent = ({ children, userId }) => {
                 <p className="mt-2 text-xl font-medium text-gray-800 dark:text-white">
                   {userData.name}
                 </p>
-                <p className="mb-4 text-xs text-gray-400"></p>
-                <p className="p-2 px-4 text-xs text-white bg-pink-500 rounded-full">
+                <p className="mb-4 text-xs text-luckyPoint-400"></p>
+                <p className="p-2 px-4 text-xs text-luckyPoint-200 bg-luckyPoint-500 rounded-full">
                   Professional
                 </p>
                 <div className="w-full p-2 mt-4 rounded-lg">
-                  <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-200">
+                  <div className="flex items-center justify-between text-sm text-luckyPoint-600 dark:text-luckyPoint-200">
                     <p className="flex flex-col">
                       Articles
                       <span className="font-bold text-black dark:text-white">
@@ -91,13 +91,13 @@ const HoverComponent = ({ children, userId }) => {
                     </p>
                     <p className="flex flex-col">
                       Followers
-                      <span className="font-bold text-black dark:text-white">
+                      <span className="font-bold text-black dark:text-luckyPoint-200">
                         455
                       </span>
                     </p>
                     <p className="flex flex-col">
                       Rating
-                      <span className="font-bold text-black dark:text-white">
+                      <span className="font-bold text-black dark:text-luckyPoint-200">
                         9.3
                       </span>
                     </p>

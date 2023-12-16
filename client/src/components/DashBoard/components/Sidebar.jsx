@@ -19,21 +19,18 @@ import {
 } from "@material-tailwind/react";
 import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
-import { useWorkspaceModal } from "../../../Context/WorkspaceModalContext";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
-import { set } from "mongoose";
+import CreateChannel from "../../Popup/CreateChannel";
 
 const SideBar = ({ activeChannel, setActiveChannel }) => {
-  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [newChannelName, setNewChannelName] = useState("");
-  const [isCreatingChannel, setIsCreatingChannel] = useState(false);
   const [channels, setChannels] = useState([]);
-  const [imageLoadError, setImageLoadError] = useState(false);
+  const [imageLoadError, ] = useState(false);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [members, setMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [channelPopupIsOpen, setChannelPopupIsOpen] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
@@ -41,8 +38,9 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10";
   const MIN_SIDEBAR_WIDTH = 230; // Mindestbreite in Pixel
   let navigate = useNavigate();
-  const { openModal } = useWorkspaceModal();
-  const { selectedWorkspace, setSelectedWorkspace } = useContext(WorkspaceContext);
+ 
+  const { selectedWorkspace, setSelectedWorkspace } =
+    useContext(WorkspaceContext);
   const handleMouseDownOnResizeBar = (e) => {
     e.preventDefault();
     window.addEventListener("mousemove", onResize);
@@ -71,7 +69,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsVideoModalOpen(false);
   };
 
-  const closeWorkspaceModal = () => setIsWorkspaceModalOpen(false);
+
 
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
@@ -87,7 +85,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   };
 
   useEffect(() => {
-    const savedWorkspaceId = localStorage.getItem('lastVisitedWorkspace');
+    const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
     if (savedWorkspaceId) {
       setSelectedWorkspace(savedWorkspaceId);
     }
@@ -132,39 +130,10 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   }, [selectedWorkspace]);
 
   const handleCreateChannel = () => {
-    setIsCreatingChannel(true);
+    setChannelPopupIsOpen(true);
   };
 
-  const saveNewChannel = async () => {
-    try {
-      const token = localStorage.getItem("userToken");
-      const workspaceId = selectedWorkspace._id;
-      if (!workspaceId) {
-        console.error("No workspace selected");
-        return;
-      }
 
-      const response = await axios.post(
-        `http://localhost:9000/api/workspaces/${workspaceId}/create-channel`,
-        {
-          name: newChannelName,
-          workspaceId: workspaceId,
-          messages: [],
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Fügen Sie den neu erstellten Channel zum State hinzu
-      setChannels((prevChannels) => [...prevChannels, response.data]);
-      setIsCreatingChannel(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleLogout = () => {
     // Remove the token from LocalStorage
@@ -224,9 +193,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     navigate("/user-profile");
   };
 
-  const navigateTo = (path) => {
-    navigate(path);
-  };
+
 
   const handleVideoCallClick = async (channelId) => {
     openVideoModal(channelId);
@@ -237,7 +204,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       <div
         ref={sidebarRef}
         style={{ width: `${sidebarWidth}px` }}
-        className={`relative flex flex-col justify-between h-full border-r-2 border-slate-900 ${
+        className={`relative flex flex-col justify-between h-full border-r-2 border-luckyPoint-900 ${
           isMobileSidebarOpen ? "block" : "hidden"
         } lg:block`}
       >
@@ -247,7 +214,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           {/* Top Bar/Header */}
           <div
             className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 lg:justify-start"
-            onClick={openPopUp}
+            
           >
             {/* Hamburger-Menü-Icon */}
             <div className="lg:hidden relative sidebar-icon-background">
@@ -262,17 +229,17 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
           {/* Workspace-Name in der normalen Ansicht */}
 
-          <WorkspaceDropdown />
+          <WorkspaceDropdown sidebarWidth={sidebarWidth} />
 
           {/* Primary Navigation */}
           <div className="flex flex-col px-4 mt-6">
-            <button className="flex items-center py-2 text-sm  text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
+            <button className="flex items-center py-2 text-sm  text-black font-medium hover:bg-luckyPoint-700 dark:hover:bg-luckyPoint-600 dark:text-white">
               Threads
             </button>
-            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-gray-700 w-full text-left dark:hover:bg-gray-600 dark:text-white">
+            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 w-full text-left dark:hover:bg-luckyPoint-600 dark:text-luckyPoint-200">
               Files
             </button>
-            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-gray-700 dark:hover:bg-gray-600 dark:text-white">
+            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:hover:bg-luckyPoint-600 dark:text-luckyPoint-200">
               Mentions & reactions
             </button>
             {/* ... more primary navigation items */}
@@ -282,51 +249,32 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           <div className="px-4 mt-2 relative overflow-y-auto max-h-72">
             <div className={dividerStyle}></div>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-xs font-semibold text-black uppercase  dark:text-white">
+              <h2
+                className="text-xs font-semibold text-black uppercase  dark:text-luckyPoint-200"
+                style={{ width: sidebarWidth }}
+              >
                 Channels
               </h2>
               <button
                 onClick={handleCreateChannel}
-                className="hover:bg-gray-700 rounded"
+                className="hover:bg-luckyPoint-700 rounded"
               >
-                <PlusIcon className="h-5 w-5 text-black dark:text-white" />
+                <PlusIcon className="h-5 w-5 text-black dark:text-luckyPoint-200" />
               </button>
+              {channelPopupIsOpen && <CreateChannel />}
             </div>
-            {/* Dialog oder Formular für neue Channel-Erstellung */}
-            {isCreatingChannel && (
-              <div className="w-40">
-                <div className="relative w-full min-w-[200px] h-10">
-                  <input
-                    className=" peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 border-t-transparent focus:border-t-transparent text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-200"
-                    placeholder=""
-                    type="text"
-                    value={newChannelName}
-                    onChange={(e) => setNewChannelName(e.target.value)}
-                  />{" "}
-                  <label className="flex w-full h-full select-none pointer-events-none absolute left-0 font-normal !overflow-visible truncate peer-placeholder-shown:text-blue-gray-500 leading-tight peer-focus:leading-tight peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500 transition-all -top-1.5 peer-placeholder-shown:text-sm text-[11px] peer-focus:text-[11px] before:content[' '] before:block before:box-border before:w-2.5 before:h-1.5 before:mt-[6.5px] before:mr-1 peer-placeholder-shown:before:border-transparent before:rounded-tl-md before:border-t peer-focus:before:border-t-2 before:border-l peer-focus:before:border-l-2 before:pointer-events-none before:transition-all peer-disabled:before:border-transparent after:content[' '] after:block after:flex-grow after:box-border after:w-2.5 after:h-1.5 after:mt-[6.5px] after:ml-1 peer-placeholder-shown:after:border-transparent after:rounded-tr-md after:border-t peer-focus:after:border-t-2 after:border-r peer-focus:after:border-r-2 after:pointer-events-none after:transition-all peer-disabled:after:border-transparent peer-placeholder-shown:leading-[3.75] text-gray-500 peer-focus:text-gray-200 before:border-blue-gray-200 peer-focus:before:!border-gray-200 after:border-blue-gray-200 peer-focus:after:!border-gray-200">
-                    channel name
-                  </label>
-                </div>
-                <button
-                  className="text-black dark:text-white"
-                  onClick={saveNewChannel}
-                >
-                  create channel
-                </button>
-              </div>
-            )}
 
             {/* List of channels */}
             {channels.map((channel) => (
               <div
                 key={channel._id}
-                className="flex items-center justify-between py-2 text-sm text-black font-medium hover:bg-gray-700 dark:text-white"
+                className="flex items-center justify-between py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:text-luckyPoint-200"
               >
                 <button onClick={() => handleChannelClick(channel._id)}>
                   # {channel.name}
                 </button>
                 <button onClick={() => handleVideoCallClick(channel._id)}>
-                  <VideoCameraIcon className="h-5 w-5 text-black dark:text-white" />
+                  <VideoCameraIcon className="h-5 w-5 text-black dark:text-luckyPoint-200" />
                 </button>
               </div>
             ))}
@@ -334,7 +282,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
           {/* Direct Messages Section */}
           <div className="px-4 mt-2 relative overflow-y-auto  max-h-72">
-            <h2 className="text-xs font-semibold text-black dark:text-white uppercase mb-5">
+            <h2 className="text-xs font-semibold text-black dark:text-luckyPoint-200 uppercase mb-5">
               Direct Messages
             </h2>
 
@@ -345,7 +293,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                     <HoverComponent key={index} userId={member._id}>
                       <button
                         key={index}
-                        className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left"
+                        className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left"
                       >
                         <img
                           src={
@@ -368,10 +316,10 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
           {/* Secondary Navigation/Footer */}
           <div className="px-4 mt-2  absolute bottom-0">
-            <button className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left">
+            <button className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left">
               Preferences
             </button>
-            <button className="flex items-center py-2 text-sm text-black dark:text-white font-medium hover:bg-gray-700 w-full text-left">
+            <button className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left">
               Help
             </button>
             <div className={dividerStyle}></div>
@@ -386,15 +334,15 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <Avatar
                           variant="circular"
                           alt="User"
-                          className="cursor-pointer h-10 w-10 rounded-full border-2 border-gray-300 object-cover"
+                          className="cursor-pointer h-10 w-10 rounded-full border-2 border-luckyPoint-300 object-cover"
                           src={`http://localhost:9000/${userData.profileImage}`}
                         />
                       </MenuHandler>
-                      <MenuList className="bg-white dark:bg-gray-700">
+                      <MenuList className="bg-luckyPoint-200 dark:bg-luckyPoint-700">
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/my-profile")}
-                          className="flex items-center gap-2 text-black dark:text-white "
+                          className="flex items-center gap-2 text-black dark:text-luckyPoint-200 "
                         >
                           <svg
                             width="16"
@@ -418,7 +366,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/profile-settings")}
-                          className="text-black dark:text-white flex items-center gap-2"
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
                         >
                           <svg
                             width="16"
@@ -442,7 +390,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/inbox")}
-                          className="text-black dark:text-white flex items-center gap-2"
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
                         >
                           <svg
                             width="14"
@@ -466,7 +414,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/help")}
-                          className="text-black dark:text-white flex items-center gap-2"
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
                         >
                           <svg
                             width="16"
@@ -486,11 +434,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                             Help
                           </Typography>
                         </MenuItem>
-                        <hr className="my-2 border-blue-gray-50" />
+                        <hr className="my-2 border-luckyPoint-50" />
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={handleLogout}
-                          className="text-black dark:text-white flex items-center gap-2 "
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2 "
                         >
                           <svg
                             width="16"
@@ -514,11 +462,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                     </Menu>
                   </>
                 ) : (
-                  <div className="h-10 w-10 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                  <div className="h-10 w-10 rounded-full border-2 border-luckyPoint-300 flex items-center justify-center">
                     <span className="text-xs">User</span>
                   </div>
                 )}
-                <span className="text-black dark:text-white text-sm font-medium">
+                <span className="text-black dark:text-luckyPoint-200 text-sm font-medium">
                   {userData.name}
                 </span>
               </div>

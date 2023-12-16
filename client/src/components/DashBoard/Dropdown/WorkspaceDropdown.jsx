@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 
-const WorkspaceDropdown = () => {
+const WorkspaceDropdown = ({ sidebarWidth }) => {
   const [rotation, setRotation] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const allowScroll = useRef(true);
@@ -82,10 +82,22 @@ const WorkspaceDropdown = () => {
     };
   }, [workspaces]);
 
+  // Konstante Höhe für den Quader
+  const cubeHeight = 150; // Beispielhöhe, kann nach Bedarf angepasst werden
+
+  // Die Breite des Quaders anpassen, basierend auf der Breite der Sidebar
+  const cubeWidth = Math.min(sidebarWidth, 400); // Beispiel, passt sich an die Sidebar-Breite an
+
+  const dropdownStyle = {
+    width: `${sidebarWidth}px`,
+    maxWidth: `${sidebarWidth}px`,
+    overflow: "hidden",
+  };
+
   const cubeStyle = {
-    width: "7.5em",
-    height: "7.5em",
-    perspective: "7.5em",
+    width: `${cubeWidth}px`,
+    height: `${cubeHeight}px`,
+    perspective: "1000px", // Beispielwert für die Perspektive, kann angepasst werden
   };
 
   const cubeInnerStyle = {
@@ -94,19 +106,23 @@ const WorkspaceDropdown = () => {
     position: "relative",
     transformStyle: "preserve-3d",
     transition: "transform 0.6s",
-    transform: `translateZ(-5em) rotateX(${rotation}deg)`,
+    transform: `rotateX(${rotation}deg)`,
   };
 
   const faceStyle = {
     boxShadow: "0px 25px 20px -20px rgba(0,0,0,0.45)",
-    width: "100%",
-    height: "100%",
+    width: `${cubeWidth}px`,
+    height: `${cubeHeight}px`,
     position: "absolute",
     border: "1px solid #333",
     color: "#FFF",
-    lineHeight: "3.75em",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "end",
     textAlign: "center",
     fontWeight: "bold",
+    backgroundSize: "cover",
+    backfaceVisibility: "hidden",
   };
 
   // Anpassung für das Anzeigen von Workspaces in den Seiten des Würfels
@@ -145,6 +161,11 @@ const WorkspaceDropdown = () => {
             transform,
             backgroundImage: `url(${imageUrl})`,
             backgroundSize: "cover",
+            fontFamily: "rubik doodle shadow",
+            fontSize: "20px",
+            padding: "10px",
+            backgroundColor: "#4CAF50", // Hintergrundfarbe für den Namen
+            color: "white", // Textfarbe, falls erforderlich
           }}
         >
           {workspace.name}
@@ -154,7 +175,7 @@ const WorkspaceDropdown = () => {
   };
 
   return (
-    <div className="w-full">
+    <div style={dropdownStyle}>
       <div style={cubeStyle}>
         <div className="cube" style={cubeInnerStyle}>
           {renderFaces()}

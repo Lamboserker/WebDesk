@@ -5,7 +5,7 @@ import Switcher from "../../Switcher";
 
 const ProfileMenu = () => {
   return (
-    <div className="bg-white dark:bg-gray-700 w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#161931]">
+    <div className="bg-luckyPoint-200 dark:bg-luckyPoint-700 w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#161931]">
       <div className="flex end">
         <Switcher />
       </div>
