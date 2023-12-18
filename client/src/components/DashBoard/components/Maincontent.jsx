@@ -373,7 +373,7 @@ const Maincontent = ({ activeChannel }) => {
                         }
                         onError={(e) => (e.target.src = fallbackImage)}
                         alt={message.sender}
-                        className="w-10 h-10 rounded-full"
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="flex-1">
                         <div className="flex items-baseline justify-between">

@@ -55,10 +55,11 @@ router.post("/create", upload.single("workspaceImages"), async (req, res) => {
     res.status(201).json(savedWorkspace);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Fehler beim Erstellen des Workspaces: " + error.message);
+    res
+      .status(500)
+      .send("Fehler beim Erstellen des Workspaces: " + error.message);
   }
 });
-
 
 //show all members of the workspace
 router.get("/:workspaceId/users", async (req, res) => {
@@ -177,20 +178,73 @@ router.get("/:workspaceId/channels", async (req, res) => {
 
 // create a channel within a workspace
 router.post("/:workspaceId/create-channel", async (req, res) => {
+  const workspaceId = req.params.workspaceId;
+  const { name, type } = req.body; // Extrahieren Sie den Namen und Typ aus dem Anfragekörper
+
+  if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+    return res.status(400).send("Invalid workspaceId");
+  }
+
+  if (
+    !["textChannel", "voiceChannel", "forum", "announcement", "stage"].includes(type)
+  ) {
+    return res.status(400).send("Invalid channel type");
+  }
+
+  let newChannel;
+  switch (type) {
+    case "textChannel":
+      // Logik für die Erstellung eines Text-Channels
+      newChannel = new Channel({
+        name,
+        type,
+        messages: [],
+        workspaceId: workspaceId,
+        // Weitere spezifische Eigenschaften für Text-Channels
+      });
+      break;
+    case "voiceChannel":
+      // Logik für die Erstellung eines Voice-Channels mit activeMeetingId
+      newChannel = new Channel({
+        name,
+        type,
+        workspaceId: workspaceId,
+        activeMeetingId: null, // Initialisieren als null oder mit einem spezifischen Wert
+        // Weitere spezifische Eigenschaften für Voice-Channels
+      });
+      break;
+    case "forum":
+      // Logik für die Erstellung eines Forums
+      newChannel = new Channel({
+        name,
+        type,
+        workspaceId: workspaceId,
+        // Weitere spezifische Eigenschaften für Foren
+      });
+      break;
+    case "announcement":
+      // Logik für die Erstellung eines Announcement-Channels
+      newChannel = new Channel({
+        name,
+        type,
+        workspaceId: workspaceId,
+        // Weitere spezifische Eigenschaften für Announcement-Channels
+      });
+      break;
+      case "stage":
+        // Logik für die Erstellung eines Stage-Channels
+        newChannel = new Channel({
+          name,
+          type,
+          workspaceId: workspaceId,
+          // Weitere spezifische Eigenschaften für Stage-Channels
+        });
+        break;
+    default:
+      return res.status(400).send("Unbekannter Channel-Typ");
+  }
+
   try {
-    const workspaceId = req.params.workspaceId;
-    const { name } = req.body;
-
-    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return res.status(400).send("Invalid workspaceId");
-    }
-
-    const newChannel = new Channel({
-      name,
-      messages: [],
-      workspaceId: workspaceId,
-    });
-
     const savedChannel = await newChannel.save();
     const workspace = await Workspace.findById(workspaceId);
     if (!workspace) {

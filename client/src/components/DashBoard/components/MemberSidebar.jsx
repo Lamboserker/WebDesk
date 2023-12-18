@@ -95,7 +95,7 @@ const MemberSidebar = () => {
             />
             
             {isTextVisible && (
-              <span className="text-white ml-5">{member.name}</span>
+              <span className="text-white ml-5 font-bold text-sm uppercase">{member.name}</span>
             )}
           </li>
         ))}

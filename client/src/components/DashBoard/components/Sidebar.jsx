@@ -32,6 +32,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [channelPopupIsOpen, setChannelPopupIsOpen] = useState(false);
   const [newMessagesCount, setNewMessagesCount] = useState({});
+  const [channelPopupKey, setChannelPopupKey] = useState(0);
   const socket = useRef(null);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
@@ -161,6 +162,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
   const handleCreateChannel = () => {
     setChannelPopupIsOpen(true);
+    setChannelPopupKey((prevKey) => prevKey + 1); // Erhöht den Schlüssel bei jedem Öffnen
   };
 
   const handleLogout = () => {
@@ -225,6 +227,22 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     openVideoModal(channelId);
   };
 
+  /*const getChannelIcon = (type) => {
+    switch (type) {
+      case "Text":
+        return <ChatBubbleBottomCenterIcon className="h-5 w-5 mr-2" />;
+      case "Voice and Video":
+        return <SpeakerWaveIcon className="h-5 w-5 mr-2" />;
+      case "Forum":
+        return <UserGroupIcon className="h-5 w-5 mr-2" />;
+      case "Announcement":
+        return <MegaphoneIcon className="h-5 w-5 mr-2" />;
+      case "Stage":
+        return <ComputerDesktopIcon className="h-5 w-5 mr-2" />;
+      default:
+        return null; // Falls kein passendes Icon gefunden wird
+    }
+  };*/
   return (
     <>
       <div
@@ -358,7 +376,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                 </span>
               </button>
             </li>
-
+            {channelPopupIsOpen && <CreateChannel key={channelPopupKey} />}
+            {console.log("HERE IT IS:", selectedWorkspace)}
             <li>
               <div className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2">
                 <span className="inline-flex justify-center items-center ml-4">
