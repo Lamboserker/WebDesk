@@ -3,6 +3,9 @@ import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 
 const WorkspaceDropdown = ({ sidebarWidth }) => {
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
+  const [enableScroll, setEnableScroll] = useState(true); // Zustand für das Scrolling
+
   const [rotation, setRotation] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const allowScroll = useRef(true);
@@ -25,6 +28,16 @@ const WorkspaceDropdown = ({ sidebarWidth }) => {
     // Speichern des ausgewählten Workspace im localStorage
     localStorage.setItem("lastVisitedWorkspace", selectedWorkspace);
   }, [selectedWorkspace]);
+
+  // Aktualisierte useEffect-Hook
+  useEffect(() => {
+    if (workspaces.length === 1) {
+      setSelectedWorkspaceId(workspaces[0].id);
+      setEnableScroll(false); // Deaktiviert Scrolling, wenn nur ein Workspace vorhanden ist
+    } else {
+      setEnableScroll(true); // Aktiviert Scrolling, wenn mehr als ein Workspace vorhanden ist
+    }
+  }, [workspaces]);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -166,6 +179,7 @@ const WorkspaceDropdown = ({ sidebarWidth }) => {
             padding: "10px",
             backgroundColor: "#4CAF50", // Hintergrundfarbe für den Namen
             color: "white", // Textfarbe, falls erforderlich
+            
           }}
         >
           {workspace.name}

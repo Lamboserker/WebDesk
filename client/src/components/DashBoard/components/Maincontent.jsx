@@ -14,9 +14,6 @@ import { modules, formats } from "../index";
 import Switcher from "../../../Switcher";
 import "../../styles/dashboard.css";
 
-
-
-
 const Maincontent = ({ activeChannel }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [, setIsTyping] = useState(false);
@@ -310,13 +307,21 @@ const Maincontent = ({ activeChannel }) => {
           {showDropdown && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 mt-2 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md"
+              className="absolute right-0 mt-2 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md z-50"
             >
               {/* Grid-Layout Inhalte */}
               <div className="grid grid-cols-2 grid-rows-4 gap-4 items-center  px-4 py-2 mt-2">
-                <div className="col-span-2  px-4 py-2 mt-2"><span className="text-black font-bold uppercase ">get help</span></div>
-                <div className="col-span-2 row-start-2  px-4 py-2 mt-2 text-black font-bold uppercase ">FAQ</div>
-                <div className="col-span-2 row-start-3  px-4 py-2 mt-2 text-black font-bold uppercase ">News</div>
+                <div className="col-span-2  px-4 py-2 mt-2">
+                  <span className="text-black font-bold uppercase ">
+                    get help
+                  </span>
+                </div>
+                <div className="col-span-2 row-start-2  px-4 py-2 mt-2 text-black font-bold uppercase ">
+                  FAQ
+                </div>
+                <div className="col-span-2 row-start-3  px-4 py-2 mt-2 text-black font-bold uppercase ">
+                  News
+                </div>
                 <div className="row-start-4  px-4 py-2 mt-2">
                   <button
                     className=" text-black font-bold uppercase "

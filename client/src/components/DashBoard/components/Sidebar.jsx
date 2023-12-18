@@ -21,36 +21,42 @@ import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 import CreateChannel from "../../Popup/CreateChannel";
-
+import io from "socket.io-client";
 const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [channels, setChannels] = useState([]);
-  const [imageLoadError, ] = useState(false);
+  const [imageLoadError] = useState(false);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [members, setMembers] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [channelPopupIsOpen, setChannelPopupIsOpen] = useState(false);
+  const [newMessagesCount, setNewMessagesCount] = useState({});
+  const socket = useRef(null);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
-  const sidebarRef = useRef(null);
-  const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10";
-  const MIN_SIDEBAR_WIDTH = 230; // Mindestbreite in Pixel
-  let navigate = useNavigate();
- 
   const { selectedWorkspace, setSelectedWorkspace } =
     useContext(WorkspaceContext);
+  const sidebarRef = useRef(null);
+  const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
+  let navigate = useNavigate();
+
+  const MIN_SIDEBAR_WIDTH = 200; // Definieren Sie den Mindestwert
+  const MAX_SIDEBAR_WIDTH = 400; // Definieren Sie den Maximalwert
+
   const handleMouseDownOnResizeBar = (e) => {
     e.preventDefault();
     window.addEventListener("mousemove", onResize);
     window.addEventListener("mouseup", stopResizing);
   };
+
   const onResize = (e) => {
     let newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
 
-    // Überprüfen, ob die neue Breite unter dem Mindestwert liegt
+    // Stellen Sie sicher, dass die neue Breite zwischen dem Mindest- und Höchstwert liegt
     newWidth = Math.max(newWidth, MIN_SIDEBAR_WIDTH);
+    newWidth = Math.min(newWidth, MAX_SIDEBAR_WIDTH);
 
     setSidebarWidth(newWidth);
     localStorage.setItem("sidebarWidth", newWidth.toString());
@@ -69,8 +75,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsVideoModalOpen(false);
   };
 
-
-
   const handleChannelClick = (channel) => {
     setActiveChannel(channel);
     if (window.innerWidth < 768) {
@@ -83,6 +87,32 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsDropdownOpen(true);
     console.log("Is it open?", isDropdownOpen);
   };
+
+  useEffect(() => {
+    // Initialisieren der Socket-Verbindung
+    socket.current = io("http://localhost:9000");
+
+    socket.current.on("connect", () => {
+      console.log("Connected to the server");
+    });
+
+    // Event Listener für neue Nachrichten
+    socket.current.on("newMessage", (message) => {
+      // Angenommen, `message` hat die Eigenschaften `channelId` und `count`
+      setNewMessagesCount((prevCounts) => ({
+        ...prevCounts,
+        [message.channelId]:
+          (prevCounts[message.channelId] || 0) + message.count,
+      }));
+    });
+
+    // Aufräumen bei Unmount
+    return () => {
+      socket.current.disconnect();
+    };
+  }, []);
+
+  // ... Ihr bestehender Code ...
 
   useEffect(() => {
     const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
@@ -132,8 +162,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const handleCreateChannel = () => {
     setChannelPopupIsOpen(true);
   };
-
-
 
   const handleLogout = () => {
     // Remove the token from LocalStorage
@@ -193,8 +221,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     navigate("/user-profile");
   };
 
-
-
   const handleVideoCallClick = async (channelId) => {
     openVideoModal(channelId);
   };
@@ -212,10 +238,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
         <div className="h-screen ">
           {/* Top Bar/Header */}
-          <div
-            className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 lg:justify-start"
-            
-          >
+          <div className="flex items-center justify-between h-16 px-4 absolute top-0 left-0 lg:justify-start">
             {/* Hamburger-Menü-Icon */}
             <div className="lg:hidden relative sidebar-icon-background">
               <button
@@ -232,88 +255,155 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           <WorkspaceDropdown sidebarWidth={sidebarWidth} />
 
           {/* Primary Navigation */}
-          <div className="flex flex-col px-4 mt-6">
-            <button className="flex items-center py-2 text-sm  text-black font-medium hover:bg-luckyPoint-700 dark:hover:bg-luckyPoint-600 dark:text-white">
-              Threads
-            </button>
-            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 w-full text-left dark:hover:bg-luckyPoint-600 dark:text-luckyPoint-200">
-              Files
-            </button>
-            <button className="flex items-center py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:hover:bg-luckyPoint-600 dark:text-luckyPoint-200">
-              Mentions & reactions
-            </button>
-            {/* ... more primary navigation items */}
-          </div>
-
-          {/* Channels Section */}
-          <div className="px-4 mt-2 relative overflow-y-auto max-h-72">
-            <div className={dividerStyle}></div>
-            <div className="flex items-center justify-between mb-5">
-              <h2
-                className="text-xs font-semibold text-black uppercase  dark:text-luckyPoint-200"
-                style={{ width: sidebarWidth }}
+          <ul className="flex flex-col py-4 space-y-1">
+            <li>
+              <div
+                href="/"
+                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-luckyPoint-50 text-luckyPoint-600 hover:text-luckyPoint-800 border-l-4 border-transparent hover:border-luckyPoint-500 pr-6"
               >
-                Channels
-              </h2>
+                <span className="inline-flex justify-center items-center ml-4">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    ></path>
+                  </svg>
+                </span>
+                <span className="ml-2 text-sm tracking-wide truncate  dark:text-luckyPoint-100">
+                  Notifications
+                </span>
+                <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
+                  1.2k
+                </span>
+              </div>
+            </li>
+            <li>
+              <a
+                href="/"
+                className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-luckyPoint-50 text-luckyPoint-600 hover:text-luckyPoint-800 border-l-4 border-transparent hover:border-luckyPoint-500 pr-6"
+              >
+                <span className="inline-flex justify-center items-center ml-4">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                    ></path>
+                  </svg>
+                </span>
+                <span className="ml-2 text-sm tracking-wide truncate">
+                  Inbox
+                </span>
+                <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-luckyPoint-500 bg-luckyPoint-50 rounded-full">
+                  New
+                </span>
+              </a>
+            </li>
+            {/* Direct Messages Section */}
+
+            <li>
+              <div className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-luckyPoint-50 text-luckyPoint-600 hover:text-luckyPoint-800 border-l-4 border-transparent hover:border-luckyPoint-500 pr-6">
+                <div className="flex flex-row items-center">
+                  <span className="inline-flex justify-center items-center ml-4">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                      />
+                    </svg>
+                  </span>
+                  <span className="ml-2 text-sm tracking-wide truncate">
+                    Messages
+                  </span>
+                </div>
+              </div>
+            </li>
+
+            {/* Channels Section */}
+
+            <div style={{ width: sidebarWidth }} className={dividerStyle}></div>
+
+            {/* Plus Icon in a new list item */}
+            <li>
               <button
                 onClick={handleCreateChannel}
-                className="hover:bg-luckyPoint-700 rounded"
+                className="flex justify-start items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2 ml-4"
               >
                 <PlusIcon className="h-5 w-5 text-black dark:text-luckyPoint-200" />
+                <span className="ml-2 text-sm tracking-wide truncate">
+                  Create Channel
+                </span>
               </button>
-              {channelPopupIsOpen && <CreateChannel />}
-            </div>
+            </li>
 
-            {/* List of channels */}
-            {channels.map((channel) => (
-              <div
-                key={channel._id}
-                className="flex items-center justify-between py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:text-luckyPoint-200"
-              >
-                <button onClick={() => handleChannelClick(channel._id)}>
-                  # {channel.name}
-                </button>
-                <button onClick={() => handleVideoCallClick(channel._id)}>
-                  <VideoCameraIcon className="h-5 w-5 text-black dark:text-luckyPoint-200" />
-                </button>
+            <li>
+              <div className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2">
+                <span className="inline-flex justify-center items-center ml-4">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5"
+                    />
+                  </svg>
+                </span>
+                <span className="ml-2 text-sm tracking-wide truncate">
+                  Channels
+                </span>
+                {newMessagesCount[channels._id] > 0 && (
+                  <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
+                    {newMessagesCount[channels._id]}
+                  </span>
+                )}
               </div>
-            ))}
-            <div className={dividerStyle}></div>
-          </div>
-          {/* Direct Messages Section */}
-          <div className="px-4 mt-2 relative overflow-y-auto  max-h-72">
-            <h2 className="text-xs font-semibold text-black dark:text-luckyPoint-200 uppercase mb-5">
-              Direct Messages
-            </h2>
+              {/* List of channels */}
+              {channels.map((channel) => (
+                <div
+                  key={channel._id}
+                  className="flex justify-between py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:text-luckyPoint-200 ml-6 mb-2"
+                >
+                  <button onClick={() => handleChannelClick(channel._id)}>
+                    {channel.name}
+                  </button>
+                  <button onClick={() => handleVideoCallClick(channel._id)}>
+                    <VideoCameraIcon className="h-5 w-5 text-black dark:text-luckyPoint-200 mr-10" />
+                  </button>
+                </div>
+              ))}
+            </li>
 
-            <div className="space-y-1">
-              {members.map((member, index) => {
-                if (member._id !== userData._id) {
-                  return (
-                    <HoverComponent key={index} userId={member._id}>
-                      <button
-                        key={index}
-                        className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left"
-                      >
-                        <img
-                          src={
-                            `http://localhost:9000/${member.profileImage}` ||
-                            member.profileImage ||
-                            "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg"
-                          }
-                          alt="Profile"
-                          className="rounded-full w-6 h-6 mr-2"
-                        />
-                        {member.name}
-                      </button>
-                    </HoverComponent>
-                  );
-                }
-                return null; // Nichts rendern, wenn es der eigene Account ist
-              })}
-            </div>
-            <div className={dividerStyle}></div>
-          </div>
+            <div style={{ width: sidebarWidth }} className={dividerStyle}></div>
+          </ul>
           {/* Secondary Navigation/Footer */}
           <div className="px-4 mt-2  absolute bottom-0">
             <button className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left">
@@ -322,7 +412,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             <button className="flex items-center py-2 text-sm text-black dark:text-luckyPoint-200 font-medium hover:bg-luckyPoint-700 w-full text-left">
               Help
             </button>
-            <div className={dividerStyle}></div>
 
             {/* User Profile Section */}
             <div className="  py-5 mt-auto relative bottom-0 left-0">
