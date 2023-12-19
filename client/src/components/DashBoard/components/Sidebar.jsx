@@ -362,7 +362,10 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
             {/* Channels Section */}
 
-            <div style={{ width: sidebarWidth }} className={dividerStyle}></div>
+            <div
+              style={{ width: sidebarWidth }}
+              className={`${dividerStyle} `}
+            ></div>
 
             {/* Plus Icon in a new list item */}
             <li>
