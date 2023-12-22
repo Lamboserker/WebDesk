@@ -1,10 +1,7 @@
-import React, {useEffect} from "react";
+import React, { useEffect, lazy, Suspense, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./components/DashBoard/components/Dashboard";
 import AuthContainer from "./components/Auth/AuthContainer";
 import LandingPage from "./components/Landing/LandingPage";
-import VideoApp from "./components/Video/VideoApp";
-import WorkspaceModal from "./components/Modal/WorkspaceModal";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRouteDashboard";
 import ProfileMenu from "./components/userProfile/ProfileMenu";
 import {
@@ -12,20 +9,34 @@ import {
   useWorkspaceModal,
 } from "./Context/WorkspaceModalContext";
 import { WorkspaceProvider } from "./Context/WorkspaceContext";
+import Loading from "./components/Loading/Loading"; // Bestätigen Sie den Pfad zur Loading-Komponente
+
+// Lazy loading for components
+const Dashboard = lazy(() =>
+  import("./components/DashBoard/components/Dashboard")
+);
+const VideoApp = lazy(() => import("./components/Video/VideoApp"));
+const WorkspaceModal = lazy(() => import("./components/Modal/WorkspaceModal"));
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect (() => {
-  const checkDarkMode = () => {
-    const theme = localStorage.getItem("theme");
-    if (theme === "dark") {
-      return document.body.classList.toggle("dark");
-    } else if (theme === "light") {
-      return document.body.classList.toggle("light");
-    }
-  };
-  checkDarkMode();
-}, []);
+  useEffect(() => {
+    // Bestimmen Sie das Dunkle/Helle Thema
+    checkDarkMode();
+
+    // Setzen Sie isLoading nach 2 Sekunden auf false
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    // Bereinigen Sie den Timer, wenn die Komponente unmountet wird
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Eine generische Ladekomponente für alle Pfade
+  const loadingComponent = isLoading ? <Loading /> : null;
+
   return (
     <WorkspaceProvider>
       <WorkspaceModalProvider>
@@ -36,14 +47,24 @@ function App() {
               <Route path="/auth" element={<AuthContainer />} />
               <Route
                 path="/dashboard"
-                element={<ProtectedRoute component={Dashboard} />}
+                element={
+                  <Suspense fallback={loadingComponent}>
+                    <ProtectedRoute component={Dashboard} />
+                  </Suspense>
+                }
               />
-              <Route path="/videoapp" element={<VideoApp />} />
+              <Route
+                path="/videoapp"
+                element={
+                  <Suspense fallback={loadingComponent}>
+                    <VideoApp />
+                  </Suspense>
+                }
+              />
               <Route
                 path="/workspace-modal"
-                element={<WorkspaceModalWrapper />}
+                element={<WorkspaceModalWrapper isLoading={isLoading} />}
               />
-
               <Route path="/my-profile" element={<ProfileMenu />} />
             </Routes>
           </BrowserRouter>
@@ -52,11 +73,23 @@ function App() {
     </WorkspaceProvider>
   );
 }
-// A wrapper component for WorkspaceModal to use the context
-const WorkspaceModalWrapper = () => {
-  const { isModalOpen } = useWorkspaceModal();
 
-  return isModalOpen ? <WorkspaceModal /> : null;
+function checkDarkMode() {
+  const theme = localStorage.getItem("theme");
+  document.body.classList.remove("dark", "light"); // Entfernen beider Klassen
+  if (theme) {
+    document.body.classList.add(theme); // Fügen Sie die entsprechende Klasse hinzu
+  }
+}
+
+// Ein Wrapper-Komponent für WorkspaceModal, um den Kontext zu nutzen
+const WorkspaceModalWrapper = ({ isLoading }) => {
+  const { isModalOpen } = useWorkspaceModal();
+  return (
+    <Suspense fallback={isLoading ? <Loading /> : null}>
+      {isModalOpen ? <WorkspaceModal /> : null}
+    </Suspense>
+  );
 };
 
 export default App;

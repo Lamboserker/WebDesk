@@ -42,7 +42,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
-  const { selectedWorkspace, setSelectedWorkspace } =
+  const { selectedWorkspace, setSelectedWorkspace, workspaces } =
     useContext(WorkspaceContext);
   const sidebarRef = useRef(null);
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
@@ -55,8 +55,12 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     const lastActiveWorkspace = localStorage.getItem("lastActiveWorkspace");
     if (lastActiveWorkspace) {
       setSelectedWorkspace(lastActiveWorkspace);
+    } else if (workspaces && workspaces.length > 0) {
+      const firstWorkspace = workspaces[0].id; // Nehmen Sie an, dass Workspaces eine ID-Eigenschaft haben
+      setSelectedWorkspace(firstWorkspace);
+      localStorage.setItem("lastActiveWorkspace", firstWorkspace);
     }
-  }, []);
+  }, [workspaces]);
 
   useEffect(() => {
     if (selectedWorkspace) {
