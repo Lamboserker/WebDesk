@@ -17,17 +17,19 @@ const WorkspaceDropdown = ({ sidebarWidth }) => {
     useContext(WorkspaceContext);
 
   useEffect(() => {
-    // Laden des gespeicherten Workspace beim Initialisieren
-    const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
+    const savedWorkspaceId = localStorage.getItem("selectedWorkspaceId");
     if (savedWorkspaceId) {
-      setSelectedWorkspace(savedWorkspaceId); // Stellen Sie sicher, dass dieser Aufruf korrekt den Workspace setzt
+      setSelectedWorkspaceId(savedWorkspaceId);
+      // Stellen Sie sicher, dass die Funktion oder Logik hier den Workspace im Kontext aktualisiert
+      setSelectedWorkspace(savedWorkspaceId);
     }
   }, []);
 
   useEffect(() => {
-    // Speichern des ausgewählten Workspace im localStorage
-    localStorage.setItem("lastVisitedWorkspace", selectedWorkspace);
-  }, [selectedWorkspace]);
+    if (selectedWorkspaceId) {
+      localStorage.setItem("selectedWorkspaceId", selectedWorkspaceId);
+    }
+  }, [selectedWorkspaceId]);
 
   // Aktualisierte useEffect-Hook
   useEffect(() => {
@@ -179,7 +181,6 @@ const WorkspaceDropdown = ({ sidebarWidth }) => {
             padding: "10px",
             backgroundColor: "#4CAF50", // Hintergrundfarbe für den Namen
             color: "white", // Textfarbe, falls erforderlich
-            
           }}
         >
           {workspace.name}

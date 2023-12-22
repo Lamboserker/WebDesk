@@ -6,8 +6,13 @@ import WorkspaceDropdown from "../Dropdown/WorkspaceDropdown";
 import { useNavigate } from "react-router-dom";
 import {
   PlusIcon,
-  VideoCameraIcon,
+  HashtagIcon,
   Bars3BottomLeftIcon,
+  ChatBubbleBottomCenterIcon,
+  SpeakerWaveIcon,
+  UserGroupIcon,
+  MegaphoneIcon,
+  ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
 import {
   Menu,
@@ -43,8 +48,21 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
   let navigate = useNavigate();
 
-  const MIN_SIDEBAR_WIDTH = 200; // Definieren Sie den Mindestwert
-  const MAX_SIDEBAR_WIDTH = 400; // Definieren Sie den Maximalwert
+  const MIN_SIDEBAR_WIDTH = 200;
+  const MAX_SIDEBAR_WIDTH = 400;
+
+  useEffect(() => {
+    const lastActiveWorkspace = localStorage.getItem("lastActiveWorkspace");
+    if (lastActiveWorkspace) {
+      setSelectedWorkspace(lastActiveWorkspace);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedWorkspace) {
+      localStorage.setItem("lastActiveWorkspace", selectedWorkspace);
+    }
+  }, [selectedWorkspace]);
 
   const handleMouseDownOnResizeBar = (e) => {
     e.preventDefault();
@@ -55,7 +73,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const onResize = (e) => {
     let newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
 
-    // Stellen Sie sicher, dass die neue Breite zwischen dem Mindest- und Höchstwert liegt
     newWidth = Math.max(newWidth, MIN_SIDEBAR_WIDTH);
     newWidth = Math.min(newWidth, MAX_SIDEBAR_WIDTH);
 
@@ -112,8 +129,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       socket.current.disconnect();
     };
   }, []);
-
-  // ... Ihr bestehender Code ...
 
   useEffect(() => {
     const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
@@ -207,7 +222,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           params: { userId: userId },
         });
         setUserData({
-          _id: userId, // Stellen Sie sicher, dass die ID hier gesetzt wird
+          _id: userId,
           name: response.data.name,
           profileImage: response.data.profileImage,
         });
@@ -223,26 +238,43 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     navigate("/user-profile");
   };
 
-  const handleVideoCallClick = async (channelId) => {
-    openVideoModal(channelId);
+  const handleVideoIconClick = () => {
+    setIsVideoModalOpen(true);
   };
 
-  /*const getChannelIcon = (type) => {
-    switch (type) {
-      case "Text":
-        return <ChatBubbleBottomCenterIcon className="h-5 w-5 mr-2" />;
-      case "Voice and Video":
-        return <SpeakerWaveIcon className="h-5 w-5 mr-2" />;
-      case "Forum":
-        return <UserGroupIcon className="h-5 w-5 mr-2" />;
-      case "Announcement":
-        return <MegaphoneIcon className="h-5 w-5 mr-2" />;
-      case "Stage":
-        return <ComputerDesktopIcon className="h-5 w-5 mr-2" />;
+  channels.sort((a, b) => {
+    const order = ["Text", "Voice", "Stage", "Forum", "Announcement"];
+    return order.indexOf(a.type) - order.indexOf(b.type);
+  });
+
+  const getChannelIcon = (channelType) => {
+    switch (channelType) {
+      case "textChannel":
+        return (
+          <ChatBubbleBottomCenterIcon className="h-6 w-6 text-luckyPoint-200" />
+        );
+      case "voiceChannel":
+        return (
+          <SpeakerWaveIcon
+            isToggled={isVideoModalOpen}
+            onClose={closeVideoModal}
+            onClick={handleVideoIconClick}
+            className="h-6 w-6 mr-8 text-luckyPoint-200"
+          />
+        );
+      case "stage":
+        return <UserGroupIcon className=" mr-8 h-6 w-6 text-luckyPoint-200" />;
+      case "forum":
+        return (
+          <ComputerDesktopIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />
+        );
+      case "announcement":
+        return <MegaphoneIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />;
       default:
-        return null; // Falls kein passendes Icon gefunden wird
+        return <HashtagIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />;
     }
-  };*/
+  };
+
   return (
     <>
       <div
@@ -268,7 +300,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             </div>
           </div>
 
-          {/* Workspace-Name in der normalen Ansicht */}
+          {/* workspace name for desktop view */}
 
           <WorkspaceDropdown sidebarWidth={sidebarWidth} />
 
@@ -367,7 +399,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
               className={`${dividerStyle} `}
             ></div>
 
-            {/* Plus Icon in a new list item */}
+            {/* Plus icon in a new list item */}
             <li>
               <button
                 onClick={handleCreateChannel}
@@ -381,7 +413,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             </li>
             {channelPopupIsOpen && <CreateChannel key={channelPopupKey} />}
             {console.log("HERE IT IS:", selectedWorkspace)}
-            <li>
+            <li className="max-h-[20em] overflow-y-auto">
               <div className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2">
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -409,17 +441,22 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                 )}
               </div>
               {/* List of channels */}
+
               {channels.map((channel) => (
                 <div
                   key={channel._id}
-                  className="flex justify-between py-2 text-sm text-black font-medium hover:bg-luckyPoint-700 dark:text-luckyPoint-200 ml-6 mb-2"
+                  className="flex justify-between items-center py-2 text-sm font-medium hover:bg-luckyPoint-700 ml-6 mb-2"
                 >
-                  <button onClick={() => handleChannelClick(channel._id)}>
-                    {channel.name}
-                  </button>
-                  <button onClick={() => handleVideoCallClick(channel._id)}>
-                    <VideoCameraIcon className="h-5 w-5 text-black dark:text-luckyPoint-200 mr-10" />
-                  </button>
+                  {" "}
+                  {getChannelIcon(channel.type)}
+                  <div className="flex flex-grow items-center">
+                    <button
+                      onClick={() => handleChannelClick(channel._id)}
+                      className="truncate text-black dark:text-luckyPoint-200"
+                    >
+                      {channel.name} {/* Name des Channels */}
+                    </button>
+                  </div>
                 </div>
               ))}
             </li>
@@ -435,7 +472,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
               Help
             </button>
 
-            {/* User Profile Section */}
+            {/* User profile section */}
             <div className="  py-5 mt-auto relative bottom-0 left-0">
               <div className="flex items-center space-x-3">
                 {!imageLoadError && userData.profileImage ? (
@@ -584,7 +621,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             </div>
           </div>
         </div>
-        {/* Resize-Bar (Drag Handle) innerhalb der Sidebar */}
+        {/* Resize-bar (drag handle) inside the sidebar */}
         <div
           onMouseDown={handleMouseDownOnResizeBar}
           className=" w-1 absolute top-0 right-0 h-full bg-transparent opacity-50 hover:opacity-100 cursor-col-resize"

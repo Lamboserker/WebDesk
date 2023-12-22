@@ -54,7 +54,7 @@ function VideoApp(channelId) {
         setMeetingId(existingMeetingResponse.data.meetingId);
         const meetingId = existingMeetingResponse.data.meetingId;
         // Wenn keine Meeting-ID vorhanden ist, wird ein neues Meeting erstellt
-        if (meetingId === "") {
+        if (meetingId === null) {
           const token = await getToken();
           const meetingId = await createMeeting({ token });
           setToken(token);
