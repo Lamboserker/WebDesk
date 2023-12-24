@@ -13,7 +13,7 @@ import "react-quill/dist/quill.snow.css";
 import { modules, formats } from "../index";
 import Switcher from "../../../Switcher";
 import "../../styles/dashboard.css";
-
+import Whiteboard from "./FigJam/Whiteboard";
 const Maincontent = ({ activeChannel }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [, setIsTyping] = useState(false);
@@ -24,6 +24,7 @@ const Maincontent = ({ activeChannel }) => {
   const [message, setMessage] = useState("");
   const [, setSelectedWorkspace] = useState(null);
   const [filteredMessages, setFilteredMessages] = useState([]);
+  const [displayWhiteboard, setDisplayWhiteboard] = useState(false);
   const dropdownRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -151,6 +152,14 @@ const Maincontent = ({ activeChannel }) => {
       socket.off("userStoppedTyping");
     };
   }, []);
+
+  const handleDropdownSelection = (selection) => {
+    if (selection === "switch to whiteboard") {
+      setDisplayWhiteboard(true); // Zeigt das Whiteboard an
+    } else {
+      // Andere Dropdown-Optionen handhaben
+    }
+  };
 
   // Filterfunktion, um Nachrichten basierend auf dem Suchbegriff zu filtern
   const filterMessages = useCallback(() => {
@@ -339,70 +348,74 @@ const Maincontent = ({ activeChannel }) => {
         </div>
 
         {/* chat history/main area */}
-        <div className="flex-1 p-4 overflow-y-auto bg-luckyPoint-200 dark:bg-luckyPoint-800 border border-t-2 border-luckyPoint-200 dark:border-luckyPoint-700">
-          <h2 className="font-bold text-center text-2xl ">
-            {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
-          </h2>
-          <div className="space-y-4 text-black dark:text-luckyPoint-200">
-            {displayedMessages && displayedMessages.length > 0 ? (
-              displayedMessages.map((message, index) => {
-                const showDateHeader = isNewDay(
-                  message,
-                  displayedMessages[index - 1]
-                );
-                const fallbackImage =
-                  "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg";
+        {displayWhiteboard ? (
+          <Whiteboard /> // Whiteboard anzeigen
+        ) : (
+          <div className="flex-1 p-4 overflow-y-auto bg-luckyPoint-200 dark:bg-luckyPoint-800 border border-t-2 border-luckyPoint-200 dark:border-luckyPoint-700">
+            <h2 className="font-bold text-center text-2xl ">
+              {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
+            </h2>
+            <div className="space-y-4 text-black dark:text-luckyPoint-200">
+              {displayedMessages && displayedMessages.length > 0 ? (
+                displayedMessages.map((message, index) => {
+                  const showDateHeader = isNewDay(
+                    message,
+                    displayedMessages[index - 1]
+                  );
+                  const fallbackImage =
+                    "https://img.freepik.com/premium-vector/social-media-user-profile-icon-video-call-screen_97886-10046.jpg";
 
-                return (
-                  <React.Fragment key={message._id}>
-                    {showDateHeader && (
-                      <div className="flex items-center my-2">
-                        <hr className="flex-grow border-t border-luckyPoint-700 dark:border-luckyPoint-400" />
-                        <span className="px-4 py-1 mx-2 text-sm text-black dark:text-luckyPoint-200 bg-luckyPoint-100 dark:bg-luckyPoint-600 rounded-full">
-                          {formatDate(message.createdAt)}
-                        </span>
-                        <hr className="flex-grow border-t border-luckyPoint-700 dark:border-luckyPoint-400" />
-                      </div>
-                    )}
-                    <div className="flex items-start space-x-2">
-                      <img
-                        src={
-                          message.senderImage
-                            ? `http://localhost:9000/${message.senderImage}`
-                            : fallbackImage
-                        }
-                        onError={(e) => (e.target.src = fallbackImage)}
-                        alt={message.sender}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-baseline justify-between">
-                          <p className="font-semibold text-black dark:text-luckyPoint-200">
-                            {message.sender}
-                            <span className="text-xs text-luckyPoint-500 dark:text-gray-luckyPoint m-3">
-                              {new Date(message.createdAt).toLocaleTimeString(
-                                [],
-                                {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                  hour12: false,
-                                }
-                              )}
-                            </span>
-                          </p>
+                  return (
+                    <React.Fragment key={message._id}>
+                      {showDateHeader && (
+                        <div className="flex items-center my-2">
+                          <hr className="flex-grow border-t border-luckyPoint-700 dark:border-luckyPoint-400" />
+                          <span className="px-4 py-1 mx-2 text-sm text-black dark:text-luckyPoint-200 bg-luckyPoint-100 dark:bg-luckyPoint-600 rounded-full">
+                            {formatDate(message.createdAt)}
+                          </span>
+                          <hr className="flex-grow border-t border-luckyPoint-700 dark:border-luckyPoint-400" />
                         </div>
-                        <Message htmlContent={message.content} />
-                        <div ref={messagesEndRef} />
+                      )}
+                      <div className="flex items-start space-x-2">
+                        <img
+                          src={
+                            message.senderImage
+                              ? `http://localhost:9000/${message.senderImage}`
+                              : fallbackImage
+                          }
+                          onError={(e) => (e.target.src = fallbackImage)}
+                          alt={message.sender}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-baseline justify-between">
+                            <p className="font-semibold text-black dark:text-luckyPoint-200">
+                              {message.sender}
+                              <span className="text-xs text-luckyPoint-500 dark:text-gray-luckyPoint m-3">
+                                {new Date(message.createdAt).toLocaleTimeString(
+                                  [],
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: false,
+                                  }
+                                )}
+                              </span>
+                            </p>
+                          </div>
+                          <Message htmlContent={message.content} />
+                          <div ref={messagesEndRef} />
+                        </div>
                       </div>
-                    </div>
-                  </React.Fragment>
-                );
-              })
-            ) : (
-              <p className="text-center">Keine Nachrichten gefunden</p>
-            )}
+                    </React.Fragment>
+                  );
+                })
+              ) : (
+                <p className="text-center">Keine Nachrichten gefunden</p>
+              )}
+            </div>
           </div>
-        </div>
+        )}
         {/* message input area */}
         {activeChannel && (
           <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">
