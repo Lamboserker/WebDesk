@@ -28,15 +28,21 @@ function App() {
     // Setzen Sie isLoading nach 2 Sekunden auf false
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 4000);
 
     // Bereinigen Sie den Timer, wenn die Komponente unmountet wird
     return () => clearTimeout(timer);
   }, []);
 
   // Eine generische Ladekomponente für alle Pfade
-  const loadingComponent = isLoading ? <Loading /> : null;
+  const loadingComponent = <Loading />;
 
+  const renderLoading = () => {
+    if (isLoading) {
+      return <Loading />;
+    }
+    return null;
+  };
   return (
     <WorkspaceProvider>
       <WorkspaceModalProvider>
@@ -48,7 +54,7 @@ function App() {
               <Route
                 path="/dashboard"
                 element={
-                  <Suspense fallback={loadingComponent}>
+                  <Suspense fallback={renderLoading()}>
                     <ProtectedRoute component={Dashboard} />
                   </Suspense>
                 }
@@ -56,7 +62,7 @@ function App() {
               <Route
                 path="/videoapp"
                 element={
-                  <Suspense fallback={loadingComponent}>
+                  <Suspense fallback={renderLoading()}>
                     <VideoApp />
                   </Suspense>
                 }
