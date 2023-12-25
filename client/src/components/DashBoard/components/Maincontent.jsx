@@ -14,11 +14,13 @@ import { modules, formats } from "../index";
 import Switcher from "../../../Switcher";
 import "../../styles/dashboard.css";
 import Whiteboard from "./FigJam/Whiteboard";
+
 const Maincontent = ({ activeChannel }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [, setIsTyping] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [message, setMessage] = useState("");
@@ -29,11 +31,11 @@ const Maincontent = ({ activeChannel }) => {
   const emojiPickerRef = useRef(null);
   const messageInputRef = useRef(null);
   const messagesEndRef = useRef(null);
-  const [showMenu] = useState(false);
 
   const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
   const navigate = useNavigate();
   const toggleDropdown = () => setShowDropdown(!showDropdown);
+  const toggleMenu = () => setShowMenu(!showMenu);
 
   // Function to check if a new day has started and return a formatted date
 
@@ -154,13 +156,13 @@ const Maincontent = ({ activeChannel }) => {
   }, []);
 
   const handleDropdownSelection = (selection) => {
+    setShowDropdown(false); // Dropdown schließen
     if (selection === "switch to whiteboard") {
       setDisplayWhiteboard(true); // Zeigt das Whiteboard an
     } else {
       // Andere Dropdown-Optionen handhaben
     }
   };
-
   // Filterfunktion, um Nachrichten basierend auf dem Suchbegriff zu filtern
   const filterMessages = useCallback(() => {
     console.log("Suchbegriff:", searchTerm);
@@ -282,6 +284,7 @@ const Maincontent = ({ activeChannel }) => {
 
     fetchUserData();
   }, []);
+
   return (
     <>
       {/* Main Content */}
@@ -447,21 +450,24 @@ const Maincontent = ({ activeChannel }) => {
                   <Picker onEmojiClick={onEmojiClick} />
                 </div>
               )}
-              <div className="menu-container">
-                <button className="mx-1 mt-1 z-50">
-                  <EllipsisVerticalIcon className="text-black dark:text-luckyPoint-200 h-6" />
+              <div className="flex items-center justify-center">
+                <button className="mx-1 mt-1 z-50" onClick={toggleMenu}>
+                  <EllipsisVerticalIcon className="text-black dark:text-luckyPoint-200 h-6 " />
                 </button>
                 {showMenu && (
-                  <div className="dropdown-menu z-50">
-                    {/* Menüoptionen */}
-                    <a
-                      href="/"
-                      className="block px-4 py-2 text-sm text-luckyPoint-700 hover:bg-luckyPoint-100"
-                      role="menuitem"
+                  <div
+                    ref={dropdownRef}
+                    className="absolute right-10 mt-10 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md z-50"
+                  >
+                    <div
+                      className="text-black font-bold uppercase px-4 py-2 cursor-pointer hover:bg-luckyPoint-300"
+                      onClick={() =>
+                        handleDropdownSelection("switch to whiteboard")
+                      }
                     >
-                      Option 1
-                    </a>
-                    {/* Weitere Optionen */}
+                      Change to Whiteboard
+                    </div>
+                    {/* Weitere Dropdown-Optionen hier hinzufügen */}
                   </div>
                 )}
               </div>

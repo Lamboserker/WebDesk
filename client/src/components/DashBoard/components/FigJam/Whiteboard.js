@@ -157,7 +157,7 @@ function Whiteboard() {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen w-screen overflow-hidden">
       <div className="w-64 h-screen bg-gray-800 text-white p-4">
         {" "}
         {/* Sidebar */}
@@ -197,62 +197,65 @@ function Whiteboard() {
       </div>
 
       {/* Schaltflächen zum Hinzufügen von Formen */}
+      <div className="relative max-w-screen max-h-screen overflow-auto">
+        <Stage
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={checkDeselect}
+          onTouchStart={checkDeselect}
+        >
+          <Layer>{createGrid()}</Layer>
+          <Layer>
+            {/* Hier renderst du deine Formen */}
+            {shapes.rectangles.map((shape, i) => (
+              <Rectangle
+                key={shape.id}
+                shapeProps={shape}
+                isSelected={shape.id === selectedId}
+                onSelect={() => setSelectedId(shape.id)}
+                onChange={(newProps) =>
+                  handleShapeChange("rectangles", i, newProps)
+                }
+              />
+            ))}
 
-      <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
-        onMouseDown={checkDeselect}
-        onTouchStart={checkDeselect}
-      >
-        <Layer>{createGrid()}</Layer>
-        <Layer>
-          {/* Hier renderst du deine Formen */}
-          {shapes.rectangles.map((shape, i) => (
-            <Rectangle
-              key={shape.id}
-              shapeProps={shape}
-              isSelected={shape.id === selectedId}
-              onSelect={() => setSelectedId(shape.id)}
-              onChange={(newProps) =>
-                handleShapeChange("rectangles", i, newProps)
-              }
-            />
-          ))}
+            {shapes.circles.map((shape, i) => (
+              <Circle
+                key={shape.id}
+                shapeProps={shape}
+                isSelected={shape.id === selectedId}
+                onSelect={() => setSelectedId(shape.id)}
+                onChange={(newProps) =>
+                  handleShapeChange("circles", i, newProps)
+                }
+              />
+            ))}
 
-          {shapes.circles.map((shape, i) => (
-            <Circle
-              key={shape.id}
-              shapeProps={shape}
-              isSelected={shape.id === selectedId}
-              onSelect={() => setSelectedId(shape.id)}
-              onChange={(newProps) => handleShapeChange("circles", i, newProps)}
-            />
-          ))}
+            {shapes.triangles.map((shape, i) => (
+              <Triangle
+                key={shape.id}
+                shapeProps={shape}
+                isSelected={shape.id === selectedId}
+                onSelect={() => setSelectedId(shape.id)}
+                onChange={(newProps) =>
+                  handleShapeChange("triangles", i, newProps)
+                }
+              />
+            ))}
 
-          {shapes.triangles.map((shape, i) => (
-            <Triangle
-              key={shape.id}
-              shapeProps={shape}
-              isSelected={shape.id === selectedId}
-              onSelect={() => setSelectedId(shape.id)}
-              onChange={(newProps) =>
-                handleShapeChange("triangles", i, newProps)
-              }
-            />
-          ))}
-
-          {shapes.texts.map((text, i) => (
-            <EditableText
-              key={text.id} // Ensure text.id is unique
-              shapeProps={text}
-              isSelected={text.id === selectedId}
-              onSelect={() => setSelectedId(text.id)}
-              onChange={(newProps) => handleShapeChange("texts", i, newProps)}
-              stageRef={stageRef}
-            />
-          ))}
-        </Layer>
-      </Stage>
+            {shapes.texts.map((text, i) => (
+              <EditableText
+                key={text.id} // Ensure text.id is unique
+                shapeProps={text}
+                isSelected={text.id === selectedId}
+                onSelect={() => setSelectedId(text.id)}
+                onChange={(newProps) => handleShapeChange("texts", i, newProps)}
+                stageRef={stageRef}
+              />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
     </div>
   );
 }
