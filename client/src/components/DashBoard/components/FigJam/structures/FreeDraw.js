@@ -1,8 +1,9 @@
-import React, { useState, useRef } from "react";
-import { Line } from "react-konva";
+import React, {useState, useRef} from 'react';
+import { createRoot } from 'react-dom/client';
+import { Stage, Layer, Line, Text } from 'react-konva';
 
 const FreeDraw = () => {
-  const [tool, setTool] = useState("pen");
+  const [tool, setTool] = useState('pen');
   const [lines, setLines] = useState([]);
   const isDrawing = useRef(false);
 
@@ -13,14 +14,17 @@ const FreeDraw = () => {
   };
 
   const handleMouseMove = (e) => {
+    // no drawing - skipping
     if (!isDrawing.current) {
       return;
     }
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
     let lastLine = lines[lines.length - 1];
+    // add point
     lastLine.points = lastLine.points.concat([point.x, point.y]);
 
+    // replace last
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
   };
@@ -30,16 +34,42 @@ const FreeDraw = () => {
   };
 
   return (
-    <React.Fragment>
-      <Line
-        stroke="#df4b26"
-        strokeWidth={5}
-        points={[]}
+    <div>
+      <Stage
+        width={window.innerWidth}
+        height={window.innerHeight}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      />
-    </React.Fragment>
+        onMousemove={handleMouseMove}
+        onMouseup={handleMouseUp}
+      >
+        <Layer>
+          <Text text="Just start drawing" x={5} y={30} />
+          {lines.map((line, i) => (
+            <Line
+              key={i}
+              points={line.points}
+              stroke="#df4b26"
+              strokeWidth={5}
+              tension={0.5}
+              lineCap="round"
+              lineJoin="round"
+              globalCompositeOperation={
+                line.tool === 'eraser' ? 'destination-out' : 'source-over'
+              }
+            />
+          ))}
+        </Layer>
+      </Stage>
+      <select
+        value={tool}
+        onChange={(e) => {
+          setTool(e.target.value);
+        }}
+      >
+        <option value="pen">Pen</option>
+        <option value="eraser">Eraser</option>
+      </select>
+    </div>
   );
 };
 

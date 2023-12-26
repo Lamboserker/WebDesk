@@ -4,10 +4,17 @@ import Rectangle from "./structures/Rectangle";
 import Circle from "./structures/Circle";
 import Triangle from "./structures/Triangle";
 import EditableText from "./structures/Text"; // Achte darauf, dass der Importname nicht mit dem HTML-Tag kollidiert
+import FreeDraw from "./structures/FreeDraw";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircle, faFont, faSquare } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCircle,
+  faFont,
+  faSquare,
+  faPencilAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import Icon from "@mdi/react";
 import { mdiTriangleOutline } from "@mdi/js";
+
 const gridSize = 20; // Größe der Rasterlinien
 
 // Funktion zum Erstellen der Linien des Gitters
@@ -45,17 +52,16 @@ const createGrid = () => {
 };
 
 function Whiteboard() {
-  // Zustände für die Formen
   const [shapes, setShapes] = useState({
     rectangles: [],
     circles: [],
     triangles: [],
     texts: [],
+    FreeDraw: [],
   });
+  const [mode, setMode] = useState("select");
   const [selectedId, setSelectedId] = useState(null);
   const stageRef = useRef(null);
-  const [selectedShape, setSelectedShape] = useState(null);
-  const [shapeColor, setShapeColor] = useState("#000000");
 
   // Funktion zum Hinzufügen von Formen (als Beispiel)
   const addShape = useCallback((shapeType) => {
@@ -106,6 +112,15 @@ function Whiteboard() {
         maxX -= 100; // Schätzen Sie die Breite für "Edit Me"
         maxY -= newShape.fontSize; // Verwenden Sie die Schriftgröße für die Höhe
         break;
+      case "freedraw":
+        newShape = {
+          tool: "pen",
+          points: [],
+        };
+        maxX -= 100; // Schätzen Sie die Breite für "Edit Me"
+        maxY -= newShape.fontSize; // Verwenden Sie die Schriftgröße für die Höhe
+        break;
+
       default:
         console.error("Unknown shape type:", shapeType);
         return;
@@ -188,6 +203,11 @@ function Whiteboard() {
           >
             <FontAwesomeIcon icon={faFont} />
           </button>
+          <button onClick={() => setMode("freedraw")}>
+            {" "}
+            {/* Freihandzeichnen-Modus */}
+            <FontAwesomeIcon icon={faPencilAlt} />
+          </button>
         </div>
         <div className="flex-1">
           {" "}
@@ -203,10 +223,11 @@ function Whiteboard() {
           height={window.innerHeight}
           onMouseDown={checkDeselect}
           onTouchStart={checkDeselect}
+          ref={stageRef}
         >
           <Layer>{createGrid()}</Layer>
           <Layer>
-            {/* Hier renderst du deine Formen */}
+            {mode === "freedraw" && <FreeDraw />}
             {shapes.rectangles.map((shape, i) => (
               <Rectangle
                 key={shape.id}
