@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Stage, Layer, Line } from "react-konva";
+import { Stage, Layer, Line, Text } from "react-konva";
 import Rectangle from "./structures/Rectangle";
 import Circle from "./structures/Circle";
 import Triangle from "./structures/Triangle";
@@ -59,9 +59,22 @@ function Whiteboard() {
     texts: [],
     FreeDraw: [],
   });
-  const [mode, setMode] = useState("select");
+  const [tool, setTool] = useState("pen"); // Zustand für das ausgewählte Werkzeug
+  const [lines, setLines] = useState([]); // Zustand für die Linien
   const [selectedId, setSelectedId] = useState(null);
+  const [mode, setMode] = useState("select"); // Zustand für den aktuellen Modus
   const stageRef = useRef(null);
+  const isDrawing = useRef(false);
+  const [color, setColor] = useState("#df4b26"); // Zustand für die Farbe
+  const [strokeWidth, setStrokeWidth] = useState(5); // Zustand für die Strichstärke
+
+  const handleColorChange = (newColor) => {
+    setColor(newColor.hex);
+  };
+
+  const handleStrokeWidthChange = (newWidth) => {
+    setStrokeWidth(newWidth);
+  };
 
   // Funktion zum Hinzufügen von Formen (als Beispiel)
   const addShape = useCallback((shapeType) => {
@@ -171,14 +184,42 @@ function Whiteboard() {
     }
   };
 
+  const handleFreeDrawClick = () => {
+    setMode("freedraw"); // Setzt den Modus auf Freihandzeichnen
+  };
+
+  const handleMouseDown = (e) => {
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+    // Speichern Sie die aktuelle Farbe und Strichstärke zusammen mit den Punkten
+    setLines([
+      ...lines,
+      { tool, points: [pos.x, pos.y], color: color, strokeWidth: strokeWidth },
+    ]);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDrawing.current) {
+      return;
+    }
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = lines[lines.length - 1];
+    // Fügen Sie dem letzten Linienobjekt Punkte hinzu
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+    lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines.concat());
+  };
+
+  const handleMouseUp = () => {
+    isDrawing.current = false;
+  };
+
   return (
     <div className="flex h-screen w-screen overflow-hidden">
+      {/* Sidebar mit Schaltflächen zum Hinzufügen von Formen und Umschalten des Modus */}
       <div className="w-64 h-screen bg-gray-800 text-white p-4">
-        {" "}
-        {/* Sidebar */}
         <div className="flex flex-col items-center space-y-4">
-          {" "}
-          {/* Sidebar */}
           <button
             onClick={() => addShape("rectangles")}
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex items-center"
@@ -203,31 +244,66 @@ function Whiteboard() {
           >
             <FontAwesomeIcon icon={faFont} />
           </button>
-          <button onClick={() => setMode("freedraw")}>
-            {" "}
-            {/* Freihandzeichnen-Modus */}
+          {/* Schaltfläche zum Aktivieren des Freihandzeichnen-Modus */}
+          <button
+            onClick={handleFreeDrawClick}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          >
             <FontAwesomeIcon icon={faPencilAlt} />
           </button>
-        </div>
-        <div className="flex-1">
-          {" "}
-          {/* Hauptbereich */}
-          {/* Ihr Zeichenbereich und weitere Inhalte */}
+          {/* Werkzeugauswahl */}
+          <select
+            value={tool}
+            onChange={(e) => setTool(e.target.value)} /* ... */
+          >
+            <option value="pen">Pen</option>
+            <option value="eraser">Eraser</option>
+          </select>
+
+          <input
+            type="color"
+            value={color}
+            onChange={(e) => handleColorChange({ hex: e.target.value })}
+            className="w-full h-8 border-none"
+          />
+          <input
+            type="range"
+            min="1"
+            max="20"
+            value={strokeWidth}
+            onChange={(e) => handleStrokeWidthChange(parseInt(e.target.value))}
+            className="w-full"
+          />
         </div>
       </div>
 
-      {/* Schaltflächen zum Hinzufügen von Formen */}
+      {/* Hauptbereich für das Zeichnen */}
       <div className="relative max-w-screen max-h-screen overflow-auto">
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}
-          onMouseDown={checkDeselect}
-          onTouchStart={checkDeselect}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}
           ref={stageRef}
         >
           <Layer>{createGrid()}</Layer>
           <Layer>
-            {mode === "freedraw" && <FreeDraw />}
+            {lines.map((line, i) => (
+              <Line
+                key={i}
+                points={line.points}
+                stroke={line.color} // Verwenden Sie die Farbe aus dem Linienobjekt
+                strokeWidth={line.strokeWidth} // Verwenden Sie die Strichstärke aus dem Linienobjekt
+                tension={0.5}
+                lineCap="round"
+                lineJoin="round"
+                globalCompositeOperation={
+                  line.tool === "eraser" ? "destination-out" : "source-over"
+                }
+              />
+            ))}
+
             {shapes.rectangles.map((shape, i) => (
               <Rectangle
                 key={shape.id}
@@ -239,7 +315,6 @@ function Whiteboard() {
                 }
               />
             ))}
-
             {shapes.circles.map((shape, i) => (
               <Circle
                 key={shape.id}
@@ -251,7 +326,6 @@ function Whiteboard() {
                 }
               />
             ))}
-
             {shapes.triangles.map((shape, i) => (
               <Triangle
                 key={shape.id}
@@ -263,10 +337,9 @@ function Whiteboard() {
                 }
               />
             ))}
-
             {shapes.texts.map((text, i) => (
               <EditableText
-                key={text.id} // Ensure text.id is unique
+                key={text.id}
                 shapeProps={text}
                 isSelected={text.id === selectedId}
                 onSelect={() => setSelectedId(text.id)}
