@@ -3,7 +3,7 @@ import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
+import Banner from "./components/Banner.jsx";
 import { navigation, stats, features } from "./index.js";
 
 const containerVariants = {
@@ -61,6 +61,7 @@ const LandingPage = () => {
     <>
       <div className="bg-luckyPoint-200">
         <header className="absolute inset-x-0 top-0 z-50">
+          <Banner />
           <nav
             className="flex items-center justify-between  lg:px-8"
             aria-label="Global"
@@ -175,7 +176,7 @@ const LandingPage = () => {
           </div>
           <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
             <div className="hidden sm:mb-8 sm:flex sm:justify-center">
-              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+              <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/60">
                 Announcing our next round of funding.{" "}
                 <a href="/" className="font-semibold text-luckyPoint-600">
                   <span className="absolute inset-0" aria-hidden="true" />
@@ -187,7 +188,7 @@ const LandingPage = () => {
               <h1 className="text-4xl font-bold tracking-tight text-black sm:text-6xl">
                 WebDesk: Revolutionize Your Team Collaboration
               </h1>
-              <p className="mt-6 text-lg leading-8 text-luckyPoint-300">
+              <p className="mt-6 text-lg leading-8 text-luckyPoint-500">
                 Integrate video chats, collaborative workspaces, and direct
                 GitHub repository access in one seamless platform
               </p>
@@ -260,7 +261,7 @@ const LandingPage = () => {
                       </div>
                       {feature.name}
                     </dt>
-                    <dd className="mt-2 text-base leading-7 text-luckyPoint-300">
+                    <dd className="mt-2 text-base leading-7 text-luckyPoint-500">
                       {feature.description}
                     </dd>
                   </div>
@@ -329,7 +330,7 @@ const LandingPage = () => {
             >
               {stats.map((stat) => (
                 <div key={stat.name} className="flex flex-col-reverse">
-                  <dt className="text-base leading-7 text-luckyPoint-400">
+                  <dt className="text-base leading-7 text-gray-600">
                     {stat.name}
                   </dt>
                   <dd className="text-2xl font-bold leading-9 tracking-tight text-luckyPoint-200">

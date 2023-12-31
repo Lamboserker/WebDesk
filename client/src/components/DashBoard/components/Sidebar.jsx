@@ -104,12 +104,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     }
   };
 
-  const openPopUp = () => {
-    console.log("before", isDropdownOpen);
-    setIsDropdownOpen(true);
-    console.log("Is it open?", isDropdownOpen);
-  };
-
   useEffect(() => {
     // Initialisieren der Socket-Verbindung
     socket.current = io("http://localhost:9000");
@@ -140,6 +134,17 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       setSelectedWorkspace(savedWorkspaceId);
     }
   }, []);
+
+  useEffect(() => {
+    if (workspaces && workspaces.length === 1) {
+      const singleWorkspaceId = workspaces[0].id;
+      setSelectedWorkspace(singleWorkspaceId);
+      // Fetching channels and members for the single workspace
+      fetchChannels(singleWorkspaceId);
+      fetchWorkspaceMembers(singleWorkspaceId);
+    }
+    // This effect should run when the `workspaces` array changes
+  }, [workspaces]);
 
   const fetchChannels = async (workspaceId) => {
     console.log("workspace here is:", workspaceId);
@@ -306,7 +311,10 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
           {/* workspace name for desktop view */}
 
-          <WorkspaceDropdown sidebarWidth={sidebarWidth} />
+          <WorkspaceDropdown
+            sidebarWidth={sidebarWidth}
+            isScrollDisabled={workspaces && workspaces.length === 1}
+          />
 
           {/* Primary Navigation */}
           <ul className="flex flex-col py-4 space-y-1">

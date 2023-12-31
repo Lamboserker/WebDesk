@@ -2,7 +2,7 @@ import colors from "tailwindcss/colors";
 import withMT from "@material-tailwind/react/utils/withMT";
 export default withMT({
   darkMode: "class",
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
   mode: "jit",
   theme: {
     colors: {

@@ -31,7 +31,7 @@ const Maincontent = ({ activeChannel }) => {
   const emojiPickerRef = useRef(null);
   const messageInputRef = useRef(null);
   const messagesEndRef = useRef(null);
-
+  const messagesContainerRef = useRef(null);
   const socket = io("http://localhost:9000"); // URL Ihres Socket.IO-Servers
   const navigate = useNavigate();
   const toggleDropdown = () => setShowDropdown(!showDropdown);
@@ -193,6 +193,7 @@ const Maincontent = ({ activeChannel }) => {
   const handleLogout = () => {
     // Remove the token from LocalStorage
     localStorage.removeItem("userToken");
+    localStorage.setItem("bannerVisible", "true");
     navigate("/");
   };
 
@@ -351,10 +352,15 @@ const Maincontent = ({ activeChannel }) => {
         </div>
 
         {/* chat history/main area */}
+
         {displayWhiteboard ? (
-          <Whiteboard /> // Whiteboard anzeigen
+          <Whiteboard parentRef={messagesContainerRef} />
         ) : (
-          <div className="flex-1 p-4 overflow-y-auto bg-luckyPoint-200 dark:bg-luckyPoint-800 border border-t-2 border-luckyPoint-200 dark:border-luckyPoint-700">
+          // Whiteboard anzeigen
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 p-4 overflow-y-auto bg-luckyPoint-200 dark:bg-luckyPoint-800 border border-t-2 border-luckyPoint-200 dark:border-luckyPoint-700"
+          >
             <h2 className="font-bold text-center text-2xl ">
               {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
             </h2>
@@ -451,7 +457,7 @@ const Maincontent = ({ activeChannel }) => {
                 </div>
               )}
               <div className="flex items-center justify-center">
-                <button className="mx-1 mt-1 z-50" onClick={toggleMenu}>
+                <button className="mx-1 mt-1 z-20" onClick={toggleMenu}>
                   <EllipsisVerticalIcon className="text-black dark:text-luckyPoint-200 h-6 " />
                 </button>
                 {showMenu && (
@@ -473,7 +479,7 @@ const Maincontent = ({ activeChannel }) => {
               </div>
               <button
                 onClick={handleSendMessage}
-                className="ml-2 text-luckyPoint-700 rounded-lg  z-50"
+                className="ml-2 text-luckyPoint-700 rounded-lg  z-20"
               >
                 <PaperAirplaneIcon className="h-6 mx-1 text-black dark:text-luckyPoint-200" />
               </button>

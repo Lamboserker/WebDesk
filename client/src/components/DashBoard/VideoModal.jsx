@@ -9,9 +9,9 @@ const Modal = ({ isToggled, children, onClose }) => {
       {isToggled && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
+          animate={{ opacity: 1, scale: 0.5 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed top-0 left-0 w-full h-full"
+          className="fixed top-0 left-0 w-full h-full "
           style={{ backgroundColor: "rgb(0, 0, 0)" }}
         >
           <motion.div
