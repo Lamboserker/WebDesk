@@ -67,6 +67,7 @@ const SignIn = ({ onLoginSuccess }) => {
 
       // Speichern des JWT-Tokens, das von Ihrem Server zurückgegeben wird
       const token = res.data.token;
+      console.log("token is:", token);
       localStorage.setItem("userToken", token);
 
       // Überprüfen Sie den Workspace-Status des Benutzers

@@ -97,7 +97,7 @@ export const OutlinedButton = ({
         }}
       >
         <div
-          className={`flex items-center justify-center  rounded-lg ${
+          className={`flex items-center justify-center  rounded-full ${
             bgColor ? `${bgColor}` : isFocused ? "bg-white" : "bg-gray-750"
           } ${
             mouseOver

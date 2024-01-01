@@ -1,33 +1,53 @@
 import { motion, AnimatePresence } from "framer-motion";
-import React from "react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import "../styles/modalstyles.css";
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faXmark,
+  faUpRightAndDownLeftFromCenter,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Modal = ({ isToggled, children, onClose }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const onExpand = () => {
+    setIsExpanded(!isExpanded); // Toggle the expanded state
+  };
   return (
     <AnimatePresence>
       {isToggled && (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 0.5 }}
+          animate={{ opacity: 1, scale: isExpanded ? 1 : 0.5 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed top-0 left-0 w-full h-full "
-          style={{ backgroundColor: "rgb(0, 0, 0)" }}
+          className="fixed inset-0 bg-black bg-opacity-50 z-50" // Tailwind für .modal-overlay
         >
           <motion.div
-            className="modal-content bg-white p-6 rounded shadow"
+            className="relative bg-white p-6 rounded shadow m-auto" // Tailwind für .modal-content
             onClick={(e) => e.stopPropagation()}
+            style={{
+              width: isExpanded ? "100%" : "auto",
+              height: isExpanded ? "100%" : "auto",
+            }}
           >
-            <button onClick={onClose} className="close-modal-button">
-              <XMarkIcon
-                style={{ zIndex: 1000 }}
-                className="h-6 w-6 bg-white z-50"
-              />{" "}
-              {/* Close-Icon */}
+            {children}
+            <button
+              onClick={onClose}
+              className="absolute top-0 left-0 m-5 text-center "
+            >
+              <FontAwesomeIcon
+                icon={faXmark}
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-white "
+              />
             </button>
-            {children}
-            {children}
-            <button onClick={onClose}>Schließen</button>
+            <button
+              onClick={onExpand}
+              className="absolute top-0 right-0 m-5 text center"
+            >
+              <FontAwesomeIcon
+                icon={faUpRightAndDownLeftFromCenter}
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-white"
+              />
+            </button>
           </motion.div>
         </motion.div>
       )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 
-const WorkspaceDropdown = ({ sidebarWidth }) => {
+const WorkspaceDropdown = ({ sidebarWidth, setShowWorkspaceOverview }) => {
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(null);
   const [enableScroll, setEnableScroll] = useState(true); // Zustand für das Scrolling
 
@@ -167,6 +167,12 @@ const WorkspaceDropdown = ({ sidebarWidth }) => {
       const imageUrl = workspace.image
         ? `${baseUrl}${workspace.image.replace(/\\/g, "/")}`
         : defaultImageUrl;
+
+      const handleWorkspaceSelection = (workspaceId) => {
+        // ... bestehende Auswahllogik ...
+        setShowWorkspaceOverview(true); // Zeigen Sie die WorkspaceOverview an, wenn ein Arbeitsbereich ausgewählt wird
+      };
+
       return (
         <div
           className="rounded-md"

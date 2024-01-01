@@ -26,7 +26,9 @@ import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 import CreateChannel from "../../Popup/CreateChannel";
+import WorkspaceOverview from "../Dropdown/WorkspaceOverview";
 import io from "socket.io-client";
+
 const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [channels, setChannels] = useState([]);
@@ -38,6 +40,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [channelPopupIsOpen, setChannelPopupIsOpen] = useState(false);
   const [newMessagesCount, setNewMessagesCount] = useState({});
   const [channelPopupKey, setChannelPopupKey] = useState(0);
+  const [hoveredChannel, setHoveredChannel] = useState(null);
+  const [showWorkspaceOverview, setShowWorkspaceOverview] = useState(false);
   const socket = useRef(null);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
@@ -256,11 +260,16 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     return order.indexOf(a.type) - order.indexOf(b.type);
   });
 
-  const getChannelIcon = (channelType) => {
+  const getChannelIcon = (channelType, isHovered) => {
+    const baseClass = "h-6 w-6 mr-8 ";
+    const defaultClass = "text-luckyPoint-500 dark:text-luckyPoint-200 ";
+    const hoverClass = "text-luckyPoint-200 dark:text-luckyPoint-900 ";
     switch (channelType) {
       case "textChannel":
         return (
-          <ChatBubbleBottomCenterIcon className="h-6 w-6 text-luckyPoint-200" />
+          <ChatBubbleBottomCenterIcon
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
+          />
         );
       case "voiceChannel":
         return (
@@ -268,19 +277,33 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             isToggled={isVideoModalOpen}
             onClose={closeVideoModal}
             onClick={handleVideoIconClick}
-            className="h-6 w-6 mr-8 text-luckyPoint-200"
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
           />
         );
       case "stage":
-        return <UserGroupIcon className=" mr-8 h-6 w-6 text-luckyPoint-200" />;
+        return (
+          <UserGroupIcon
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
+          />
+        );
       case "forum":
         return (
-          <ComputerDesktopIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />
+          <ComputerDesktopIcon
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
+          />
         );
       case "announcement":
-        return <MegaphoneIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />;
+        return (
+          <MegaphoneIcon
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
+          />
+        );
       default:
-        return <HashtagIcon className="mr-8  h-6 w-6 text-luckyPoint-200" />;
+        return (
+          <HashtagIcon
+            className={baseClass + (isHovered ? hoverClass : defaultClass)}
+          />
+        );
     }
   };
 
@@ -314,8 +337,10 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           <WorkspaceDropdown
             sidebarWidth={sidebarWidth}
             isScrollDisabled={workspaces && workspaces.length === 1}
+            setShowWorkspaceOverview={setShowWorkspaceOverview}
           />
 
+          {showWorkspaceOverview && <WorkspaceOverview />}
           {/* Primary Navigation */}
           <ul className="flex flex-col py-4 space-y-1">
             <li>
@@ -339,7 +364,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                     ></path>
                   </svg>
                 </span>
-                <span className="ml-2 text-sm tracking-wide truncate  dark:text-luckyPoint-100">
+                <span className="ml-2 text-sm tracking-wide truncate  ">
                   Notifications
                 </span>
                 <span className="px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">
@@ -418,7 +443,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                 className="flex justify-start items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2 ml-4"
               >
                 <PlusIcon className="h-5 w-5 text-black dark:text-luckyPoint-200" />
-                <span className="ml-2 text-sm tracking-wide truncate">
+                <span className="ml-2 tracking-wide truncate">
                   Create Channel
                 </span>
               </button>
@@ -426,7 +451,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             {channelPopupIsOpen && <CreateChannel key={channelPopupKey} />}
             {console.log("HERE IT IS:", selectedWorkspace)}
             <li className="max-h-[20em] overflow-y-auto">
-              <div className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6 mb-2">
+              <div className="relative flex flex-row items-center h-11 focus:outline-none  text-gray-600  border-l-4 border-transparent  pr-6 mb-2 cursor-default">
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
                     className="w-5 h-5"
@@ -443,7 +468,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                     />
                   </svg>
                 </span>
-                <span className="ml-2 text-sm tracking-wide truncate">
+                <span className="ml-2 text-sm tracking-wide truncate ">
                   Channels
                 </span>
                 {newMessagesCount[channels._id] > 0 && (
@@ -457,16 +482,17 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
               {channels.map((channel) => (
                 <div
                   key={channel._id}
-                  className="flex justify-between items-center py-2 text-sm font-medium hover:bg-luckyPoint-700 ml-6 mb-2"
+                  onMouseEnter={() => setHoveredChannel(channel._id)}
+                  onMouseLeave={() => setHoveredChannel(null)}
+                  className="flex justify-between items-center py-2 text-sm font-medium hover:bg-luckyPoint-700 ml-6 mb-2 "
                 >
-                  {" "}
-                  {getChannelIcon(channel.type)}
+                  {getChannelIcon(channel.type, hoveredChannel === channel._id)}
                   <div className="flex flex-grow items-center">
                     <button
                       onClick={() => handleChannelClick(channel._id)}
-                      className="truncate text-black dark:text-luckyPoint-200"
+                      className="truncate text-black dark:text-luckyPoint-200 hover:text-luckyPoint-700"
                     >
-                      {channel.name} {/* Name des Channels */}
+                      {channel.name}
                     </button>
                   </div>
                 </div>
@@ -501,7 +527,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                       <MenuList className="bg-luckyPoint-200 dark:bg-luckyPoint-700">
                         <MenuItem
                           style={{ height: "50px" }}
-                          onClick={() => navigate("/my-profile")}
+                          onClick={() => navigate("/profile-settings")}
                           className="flex items-center gap-2 text-black dark:text-luckyPoint-200 "
                         >
                           <svg
@@ -525,7 +551,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         </MenuItem>
                         <MenuItem
                           style={{ height: "50px" }}
-                          onClick={() => navigate("/profile-settings")}
+                          onClick={() => navigate("/my-profile")}
                           className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
                         >
                           <svg

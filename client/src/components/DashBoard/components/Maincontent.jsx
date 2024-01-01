@@ -17,14 +17,14 @@ import Whiteboard from "./FigJam/Whiteboard";
 
 const Maincontent = ({ activeChannel }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [, setIsTyping] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [messages, setMessages] = useState([]);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [message, setMessage] = useState("");
-  const [, setSelectedWorkspace] = useState(null);
+  const quillRef = useRef(null);
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [displayWhiteboard, setDisplayWhiteboard] = useState(false);
   const dropdownRef = useRef(null);
@@ -105,7 +105,26 @@ const Maincontent = ({ activeChannel }) => {
     return tempDivElement.textContent || tempDivElement.innerText || "";
   };
 
-  // Neue sendMessage Funktion
+  useEffect(() => {
+    if (quillRef.current) {
+      const quillInstance = quillRef.current.getEditor();
+      const quillRoot = quillInstance.root;
+
+      const handleKeyPress = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault(); // Verhindern, dass ein neuer Zeilenumbruch eingefügt wird
+          sendMessage();
+        }
+      };
+
+      quillRoot.addEventListener("keydown", handleKeyPress);
+
+      return () => {
+        quillRoot.removeEventListener("keydown", handleKeyPress);
+      };
+    }
+  }, [quillRef]);
+
   const sendMessage = useCallback(() => {
     const senderImage = userData.profileImage ? userData.profileImage : null;
     if (message && activeChannel) {
@@ -126,7 +145,6 @@ const Maincontent = ({ activeChannel }) => {
       sendMessage();
     }
   };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -222,13 +240,6 @@ const Maincontent = ({ activeChannel }) => {
       document.removeEventListener("mousedown", handleClickOutsideEmoji);
     };
   }, [activeChannel, messages, searchTerm]);
-
-  useEffect(() => {
-    const lastVisitedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
-    if (lastVisitedWorkspaceId) {
-      setSelectedWorkspace({ _id: lastVisitedWorkspaceId });
-    }
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -427,14 +438,23 @@ const Maincontent = ({ activeChannel }) => {
         )}
         {/* message input area */}
         {activeChannel && (
-          <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill">
+          <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill ">
             <ReactQuill
               onChange={(value) => setMessage(value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  // Verhindern, dass ein neuer Zeilenumbruch eingefügt wird
+                  event.preventDefault();
+
+                  // Die Funktion zum Senden der Nachricht aufrufen
+                  handleSendMessage(event);
+                }
+              }}
               ref={messageInputRef}
               value={message}
               modules={modules}
               formats={formats}
-              className=" text-black dark:text-luckyPoint-200"
+              className="text-black dark:text-luckyPoint-200"
             />
 
             {/* Message Input with Emoji Picker */}

@@ -11,7 +11,7 @@ import {
 import { WorkspaceProvider } from "./Context/WorkspaceContext";
 import Loading from "./components/Loading/Loading"; // Bestätigen Sie den Pfad zur Loading-Komponente
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
+import { FullScreenProvider } from "./Context/FullscreenContext";
 // Lazy loading for components
 const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
@@ -48,35 +48,37 @@ function App() {
     <GoogleOAuthProvider clientId={clientId}>
       <WorkspaceProvider>
         <WorkspaceModalProvider>
-          <div className="App">
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/auth" element={<AuthContainer />} />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <Suspense fallback={renderLoading()}>
-                      <ProtectedRoute component={Dashboard} />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/videoapp"
-                  element={
-                    <Suspense fallback={renderLoading()}>
-                      <VideoApp />
-                    </Suspense>
-                  }
-                />
-                <Route
-                  path="/workspace-modal"
-                  element={<WorkspaceModalWrapper isLoading={isLoading} />}
-                />
-                <Route path="/my-profile" element={<ProfileMenu />} />
-              </Routes>
-            </BrowserRouter>
-          </div>
+          <FullScreenProvider>
+            <div className="App">
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/auth" element={<AuthContainer />} />
+                  <Route
+                    path="/dashboard"
+                    element={
+                      <Suspense fallback={renderLoading()}>
+                        <ProtectedRoute component={Dashboard} />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/videoapp"
+                    element={
+                      <Suspense fallback={renderLoading()}>
+                        <VideoApp />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/workspace-modal"
+                    element={<WorkspaceModalWrapper isLoading={isLoading} />}
+                  />
+                  <Route path="/my-profile" element={<ProfileMenu />} />
+                </Routes>
+              </BrowserRouter>
+            </div>
+          </FullScreenProvider>
         </WorkspaceModalProvider>
       </WorkspaceProvider>
     </GoogleOAuthProvider>

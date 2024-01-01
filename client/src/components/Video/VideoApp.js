@@ -23,6 +23,7 @@ function VideoApp(channelId) {
   const [selectMicDeviceId, setSelectMicDeviceId] = useState(selectedMic.id);
   const [isMeetingStarted, setIsMeetingStarted] = useState(false);
   const [isMeetingLeft, setIsMeetingLeft] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = window.matchMedia(
     "only screen and (max-width: 768px)"
   ).matches;
