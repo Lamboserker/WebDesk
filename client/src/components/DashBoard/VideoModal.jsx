@@ -19,7 +19,7 @@ const Modal = ({ isToggled, children, onClose }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: isExpanded ? 1 : 0.5 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-50" // Tailwind für .modal-overlay
+          className="fixed inset-0 bg-black bg-opacity-50 z-10" // Tailwind für .modal-overlay
         >
           <motion.div
             className="relative bg-white p-6 rounded shadow m-auto" // Tailwind für .modal-content
@@ -36,7 +36,7 @@ const Modal = ({ isToggled, children, onClose }) => {
             >
               <FontAwesomeIcon
                 icon={faXmark}
-                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-white "
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-red-500 "
               />
             </button>
             <button
@@ -45,7 +45,7 @@ const Modal = ({ isToggled, children, onClose }) => {
             >
               <FontAwesomeIcon
                 icon={faUpRightAndDownLeftFromCenter}
-                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-white"
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-green-500"
               />
             </button>
           </motion.div>

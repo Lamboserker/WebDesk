@@ -33,16 +33,31 @@ const MemberSidebar = () => {
     fetchWorkspaceMembers(selectedWorkspace);
   }, [selectedWorkspace]);
 
+  // Definieren Sie eine Variable für den Timer außerhalb der Funktion
+  let textVisibilityTimer;
+
+  useEffect(() => {
+    // Wenn die Sidebar erweitert ist, warten Sie eine gewisse Zeit, bevor Sie den Text anzeigen
+    if (isExpanded) {
+      textVisibilityTimer = setTimeout(() => {
+        setIsTextVisible(true);
+      }, 600);
+    } else {
+      // Wenn die Sidebar nicht erweitert ist, setzen Sie den Text sofort zurück
+      clearTimeout(textVisibilityTimer);
+      setIsTextVisible(false);
+    }
+
+    // Bereinigungsfunktion, die beim Dämonisieren aufgerufen wird
+    return () => clearTimeout(textVisibilityTimer);
+  }, [isExpanded]); // Nur neu ausführen, wenn sich isExpanded ändert
+
   const handleMouseEnter = () => {
     setIsExpanded(true);
-    setTimeout(() => {
-      setIsTextVisible(true);
-    }, 300); // Setzt isTextVisible mit Verzögerung
   };
 
   const handleMouseLeave = () => {
     setIsExpanded(false);
-    setIsTextVisible(false); // Setzt isTextVisible sofort zurück
   };
 
   const sidebarClasses = ` transition-all duration-300 ease-in-out mr-3 fixed right-0 top-1/2 transform -translate-y-1/2  ${
@@ -93,9 +108,11 @@ const MemberSidebar = () => {
               alt="Profile"
               className="rounded-full w-10 h-10 object-cover " // Margin rechts für Abstand zum Text
             />
-            
+
             {isTextVisible && (
-              <span className="text-white ml-5 font-bold text-sm uppercase">{member.name}</span>
+              <span className="text-white ml-5 font-bold text-sm uppercase">
+                {member.name}
+              </span>
             )}
           </li>
         ))}
