@@ -9,7 +9,7 @@
 /* CSS */
 
 .custom-quill .ql-toolbar {
-  color: white !important;
+  color: white;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   border-bottom: none; /* Entfernt die untere Umrandung der Toolbar */
@@ -33,10 +33,8 @@
   box-shadow: 0px -2px 2px 1px rgba(181, 181, 181, 0.75);
   -webkit-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
   -moz-box-shadow: 0px -1px 2px 1px rgba(181, 181, 181, 0.75);
-  
 }
 
-
-.custom-quill .ql-editor:focus{
+.custom-quill .ql-editor:focus {
   outline: none;
 }

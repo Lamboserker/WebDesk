@@ -337,7 +337,7 @@ const Maincontent = ({ activeChannel }) => {
               <div className="grid grid-cols-2 grid-rows-4 gap-4 items-center  px-4 py-2 mt-2">
                 <div className="col-span-2  px-4 py-2 mt-2">
                   <span className="text-black font-bold uppercase ">
-                    get help
+                    Get help
                   </span>
                 </div>
                 <div className="col-span-2 row-start-2  px-4 py-2 mt-2 text-black font-bold uppercase ">
@@ -431,7 +431,7 @@ const Maincontent = ({ activeChannel }) => {
                   );
                 })
               ) : (
-                <p className="text-center">Keine Nachrichten gefunden</p>
+                <p className="text-center">No messages found</p>
               )}
             </div>
           </div>
@@ -440,13 +440,11 @@ const Maincontent = ({ activeChannel }) => {
         {activeChannel && (
           <div className="p-4 bg-transparent shadow-md flex flex-col custom-quill ">
             <ReactQuill
+              placeholder="Type a message..."
               onChange={(value) => setMessage(value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey) {
-                  // Verhindern, dass ein neuer Zeilenumbruch eingefügt wird
                   event.preventDefault();
-
-                  // Die Funktion zum Senden der Nachricht aufrufen
                   handleSendMessage(event);
                 }
               }}
@@ -454,7 +452,7 @@ const Maincontent = ({ activeChannel }) => {
               value={message}
               modules={modules}
               formats={formats}
-              className="text-black dark:text-luckyPoint-200"
+              className="text-black dark:text-luckyPoint-200 placeholder:text-luckyPoint-200 dark:placeholder:text-white"
             />
 
             {/* Message Input with Emoji Picker */}

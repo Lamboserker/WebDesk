@@ -176,13 +176,13 @@ function Whiteboard() {
     });
   }, []);
 
-  const checkDeselect = (e) => {
-    // Deselect when clicked on empty area
-    const clickedOnEmpty = e.target === e.target.getStage();
-    if (clickedOnEmpty) {
-      setSelectedId(null);
-    }
-  };
+  // const checkDeselect = (e) => {
+  //   // Deselect when clicked on empty area
+  //   const clickedOnEmpty = e.target === e.target.getStage();
+  //   if (clickedOnEmpty) {
+  //     setSelectedId(null);
+  //   }
+  // };
 
   const handleFreeDrawClick = () => {
     setMode("freedraw"); // Setzt den Modus auf Freihandzeichnen
