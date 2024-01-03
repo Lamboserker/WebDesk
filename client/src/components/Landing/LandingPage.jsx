@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Banner from "./components/Banner.jsx";
+import Footer from "./components/Footer.jsx";
+import ContentSection from "./components/ContentSection.jsx";
 import { navigation, stats, features } from "./index.js";
 
 const containerVariants = {
@@ -58,8 +60,8 @@ const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <>
-      <div className="bg-luckyPoint-200">
+    <div className="relative min-h-screen overflow-hidden max-w-screen">
+      <div className="bg-luckyPoint-200 h-screen ">
         <header className="absolute inset-x-0 top-0 z-50">
           <Banner />
           <nav
@@ -70,7 +72,7 @@ const LandingPage = () => {
               <a href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">WebDesk</span>
                 <img
-                  className="h-32 w-232 "
+                  className="h-32 w-32 "
                   src="https://cdn.discordapp.com/attachments/1185665614086426674/1185669662676095066/iSi_iSi__1_-removebg-preview.png?ex=659073ec&is=657dfeec&hm=6d1b220e9702faf4d57e87690face9bfdb86ef8a698f9d524af577a4d6900b9d&"
                   alt=""
                 />
@@ -79,7 +81,7 @@ const LandingPage = () => {
             <div className="flex lg:hidden">
               <button
                 type="button"
-                className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-luckyPoint-700"
+                className=" inline-flex items-center justify-center rounded-md p-2.5 text-luckyPoint-700"
                 onClick={() => setMobileMenuOpen(true)}
               >
                 <span className="sr-only">Open main menu</span>
@@ -118,8 +120,8 @@ const LandingPage = () => {
                 <a href="/" className="-m-1.5 p-1.5">
                   <span className="sr-only">WebDesk</span>
                   <img
-                    className="h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                    className="h-32 w-32"
+                    src="https://cdn.discordapp.com/attachments/1185665614086426674/1185669662676095066/iSi_iSi__1_-removebg-preview.png?ex=659073ec&is=657dfeec&hm=6d1b220e9702faf4d57e87690face9bfdb86ef8a698f9d524af577a4d6900b9d&"
                     alt=""
                   />
                 </a>
@@ -167,7 +169,7 @@ const LandingPage = () => {
             aria-hidden="true"
           >
             <div
-              className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+              className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-full -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-full"
               style={{
                 clipPath:
                   "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
@@ -213,7 +215,7 @@ const LandingPage = () => {
             aria-hidden="true"
           >
             <div
-              className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]"
+              className="relative left-[calc(50%+3rem)] aspect-[1155/678] w-full -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%+36rem)] sm:w-full"
               style={{
                 clipPath:
                   "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
@@ -223,7 +225,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      <div className="bg-white py-24 sm:py-32">
+      <div className="bg-white py-24 sm:py-32 lg:h-screen sm:h-full">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <motion.div
@@ -271,12 +273,15 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
+      <div className="relative isolate overflow-hidden bg-transparent px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
+        <ContentSection />
+      </div>
 
-      <div className="relative isolate overflow-hidden bg-luckyPoint-900 py-24 sm:py-32">
+      <div className="relative isolate overflow-hidden bg-luckyPoint-900">
         <img
           src="https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&crop=focalpoint&fp-y=.8&w=2830&h=1500&q=80&blend=111827&sat=-100&exp=15&blend-mode=multiply"
           alt=""
-          className="absolute inset-0 -z-10 h-full w-full object-cover md:object-top"
+          className="absolute inset-0 -z-10 h-full w-full object-cover md:object-top sm:object-bottom"
         />
 
         <div
@@ -284,7 +289,7 @@ const LandingPage = () => {
           aria-hidden="true"
         >
           <div
-            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+            className="aspect-[1097/845] w-full bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
             style={{
               clipPath:
                 "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
@@ -296,14 +301,15 @@ const LandingPage = () => {
           aria-hidden="true"
         >
           <div
-            className="aspect-[1097/845] w-[68.5625rem] bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+            className="aspect-[1097/845] w-full bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
             style={{
               clipPath:
                 "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
             }}
           />
         </div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
+        <div className="mx-auto max-w-7xl px-6 lg:px-8  lg:max-w-none  h-screen">
           <div className="mx-auto max-w-2xl lg:mx-0">
             <motion.h2
               variants={textVariants}
@@ -340,9 +346,46 @@ const LandingPage = () => {
               ))}
             </motion.dl>
           </div>
+          <div className="bg-transparent mt-16 px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto text-white py-10 sm:py-12 lg:py-16">
+              <div className="text-center">
+                <h3 className="text-2xl sm:text-3xl mb-3">
+                  Soon available on mobile devices!
+                </h3>
+                <div className="flex flex-wrap justify-center my-10 gap-4">
+                  <div className="flex items-center border w-52 rounded-lg px-4 py-2 mx-2">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/888/888857.png"
+                      alt="footer_alt"
+                      className="w-7 md:w-8"
+                    />
+                    <div className="text-left ml-3">
+                      <p className="text-xs text-gray-200">Soon at </p>
+                      <p className="text-sm md:text-base">Google Play Store</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center border w-52 rounded-lg px-4 py-2 mx-2">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/888/888841.png"
+                      alt="footer"
+                      className="w-7 md:w-8"
+                    />
+                    <div className="text-left ml-3">
+                      <p className="text-xs text-gray-200">Soon at </p>
+                      <p className="text-sm md:text-base"> Apple Store </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="relative mt-40">
+          <Footer />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

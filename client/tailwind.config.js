@@ -100,6 +100,9 @@ export default withMT({
         },
       },
     },
+    backgroundImage: {
+      "button-svg": 'url("/src/assets/img/button.jpg")',
+    },
   },
   variants: {
     extend: {},
