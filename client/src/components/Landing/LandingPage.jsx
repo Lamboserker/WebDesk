@@ -60,7 +60,7 @@ const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen overflow-hidden max-w-screen">
+    <div className="relative min-h-screen  max-w-screen">
       <div className="bg-luckyPoint-200 h-screen ">
         <header className="absolute inset-x-0 top-0 z-50">
           <Banner />
@@ -163,9 +163,9 @@ const LandingPage = () => {
           </Dialog>
         </header>
 
-        <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="relative isolate px-6 pt-14 lg:px-8 ">
           <div
-            className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
+            className="absolute inset-x-0 -top-40 -z-10 transform-gpu  overflow-hidden blur-3xl sm:-top-80"
             aria-hidden="true"
           >
             <div
@@ -273,11 +273,10 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <div className="relative isolate overflow-hidden bg-transparent px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
+      <div className="relative">
         <ContentSection />
       </div>
-
-      <div className="relative isolate overflow-hidden bg-luckyPoint-900">
+      <div className="relative isolate overflow-hidden bg-luckyPoint-900 p-16">
         <img
           src="https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&crop=focalpoint&fp-y=.8&w=2830&h=1500&q=80&blend=111827&sat=-100&exp=15&blend-mode=multiply"
           alt=""
