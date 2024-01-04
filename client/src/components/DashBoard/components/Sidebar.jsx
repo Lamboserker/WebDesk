@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import Modal from "../VideoModal";
 import VideoApp from "../../Video/VideoApp";
-import WorkspaceDropdown from "../Dropdown/WorkspaceDropdown";
+import WorkspaceModule from "../Dropdown/WorkspaceModule";
 import { useNavigate } from "react-router-dom";
 import {
   PlusIcon,
@@ -22,11 +22,11 @@ import {
   Avatar,
   Typography,
 } from "@material-tailwind/react";
-import HoverComponent from "../Dropdown/UserDropdown";
 import "../../styles/dashboard.css";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 import CreateChannel from "../../Popup/CreateChannel";
 import WorkspaceOverview from "../Dropdown/WorkspaceOverview";
+import WorkspaceDropdown from "../Dropdown/WorkspaceDropdown";
 import io from "socket.io-client";
 
 const SideBar = ({ activeChannel, setActiveChannel }) => {
@@ -35,14 +35,16 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [imageLoadError] = useState(false);
   const [userData, setUserData] = useState({ sender: "", senderImage: "" });
   const [members, setMembers] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [channelPopupIsOpen, setChannelPopupIsOpen] = useState(false);
   const [newMessagesCount, setNewMessagesCount] = useState({});
   const [channelPopupKey, setChannelPopupKey] = useState(0);
   const [hoveredChannel, setHoveredChannel] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const [showWorkspaceOverview, setShowWorkspaceOverview] = useState(false);
   const socket = useRef(null);
+  const workspaceRef = useRef(null);
   const [sidebarWidth, setSidebarWidth] = useState(
     parseInt(localStorage.getItem("sidebarWidth")) || 200
   );
@@ -307,6 +309,26 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     }
   };
 
+  const handleWorkspaceClick = (event) => {
+    const x = event.clientX; // X-Koordinate des Klicks
+    const y = event.clientY; // Y-Koordinate des Klicks
+    setDropdownPosition({ x, y });
+    setIsDropdownOpen(true);
+  };
+
+  const handleOutsideClick = (event) => {
+    if (workspaceRef.current && !workspaceRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("click", handleOutsideClick, true);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick, true);
+    };
+  }, []);
+
   return (
     <>
       <div
@@ -333,14 +355,19 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
           </div>
 
           {/* workspace name for desktop view */}
-
-          <WorkspaceDropdown
-            sidebarWidth={sidebarWidth}
-            isScrollDisabled={workspaces && workspaces.length === 1}
-            setShowWorkspaceOverview={setShowWorkspaceOverview}
-          />
-
-          {showWorkspaceOverview && <WorkspaceOverview />}
+          <div
+            ref={workspaceRef}
+            onClick={handleWorkspaceClick}
+            className="relative"
+          >
+            <WorkspaceModule
+              onClick={handleWorkspaceClick}
+              sidebarWidth={sidebarWidth}
+              isScrollDisabled={workspaces && workspaces.length === 1}
+              setShowWorkspaceOverview={setShowWorkspaceOverview}
+            />
+          </div>
+          {isDropdownOpen && <WorkspaceDropdown position={dropdownPosition} />}
           {/* Primary Navigation */}
           <ul className="flex flex-col py-4 space-y-1">
             <li>

@@ -141,6 +141,41 @@ router.get("/workspace-status", async (req, res) => {
   }
 });
 
+// show a specific workspace
+router.get("/:workspaceId", async (req, res) => {
+  try {
+    const workspaceId = req.params.workspaceId;
+
+    if (!workspaceId) {
+      return res.status(400).send("Workspace ID fehlt");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return res.status(400).send("Ungültige Workspace ID");
+    }
+
+    const workspace = await Workspace.findById(workspaceId);
+
+    if (!workspace) {
+      return res.status(404).send("Workspace nicht gefunden");
+
+    }
+
+    res.json(workspace);
+  } catch (error) {
+    if (error instanceof mongoose.Error) {
+      console.error("Datenbankfehler:", error);
+      return res
+        .status(500)
+        .send("Datenbankfehler beim Abrufen des Workspaces");
+    }
+    console.error("Serverfehler:", error);
+    res.status(500).send("Serverfehler beim Abrufen des Workspaces");
+  }
+});
+
+
+
 // delete a workspace
 
 router.delete("/delete", async (req, res) => {
