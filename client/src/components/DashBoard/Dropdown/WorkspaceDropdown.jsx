@@ -14,8 +14,8 @@ const WorkspaceDropdown = ({ position }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Definiert eine asynchrone Funktion, um die Workspace-Daten abzurufen.
     const fetchWorkspaceDetails = async () => {
+      console.log("Aktuell ausgewählte Workspace ID:", selectedWorkspace);
       if (!selectedWorkspace) {
         setError("Keine Workspace ID ausgewählt");
         return; // Frühzeitige Rückkehr, wenn keine ID vorhanden ist.
@@ -24,24 +24,29 @@ const WorkspaceDropdown = ({ position }) => {
       try {
         const workspaceId = selectedWorkspace;
         const token = localStorage.getItem("userToken");
-        const response = await axios.get(
-          `http://localhost:9000/api/workspaces/${workspaceId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        console.log("Verwendetes Token:", token);
+
+        const url = `http://localhost:9000/api/workspaces/${workspaceId}`;
+        console.log("Anfrage-URL:", url);
+        const response = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         setWorkspaceDetails(response.data);
         console.log("Workspace-Daten:", response.data);
         setError(null); // Fehler zurücksetzen, falls zuvor einer aufgetreten ist.
       } catch (error) {
-        console.error("Fehler beim Abrufen des Workspace:", error);
+        console.error(
+          "Fehler beim Abrufen des Workspace. Fehlerdetails:",
+          error
+        );
         setError("Fehler beim Abrufen des Workspace-Daten");
         // Setzen Sie hier vielleicht auch workspaceDetails zurück oder handhaben Sie den Fehler anders.
       }
     };
 
     fetchWorkspaceDetails();
-  }, [selectedWorkspace]);
+  }, [selectedWorkspace]); // Stellen Sie sicher, dass dieser Hook nur ausgeführt wird, wenn sich selectedWorkspace ändert.
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) {

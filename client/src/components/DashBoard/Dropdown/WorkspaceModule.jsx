@@ -13,24 +13,48 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
   const defaultImageUrl =
     "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
   const baseUrl = "http://localhost:9000/";
-  const { selectedWorkspace, setSelectedWorkspace } =
-    useContext(WorkspaceContext);
+  const { setSelectedWorkspace } = useContext(WorkspaceContext);
+
+  const handleWorkspaceSelection = (workspaceId) => {
+    try {
+      // Überprüfen, ob eine gültige Workspace-ID bereitgestellt wurde
+      if (!workspaceId) {
+        throw new Error("Keine gültige Workspace-ID bereitgestellt.");
+      }
+
+      // Aktualisieren des lokalen Zustands mit der neuen ausgewählten Workspace-ID
+      setSelectedWorkspaceId(workspaceId);
+      console.log(`Lokaler Zustand aktualisiert: ${workspaceId}`);
+
+      // Aktualisieren des globalen Kontexts mit der neuen ausgewählten Workspace-ID
+      setSelectedWorkspace(workspaceId);
+      console.log(`Globaler Kontext aktualisiert: ${workspaceId}`);
+
+      // Anzeigen der Workspace-Übersicht
+      setShowWorkspaceOverview(true);
+      console.log("Workspace-Übersicht angezeigt.");
+    } catch (error) {
+      // Fehlerbehandlung, falls etwas schief geht
+      console.error("Fehler bei der Auswahl des Workspace:", error.message);
+    }
+  };
 
   useEffect(() => {
+    // Initialisiert den Zustand aus dem lokalen Speicher
     const savedWorkspaceId = localStorage.getItem("selectedWorkspaceId");
     if (savedWorkspaceId) {
-      setSelectedWorkspaceId(savedWorkspaceId);
-      // Stellen Sie sicher, dass die Funktion oder Logik hier den Workspace im Kontext aktualisiert
-      setSelectedWorkspace(savedWorkspaceId);
+      handleWorkspaceSelection(savedWorkspaceId);
     }
   }, []);
 
   useEffect(() => {
+    // Aktualisiert den lokalen Speicher, wenn sich der ausgewählte Workspace ändert
     if (selectedWorkspaceId) {
       localStorage.setItem("selectedWorkspaceId", selectedWorkspaceId);
     }
   }, [selectedWorkspaceId]);
 
+  
   // Aktualisierte useEffect-Hook
   useEffect(() => {
     if (workspaces.length === 1) {
@@ -41,24 +65,26 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
     }
   }, [workspaces]);
 
-  useEffect(() => {
-    const fetchWorkspaces = async () => {
-      try {
-        const token = localStorage.getItem("userToken");
-        const response = await axios.get(
-          "http://localhost:9000/api/workspaces/list",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setWorkspaces(response.data);
-      } catch (error) {
-        console.error("Error fetching workspaces", error);
-      }
-    };
+  const fetchWorkspaces = async () => {
+    try {
+      const token = localStorage.getItem("userToken");
+      const response = await axios.get(
+        "http://localhost:9000/api/workspaces/list",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setWorkspaces(response.data);
+    } catch (error) {
+      console.error("Error fetching workspaces", error);
+      // Setzen Sie den Zustand auf eine leere Liste oder einen Fehlerzustand, falls erforderlich
+      setWorkspaces([]);
+    }
+  };
 
+  useEffect(() => {
     fetchWorkspaces();
   }, []);
 
@@ -72,18 +98,32 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
 
     if (e.deltaY > 0) {
       setRotation((prevRotation) => prevRotation - 90);
-      setSelectedIndex((prevIndex) => (prevIndex + 1) % workspaces.length);
+      setSelectedIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % workspaces.length;
+        console.log(`[Scroll Down] New index: ${newIndex}`);
+        console.log(
+          `[Scroll Down] New Workspace ID: ${workspaces[newIndex]._id}`
+        );
+        return newIndex;
+      });
     } else {
       setRotation((prevRotation) => prevRotation + 90);
-      setSelectedIndex(
-        (prevIndex) => (prevIndex - 1 + workspaces.length) % workspaces.length
-      );
+      setSelectedIndex((prevIndex) => {
+        const newIndex =
+          (prevIndex - 1 + workspaces.length) % workspaces.length;
+        console.log(`[Scroll Up] New index: ${newIndex}`);
+        console.log(
+          `[Scroll Up] New Workspace ID: ${workspaces[newIndex]._id}`
+        );
+        return newIndex;
+      });
     }
   };
 
   useEffect(() => {
     if (workspaces.length > 0 && workspaces[selectedIndex]) {
       setSelectedWorkspace(workspaces[selectedIndex]._id);
+      console.log("Selected workspace:", workspaces[selectedIndex]._id); // Korrigieren Sie das Logging
     }
   }, [selectedIndex, workspaces]);
 
@@ -92,8 +132,11 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
     if (cubeElement) {
       cubeElement.addEventListener("wheel", handleScroll);
     }
+    // Bereinigung, um sicherzustellen, dass Event-Listener entfernt werden
     return () => {
-      cubeElement.removeEventListener("wheel", handleScroll);
+      if (cubeElement) {
+        cubeElement.removeEventListener("wheel", handleScroll);
+      }
     };
   }, [workspaces]);
 
@@ -144,6 +187,7 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
   const renderFaces = () => {
     const faces = ["front", "back", "top", "bottom"];
     return workspaces.map((workspace, index) => {
+      console.log("Workspace:", workspace);
       const faceIndex = index % faces.length;
       let transform;
 
@@ -167,16 +211,21 @@ const WorkspaceModule = ({ sidebarWidth, setShowWorkspaceOverview }) => {
       const imageUrl = workspace.image
         ? `${baseUrl}${workspace.image.replace(/\\/g, "/")}`
         : defaultImageUrl;
-
-      const handleWorkspaceSelection = (workspaceId) => {
-        // ... bestehende Auswahllogik ...
-        setShowWorkspaceOverview(true); // Zeigen Sie die WorkspaceOverview an, wenn ein Arbeitsbereich ausgewählt wird
-      };
+      console.log(
+        "Workspace ID:",
+        workspace._id,
+        "Image:",
+        workspace.image,
+        "Final image URL:",
+        imageUrl
+      );
+      console.log("Workspace image URL:", imageUrl);
 
       return (
         <div
           className="rounded-md"
           key={workspace.id}
+          onClick={() => handleWorkspaceSelection(workspace.id)}
           style={{
             ...faceStyle,
             transform,

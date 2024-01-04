@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
+import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
 import axios from "axios";
 import Modal from "../VideoModal";
 import VideoApp from "../../Video/VideoApp";
@@ -74,26 +74,24 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     }
   }, [selectedWorkspace]);
 
-  const handleMouseDownOnResizeBar = (e) => {
+  const handleMouseDownOnResizeBar = useCallback((e) => {
     e.preventDefault();
     window.addEventListener("mousemove", onResize);
     window.addEventListener("mouseup", stopResizing);
-  };
+  }, []); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
 
-  const onResize = (e) => {
+  const onResize = useCallback((e) => {
     let newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
-
     newWidth = Math.max(newWidth, MIN_SIDEBAR_WIDTH);
     newWidth = Math.min(newWidth, MAX_SIDEBAR_WIDTH);
-
     setSidebarWidth(newWidth);
     localStorage.setItem("sidebarWidth", newWidth.toString());
-  };
+  }, []); // Sie können Abhängigkeiten hinzufügen, wenn es notwendig ist
 
-  const stopResizing = () => {
+  const stopResizing = useCallback(() => {
     window.removeEventListener("mousemove", onResize);
     window.removeEventListener("mouseup", stopResizing);
-  };
+  }, []); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
 
   const openVideoModal = () => {
     setIsVideoModalOpen(true);
