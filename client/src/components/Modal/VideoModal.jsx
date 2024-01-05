@@ -23,7 +23,6 @@ const Modal = ({ isToggled, children, onClose }) => {
         >
           <motion.div
             className="relative bg-white p-6 rounded shadow m-auto" // Tailwind für .modal-content
-            onClick={(e) => e.stopPropagation()}
             style={{
               width: isExpanded ? "100%" : "auto",
               height: isExpanded ? "100%" : "auto",

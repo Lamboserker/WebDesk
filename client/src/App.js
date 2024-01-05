@@ -17,7 +17,7 @@ const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
 );
 const VideoApp = lazy(() => import("./components/Video/VideoApp"));
-const WorkspaceModal = lazy(() => import("./components/Modal/WorkspaceModal"));
+const WorkspaceModal = lazy(() => import("./components/Modal/CreateWorkspaceModal"));
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,7 +71,7 @@ function App() {
                     }
                   />
                   <Route
-                    path="/workspace-modal"
+                    path="/create-workspace-modal"
                     element={<WorkspaceModalWrapper isLoading={isLoading} />}
                   />
                   <Route path="/my-profile" element={<ProfileMenu />} />

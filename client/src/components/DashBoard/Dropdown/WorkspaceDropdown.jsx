@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
+import WorkspaceSettingsModal from "../../Modal/WorkspaceSettingsModal";
+
 const WorkspaceDropdown = ({ position }) => {
   const style = {
     position: "absolute",
@@ -9,13 +11,14 @@ const WorkspaceDropdown = ({ position }) => {
     zIndex: 100,
     height: "fit-content",
   };
+
   const { selectedWorkspace } = useContext(WorkspaceContext);
   const [workspaceDetails, setWorkspaceDetails] = useState(null);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchWorkspaceDetails = async () => {
-      console.log("Aktuell ausgewählte Workspace ID:", selectedWorkspace);
       if (!selectedWorkspace) {
         setError("Keine Workspace ID ausgewählt");
         return; // Frühzeitige Rückkehr, wenn keine ID vorhanden ist.
@@ -24,16 +27,13 @@ const WorkspaceDropdown = ({ position }) => {
       try {
         const workspaceId = selectedWorkspace;
         const token = localStorage.getItem("userToken");
-        console.log("Verwendetes Token:", token);
 
         const url = `http://localhost:9000/api/workspaces/${workspaceId}`;
-        console.log("Anfrage-URL:", url);
         const response = await axios.get(url, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         setWorkspaceDetails(response.data);
-        console.log("Workspace-Daten:", response.data);
         setError(null); // Fehler zurücksetzen, falls zuvor einer aufgetreten ist.
       } catch (error) {
         console.error(
@@ -50,19 +50,47 @@ const WorkspaceDropdown = ({ position }) => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
-      console.log("Kein Bildpfad verfügbar, verwende Fallback");
-      return "defaultImagePath.jpg";
+      return "https://images.unsplash.com/photo-1702016049560-3d3f27b0071e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
     }
     const imageUrl = `http://localhost:9000/${imagePath}`;
-    console.log("Bild-URL:", imageUrl);
     return imageUrl;
   };
 
+  const handleSettingsClick = (e) => {
+    e.stopPropagation(); // Verhindert, dass das Klick-Event zum document propagiert wird
+    console.log("Settings clicked!");
+    setIsModalOpen(true); // Öffnet das Modal
+  };
+  const closeModal = () => {
+    setIsModalOpen(false); // Schließt das Modal
+  };
+
+  // Event-Handler für das Klicken ins Leere
+  const handleClickOutside = (e) => {
+    if (isModalOpen) {
+      closeModal();
+    }
+  };
+
+  useEffect(() => {
+    // Listener für das Klicken ins Leere hinzufügen
+    document.addEventListener("click", handleClickOutside);
+
+    // Cleanup-Funktion, um den Listener zu entfernen
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isModalOpen]); // Abhängigkeit von isModalOpen, damit der Listener nur existiert, wenn das Modal geöffnet ist
+
   return (
     <div style={style}>
-      <div className="flex items-center justify-center bg-gray-100">
-        <div className="w-full max-w-sm rounded-lg bg-white p-3 drop-shadow-xl divide-y divide-gray-200">
-          <div aria-label="header" className="flex space-x-4 items-center p-4">
+      <div className="flex items-center justify-center bg-white drop-shadow-md px-6">
+        {" "}
+        {/* Erhöhtes horizontales Padding */}
+        <div className="w-full max-w-sm rounded-lg bg-white py-4 px-6 divide-gray-100">
+          {" "}
+          {/* Angepasstes Padding für inneren Container */}
+          <div aria-label="header" className="flex space-x-4 items-center">
             <div
               aria-label="avatar"
               className="flex mr-auto items-center space-x-4"
@@ -75,10 +103,10 @@ const WorkspaceDropdown = ({ position }) => {
                     alt={`Avatar of ${workspaceDetails.name || "Workspace"}`}
                     className="w-16 h-16 shrink-0 rounded-full"
                   />
-                  <div className="space-y-2 flex flex-col flex-1 truncate">
+                  <div className="space-y-2 flex flex-col flex-1">
                     <div className="font-medium relative text-xl leading-tight text-gray-900">
                       <span className="flex">
-                        <span className="truncate relative pr-8">
+                        <span className="whitespace-normal break-words max-w-xs">
                           {workspaceDetails.name || "Workspace Name"}
                           <span
                             aria-label="verified"
@@ -121,23 +149,6 @@ const WorkspaceDropdown = ({ position }) => {
                 <p>Lade Workspace-Daten...</p>
               )}
             </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-              className="w-6 h-6 text-gray-400 shrink-0"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <path d="M8 9l4 -4l4 4"></path>
-              <path d="M16 15l-4 4l-4 -4"></path>
-            </svg>
           </div>
           <div aria-label="navigation" className="py-2">
             <nav className="grid gap-1">
@@ -162,7 +173,7 @@ const WorkspaceDropdown = ({ position }) => {
                   <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
                   <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
                 </svg>
-                <span>Account Settings</span>
+                <span>User Settings</span>
               </a>
               <a
                 href="/"
@@ -189,8 +200,8 @@ const WorkspaceDropdown = ({ position }) => {
                 </svg>
                 <span>Integrations</span>
               </a>
-              <a
-                href="/"
+              <button
+                onClick={handleSettingsClick}
                 className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
@@ -210,8 +221,11 @@ const WorkspaceDropdown = ({ position }) => {
                   <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
                   <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
                 </svg>
-                <span>Settings</span>
-              </a>
+                <span>Workspace Settings</span>
+              </button>
+
+              <WorkspaceSettingsModal isToggled={isModalOpen} />
+
               <a
                 href="/"
                 className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
@@ -259,7 +273,7 @@ const WorkspaceDropdown = ({ position }) => {
                   <path d="M12 16v.01"></path>
                   <path d="M12 13a2 2 0 0 0 .914 -3.782a1.98 1.98 0 0 0 -2.414 .483"></path>
                 </svg>
-                <span>Helper Center</span>
+                <span>Get Help</span>
               </a>
             </nav>
           </div>
@@ -280,32 +294,6 @@ const WorkspaceDropdown = ({ position }) => {
                 Upgrade
               </button>
             </div>
-          </div>
-          <div aria-label="footer" className="pt-2">
-            <button
-              type="button"
-              className="flex items-center space-x-3 py-3 px-4 w-full leading-6 text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
-                className="w-7 h-7"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path>
-                <path d="M9 12h12l-3 -3"></path>
-                <path d="M18 15l3 -3"></path>
-              </svg>
-              <span>Logout</span>
-            </button>
           </div>
         </div>
       </div>

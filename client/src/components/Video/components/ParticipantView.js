@@ -249,7 +249,7 @@ export const CornerDisplayName = ({
         <div>
           <div
             onClick={(e) => {
-              e.stopPropagation();
+              
             }}
             className="absolute top-2 right-2 rounded-md  p-2 cursor-pointer "
           >
@@ -267,7 +267,7 @@ export const CornerDisplayName = ({
                           : "#FF5D5D",
                     }}
                     onClick={(e) => {
-                      e.stopPropagation();
+                      
                       const rect = e.target.getBoundingClientRect();
                       setCoords({
                         left: Math.round(rect.x + rect.width / 2),
@@ -339,7 +339,7 @@ export const CornerDisplayName = ({
                               <button
                                 className="cursor-pointer text-white hover:bg-[#ffffff33] rounded-full px-1 text-center"
                                 onClick={(e) => {
-                                  e.stopPropagation();
+                                  
                                   close();
                                 }}
                               >

@@ -1,6 +1,12 @@
-import React, { useState, useEffect, useRef, useContext, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
 import axios from "axios";
-import Modal from "../VideoModal";
+import Modal from "../../Modal/VideoModal";
 import VideoApp from "../../Video/VideoApp";
 import WorkspaceModule from "../Dropdown/WorkspaceModule";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +31,6 @@ import {
 import "../../styles/dashboard.css";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 import CreateChannel from "../../Popup/CreateChannel";
-import WorkspaceOverview from "../Dropdown/WorkspaceOverview";
 import WorkspaceDropdown from "../Dropdown/WorkspaceDropdown";
 import io from "socket.io-client";
 
@@ -315,15 +320,18 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   };
 
   const handleOutsideClick = (event) => {
-    if (workspaceRef.current && !workspaceRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
+    const modalElement = document.getElementById("workspaceSettingsModal"); // Stellen Sie sicher, dass dieses ID in Ihrer WorkspaceSettingsModal Komponente vorhanden ist
+    if (modalElement && !modalElement.contains(event.target)) {
+      setIsDropdownOpen(false); // Oder eine andere Methode, um das Modal zu schließen
     }
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleOutsideClick, true);
+    // Fügen Sie den Event-Listener hinzu
+    document.addEventListener("click", handleOutsideClick);
+    // Entfernen Sie den Event-Listener beim Cleanup
     return () => {
-      document.removeEventListener("click", handleOutsideClick, true);
+      document.removeEventListener("click", handleOutsideClick);
     };
   }, []);
 
@@ -365,7 +373,12 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
               setShowWorkspaceOverview={setShowWorkspaceOverview}
             />
           </div>
-          {isDropdownOpen && <WorkspaceDropdown position={dropdownPosition} />}
+          {isDropdownOpen && (
+            <WorkspaceDropdown
+              id="workspaceDropdown"
+              position={dropdownPosition}
+            />
+          )}
           {/* Primary Navigation */}
           <ul className="flex flex-col py-4 space-y-1">
             <li>
