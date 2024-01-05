@@ -17,7 +17,9 @@ const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
 );
 const VideoApp = lazy(() => import("./components/Video/VideoApp"));
-const WorkspaceModal = lazy(() => import("./components/Modal/CreateWorkspaceModal"));
+const WorkspaceModal = lazy(() =>
+  import("./components/Modal/CreateWorkspaceModal")
+);
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
