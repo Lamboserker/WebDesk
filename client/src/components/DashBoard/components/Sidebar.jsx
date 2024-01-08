@@ -56,6 +56,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const { selectedWorkspace, setSelectedWorkspace, workspaces } =
     useContext(WorkspaceContext);
   const sidebarRef = useRef(null);
+  const triggerRef = useRef(null);
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
   let navigate = useNavigate();
 
@@ -106,7 +107,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsVideoModalOpen(false);
   };
 
-  const handleChannelClick = (channel) => {
+  const handleChannelClick = (channel, e) => {
+    e.stopPropagation();
     setActiveChannel(channel);
     if (window.innerWidth < 768) {
       setIsMobileSidebarOpen(false);
@@ -256,7 +258,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     navigate("/user-profile");
   };
 
-  const handleVideoIconClick = () => {
+  const handleVideoIconClick = (e) => {
+    e.stopPropagation();
     setIsVideoModalOpen(true);
   };
 
@@ -313,13 +316,15 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   };
 
   const handleWorkspaceClick = (event) => {
+    event.stopPropagation();
     const x = event.clientX; // X-Koordinate des Klicks
     const y = event.clientY; // Y-Koordinate des Klicks
     setDropdownPosition({ x, y });
-    setIsDropdownOpen(true);
+    setIsDropdownOpen(!isDropdownOpen);
   };
 
   const handleOutsideClick = (event) => {
+    event.stopPropagation();
     const modalElement = document.getElementById("workspaceSettingsModal"); // Stellen Sie sicher, dass dieses ID in Ihrer WorkspaceSettingsModal Komponente vorhanden ist
     if (modalElement && !modalElement.contains(event.target)) {
       setIsDropdownOpen(false); // Oder eine andere Methode, um das Modal zu schließen
@@ -377,6 +382,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
             <WorkspaceDropdown
               id="workspaceDropdown"
               position={dropdownPosition}
+              triggerRef={triggerRef}
             />
           )}
           {/* Primary Navigation */}

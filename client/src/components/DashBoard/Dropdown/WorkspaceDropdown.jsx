@@ -1,9 +1,16 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
+import { createPortal } from "react-dom";
 import axios from "axios";
 import { WorkspaceContext } from "../../../Context/WorkspaceContext";
 import WorkspaceSettingsModal from "../../Modal/WorkspaceSettingsModal";
 
-const WorkspaceDropdown = ({ position }) => {
+const WorkspaceDropdown = ({ position, triggerRef }) => {
   const style = {
     position: "absolute",
     top: `${position.y}px`,
@@ -16,6 +23,14 @@ const WorkspaceDropdown = ({ position }) => {
   const [workspaceDetails, setWorkspaceDetails] = useState(null);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // open dropdown
+  const openDropdown = useCallback(() => {
+    console.log("openDropdown aufgerufen, isOpen Status:", isOpen);
+    setIsOpen((prevIsOpen) => !prevIsOpen); // Toggle the state for demonstration
+  }, [isOpen]);
 
   useEffect(() => {
     const fetchWorkspaceDetails = async () => {
@@ -34,6 +49,7 @@ const WorkspaceDropdown = ({ position }) => {
         });
 
         setWorkspaceDetails(response.data);
+      
         setError(null); // Fehler zurücksetzen, falls zuvor einer aufgetreten ist.
       } catch (error) {
         console.error(
@@ -58,32 +74,46 @@ const WorkspaceDropdown = ({ position }) => {
 
   const handleSettingsClick = (e) => {
     e.stopPropagation(); // Verhindert, dass das Klick-Event zum document propagiert wird
-    console.log("Settings clicked!");
     setIsModalOpen(true); // Öffnet das Modal
   };
-  const closeModal = () => {
-    setIsModalOpen(false); // Schließt das Modal
-  };
 
-  // Event-Handler für das Klicken ins Leere
-  const handleClickOutside = (e) => {
-    if (isModalOpen) {
-      closeModal();
+  const handleClickOutside = (event) => {
+    console.log(
+      "handleClickOutside aufgerufen, isOpen:",
+      isOpen,
+      "isModalOpen:",
+      isModalOpen
+    );
+    if (
+      dropdownRef.current &&
+      isOpen &&
+      !dropdownRef.current.contains(event.target) &&
+      !isModalOpen
+    ) {
+      console.log("Bedingungen erfüllt, Dropdown wird geschlossen");
+      setIsOpen(false);
     }
   };
 
   useEffect(() => {
-    // Listener für das Klicken ins Leere hinzufügen
-    document.addEventListener("click", handleClickOutside);
-
-    // Cleanup-Funktion, um den Listener zu entfernen
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isModalOpen]); // Abhängigkeit von isModalOpen, damit der Listener nur existiert, wenn das Modal geöffnet ist
+  }, [isOpen, isModalOpen]); // Abhängigkeiten direkt hier einfügen
+
+  useEffect(() => {
+    if (triggerRef && triggerRef.current) {
+      const triggerElement = triggerRef.current;
+      triggerElement.addEventListener("click", openDropdown);
+      return () => {
+        triggerElement.removeEventListener("click", openDropdown);
+      };
+    }
+  }, [triggerRef, openDropdown]);
 
   return (
-    <div style={style}>
+    <div ref={dropdownRef} style={style} onClick={(e) => e.stopPropagation()}>
       <div className="flex items-center justify-center bg-white drop-shadow-md px-6">
         {" "}
         {/* Erhöhtes horizontales Padding */}
@@ -224,8 +254,15 @@ const WorkspaceDropdown = ({ position }) => {
                 <span>Workspace Settings</span>
               </button>
 
-              <WorkspaceSettingsModal isToggled={isModalOpen} />
-
+              {isModalOpen &&
+                createPortal(
+                  <WorkspaceSettingsModal
+                    isToggled={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    workspaceDetails={workspaceDetails}
+                  />,
+                  document.body // Modal wird am Ende des `body`-Elements gerendert
+                )}
               <a
                 href="/"
                 className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"

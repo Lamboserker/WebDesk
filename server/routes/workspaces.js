@@ -61,6 +61,46 @@ router.post("/create", upload.single("workspaceImages"), async (req, res) => {
   }
 });
 
+// update a Workspace
+router.put("/:workspaceId/update", async (req, res) => {
+  try {
+    const workspaceId = req.params.workspaceId;
+    const { name, description, image } = req.body; // Die zu aktualisierenden Daten
+
+    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return res.status(400).send("Ungültige Workspace-ID");
+    }
+
+    // Überprüfen, ob mindestens ein Wert zum Aktualisieren vorhanden ist
+    if (!name && !description && !image) {
+      return res
+        .status(400)
+        .send("Keine aktualisierbaren Daten bereitgestellt");
+    }
+
+    // Konstruieren eines Objekts für die zu aktualisierenden Daten
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (description) updateData.description = description;
+    if (image) updateData.image = image;
+
+    const updatedWorkspace = await Workspace.findByIdAndUpdate(
+      workspaceId,
+      updateData,
+      { new: true } // Gibt das aktualisierte Dokument zurück
+    );
+
+    if (!updatedWorkspace) {
+      return res.status(404).send("Workspace nicht gefunden");
+    }
+
+    res.json(updatedWorkspace);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Fehler beim Aktualisieren des Workspaces");
+  }
+});
+
 //show all members of the workspace
 router.get("/:workspaceId/users", async (req, res) => {
   try {
@@ -158,7 +198,6 @@ router.get("/:workspaceId", async (req, res) => {
 
     if (!workspace) {
       return res.status(404).send("Workspace nicht gefunden");
-
     }
 
     res.json(workspace);
@@ -173,8 +212,6 @@ router.get("/:workspaceId", async (req, res) => {
     res.status(500).send("Serverfehler beim Abrufen des Workspaces");
   }
 });
-
-
 
 // delete a workspace
 
@@ -221,7 +258,9 @@ router.post("/:workspaceId/create-channel", async (req, res) => {
   }
 
   if (
-    !["textChannel", "voiceChannel", "forum", "announcement", "stage"].includes(type)
+    !["textChannel", "voiceChannel", "forum", "announcement", "stage"].includes(
+      type
+    )
   ) {
     return res.status(400).send("Invalid channel type");
   }
@@ -266,15 +305,15 @@ router.post("/:workspaceId/create-channel", async (req, res) => {
         // Weitere spezifische Eigenschaften für Announcement-Channels
       });
       break;
-      case "stage":
-        // Logik für die Erstellung eines Stage-Channels
-        newChannel = new Channel({
-          name,
-          type,
-          workspaceId: workspaceId,
-          // Weitere spezifische Eigenschaften für Stage-Channels
-        });
-        break;
+    case "stage":
+      // Logik für die Erstellung eines Stage-Channels
+      newChannel = new Channel({
+        name,
+        type,
+        workspaceId: workspaceId,
+        // Weitere spezifische Eigenschaften für Stage-Channels
+      });
+      break;
     default:
       return res.status(400).send("Unbekannter Channel-Typ");
   }

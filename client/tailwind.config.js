@@ -25,6 +25,12 @@ export default withMT({
       pink: colors.pink,
     },
     extend: {
+      zIndex: {
+        150: "150",
+        200: "200",
+        250: "250",
+        300: "300",
+      },
       fontFamily: {
         lato: ["lato", "sans-serif"],
         sans: [
