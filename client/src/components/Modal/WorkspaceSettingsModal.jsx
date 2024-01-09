@@ -8,24 +8,64 @@ import {
   faDownLeftAndUpRightToCenter,
 } from "@fortawesome/free-solid-svg-icons";
 import { WorkspaceContext } from "../../Context/WorkspaceContext";
-import { set } from "mongoose";
-const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
+const WorkspaceSettingsModal = ({
+  isToggled,
+  onClose,
+  workspaceDetails = {},
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [newName, setNewName] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newImage, setNewImage] = useState(null);
-  const [workspaceData, setWorkspaceData] = useState({
-    name: "",
-    description: "",
-    image: "",
-  });
-  const [workspaceImage, setWorkspaceImage] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [workspaceData, setWorkspaceData] = useState(
+    workspaceDetails || {
+      name: "",
+      description: "",
+      image: "",
+    }
+  );
   const { selectedWorkspace } = useContext(WorkspaceContext);
+  const [alertState, setAlertState] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
+  const displayData = isLoading ? workspaceDetails : workspaceData;
+
+  const getAlertStyle = (type) => {
+    let backgroundColor;
+    switch (type) {
+      case "success":
+        backgroundColor = "#4CAF50"; // Grün
+        break;
+      case "error":
+        backgroundColor = "#f44336"; // Rot
+        break;
+      case "warning":
+        backgroundColor = "#ff9800"; // Orange
+        break;
+      default:
+        backgroundColor = "#2196F3"; // Blau
+    }
+    return {
+      position: "fixed",
+      top: "20px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      backgroundColor,
+      color: "white",
+      padding: "10px",
+      borderRadius: "5px",
+      boxShadow: "0px 2px 10px rgba(0, 0, 0, 0.3)",
+      zIndex: 1000,
+    };
+  };
 
   // useEffect, um die aktuellen Workspace-Daten beim Laden der Komponente abzurufen
   useEffect(() => {
-    async function fetchWorkspace() {
+    const fetchWorkspace = async () => {
+      setIsLoading(true); //Beginn des Ladens
       const workspaceId = selectedWorkspace;
       const token = localStorage.getItem("userToken");
       try {
@@ -36,16 +76,18 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
           }
         );
         setWorkspaceData(response.data);
+        setIsLoading(false); // Ende des Ladens falls ein Fehler auftritt
       } catch (error) {
         console.error("Fehler beim Abrufen des Workspaces", error);
       }
-    }
+    };
 
     fetchWorkspace();
   }, [selectedWorkspace]);
 
   // Funktion, um Workspace-Details zu aktualisieren
   const updateWorkspaceDetails = async () => {
+    setIsLoading(true);
     try {
       const workspaceId = selectedWorkspace;
       const token = localStorage.getItem("userToken");
@@ -65,18 +107,20 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
       });
 
       if (response.status === 200) {
+        // Aktualisieren Sie workspaceData mit der Antwort vom Backend
         setWorkspaceData(response.data.updatedWorkspace);
-
-        alert("Workspace erfolgreich aktualisiert!");
+        showAlert("Workspace erfolgreich aktualisiert!", "success");
       } else {
-        alert("Fehler beim Aktualisieren des Workspace!");
+        showAlert("Fehler beim Aktualisieren des Workspace!", "error");
       }
+      setIsLoading(false);
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Workspace", error);
-
-      alert("Fehler beim Aktualisieren des Workspace!");
+      showAlert("Fehler beim Aktualisieren des Workspace!", "error");
+      setIsLoading(false);
     }
   };
+
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
       return "https://picsum.photos/200"; // Standardbild
@@ -120,7 +164,6 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
         formData.append("description", newDescription);
       }
       updateWorkspaceDetails(formData); // Implement this function to update workspace details in your backend
-      setIsModalOpen(false);
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Workspace", error);
       // Handhaben Sie hier Fehler, z.B. indem Sie eine Fehlermeldung anzeigen
@@ -128,13 +171,28 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
   };
 
   const handleGenerateInviteLink = () => {
-    const link = generateInviteLink(); // Implement this function to generate a personal invite link
-    navigator.clipboard.writeText(link); // Copy link to clipboard
+    const link = generateInviteLink();
+    navigator.clipboard
+      .writeText(link)
+      .then(() => {
+        showAlert(`Einladungslink kopiert: ${link}`, "success");
+      })
+      .catch((err) => {
+        console.error("Fehler beim Kopieren des Links: ", err);
+        showAlert("Fehler beim Kopieren des Einladungslinks!", "error");
+      });
+  };
+
+  const showAlert = (message) => {
+    setAlertState({ show: true, message });
+    setTimeout(() => setAlertState({ show: false, message: "" }), 3000);
   };
 
   return (
     <AnimatePresence>
-      {isToggled && (
+      {isLoading ? (
+        <div>Laden...</div>
+      ) : isToggled ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -154,15 +212,14 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
             <div
               className="bg-cover bg-no-repeat bg-center rounded-t-xl p-4 text-white font-bold flex items-center justify-center"
               style={{
-                backgroundImage: `url(${getImageUrl(workspaceDetails.image)})`,
+                backgroundImage: `url(${getImageUrl(displayData?.image)})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center top",
-                height: isExpanded ? "300px" : "200px", // Höhere Bildhöhe, wenn expandiert
+                height: isExpanded ? "300px" : "200px",
               }}
             >
-              {console.log("Image is: ", workspaceDetails.image)}
               <div className="bg-black bg-opacity-60 w-full text-center py-2 rounded">
-                {workspaceDetails?.name || "Workspace Name"}
+                {displayData?.name || "Workspace Name"}
               </div>
             </div>
 
@@ -172,7 +229,7 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
                 Description:
               </div>
               <p className="text-gray-600">
-                {workspaceDetails?.description || "No description available."}
+                {displayData?.description || "No description available."}
               </p>
 
               {/* Form for updating Workspace Details */}
@@ -180,7 +237,7 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
                 <div>
                   <label className="block text-gray-700">Workspace Name:</label>
                   <input
-                    placeholder={workspaceData.name}
+                    placeholder={displayData?.name}
                     type="text"
                     value={newName}
                     onChange={handleNameChange}
@@ -193,7 +250,7 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
                     Workspace Description:
                   </label>
                   <textarea
-                    placeholder={workspaceData.description}
+                    placeholder={displayData?.description}
                     value={newDescription}
                     onChange={handleDescriptionChange}
                     className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-luckyPoint-600 focus:border-luckyPoint-300"
@@ -262,6 +319,10 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
             </button>
           </motion.div>
         </motion.div>
+      ) : null}
+
+      {alertState.show && (
+        <div style={getAlertStyle(alertState.type)}>{alertState.message}</div>
       )}
     </AnimatePresence>
   );

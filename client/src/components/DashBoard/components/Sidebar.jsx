@@ -108,6 +108,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   };
 
   const handleChannelClick = (channel, e) => {
+    socket.current.emit("markAsRead", channel);
     setActiveChannel(channel);
     if (window.innerWidth < 768) {
       setIsMobileSidebarOpen(false);
@@ -124,7 +125,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
     // Event Listener für neue Nachrichten
     socket.current.on("newMessage", (message) => {
-      // Angenommen, `message` hat die Eigenschaften `channelId` und `count`
+      // Aktualisierung der Nachrichtenzählung für einen bestimmten Channel
       setNewMessagesCount((prevCounts) => ({
         ...prevCounts,
         [message.channelId]:
@@ -132,9 +133,21 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       }));
     });
 
+    // Separater Event Listener für Benachrichtigungen über neue Nachrichten
+    socket.current.on("newMessageNotification", (channelId) => {
+      setNewMessagesCount((prevCounts) => ({
+        ...prevCounts,
+        [channelId]: (prevCounts[channelId] || 0) + 1,
+      }));
+    });
+
     // Aufräumen bei Unmount
     return () => {
-      socket.current.disconnect();
+      if (socket.current) {
+        socket.current.off("newMessage");
+        socket.current.off("newMessageNotification");
+        socket.current.disconnect();
+      }
     };
   }, []);
 
@@ -536,6 +549,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                       className="truncate text-black dark:text-luckyPoint-200 hover:text-luckyPoint-700"
                     >
                       {channel.name}
+                      {newMessagesCount[channel._id] > 0 && (
+                        <span className="notification-badge">
+                          {newMessagesCount[channel._id]}
+                        </span>
+                      )}
                     </button>
                   </div>
                 </div>
