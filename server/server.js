@@ -78,17 +78,15 @@ io.on("connection", (socket) => {
         await message.save();
 
         io.to(`channel_${channelId}`).emit("newMessage", message);
-        socket.to(`channel_${channelId}`).emit("newMessageNotification", channelId);
+        socket
+          .to(`channel_${channelId}`)
+          .emit("newMessageNotification", channelId);
       } catch (error) {
         console.error("Fehler beim Senden der Nachricht:", error);
       }
     }
   );
-
-  
 });
-
-
 
 const port = process.env.PORT || 9000;
 httpServer.listen(port, () => console.log(`Server läuft auf Port ${port}`));

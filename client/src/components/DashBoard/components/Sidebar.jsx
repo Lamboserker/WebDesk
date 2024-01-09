@@ -125,7 +125,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
     // Event Listener für neue Nachrichten
     socket.current.on("newMessage", (message) => {
-      // Aktualisierung der Nachrichtenzählung für einen bestimmten Channel
+      console.log("New message received:", message);
       setNewMessagesCount((prevCounts) => ({
         ...prevCounts,
         [message.channelId]:
@@ -133,8 +133,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       }));
     });
 
-    // Separater Event Listener für Benachrichtigungen über neue Nachrichten
     socket.current.on("newMessageNotification", (channelId) => {
+      console.log("New message notification for channel:", channelId);
       setNewMessagesCount((prevCounts) => ({
         ...prevCounts,
         [channelId]: (prevCounts[channelId] || 0) + 1,
