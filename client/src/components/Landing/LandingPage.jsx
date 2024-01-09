@@ -60,8 +60,8 @@ const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen  max-w-screen">
-      <div className="bg-luckyPoint-200 h-screen ">
+    <div className="relative min-h-screen  max-w-screen antialiased bg-gray-100">
+      <div className="bg-transparent h-screen ">
         <header className="absolute inset-x-0 top-0 z-50">
           <Banner />
           <nav
@@ -72,8 +72,8 @@ const LandingPage = () => {
               <a href="/" className="-m-1.5 p-1.5">
                 <span className="sr-only">WebDesk</span>
                 <img
-                  className="h-32 w-32 "
-                  src="https://cdn.discordapp.com/attachments/1185665614086426674/1185669662676095066/iSi_iSi__1_-removebg-preview.png?ex=659073ec&is=657dfeec&hm=6d1b220e9702faf4d57e87690face9bfdb86ef8a698f9d524af577a4d6900b9d&"
+                  className="h-full w-full "
+                  src="https://cdn.discordapp.com/attachments/1185665614086426674/1194230093527130162/WebDesk__2___1_-removebg-preview.png?ex=65af9872&is=659d2372&hm=b5514c628bb56612b2ad214dcb0efa6b97cb88f5f264d187f528d993b121eb1d&"
                   alt=""
                 />
               </a>
@@ -115,7 +115,7 @@ const LandingPage = () => {
             onClose={setMobileMenuOpen}
           >
             <div className="fixed inset-0 z-50" />
-            <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-luckyPoint-200 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-luckyPoint-900/10">
+            <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-100 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-luckyPoint-900/10">
               <div className="flex items-center justify-between">
                 <a href="/" className="-m-1.5 p-1.5">
                   <span className="sr-only">WebDesk</span>
@@ -177,7 +177,7 @@ const LandingPage = () => {
             />
           </div>
           <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-            <div className="hidden sm:mb-8 sm:flex sm:justify-center">
+            {/* <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/60">
                 Announcing our next round of funding.{" "}
                 <a href="/" className="font-semibold text-luckyPoint-600">
@@ -185,12 +185,19 @@ const LandingPage = () => {
                   Read more <span aria-hidden="true">&rarr;</span>
                 </a>
               </div>
-            </div>
-            <div className="text-center">
-              <h1 className="text-4xl font-bold tracking-tight text-black sm:text-6xl">
-                WebDesk: Revolutionize Your Team Collaboration
-              </h1>
-              <p className="mt-6 text-lg leading-8 text-luckyPoint-500">
+            </div> */}
+            <div className="relative flex flex-col justify-center  overflow-hidden">
+              <div className="w-full max-w-5xl mx-auto px-4 md:px-6 py-16">
+                <div className="text-center space-y-20">
+                  <h1 className="text-6xl md:text-9xl font-extrabold bg-clip-text text-transparent bg-[linear-gradient(to_right,#818cf8,#e0e7ff,#38bdf8,#e879f9,#38bdf8,#e0e7ff,#818cf8)] bg-[length:200%_auto] animate-gradient">
+                    WebDesk:
+                  </h1>
+                </div>
+              </div>
+              <h2 className="text-4xl font-bold tracking-tight text-black sm:text-6xl">
+                Revolutionize Your Team Collaboration
+              </h2>
+              <p className="mt-6 text-lg leading-8 text-slate-500">
                 Integrate video chats, collaborative workspaces, and direct
                 GitHub repository access in one seamless platform
               </p>
@@ -225,7 +232,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      <div className="bg-white py-24 sm:py-32 lg:h-screen sm:h-full">
+      <div className="bg-gray-100 py-24 sm:py-32 lg:h-screen sm:h-full">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <motion.div
@@ -263,7 +270,7 @@ const LandingPage = () => {
                       </div>
                       {feature.name}
                     </dt>
-                    <dd className="mt-2 text-base leading-7 text-luckyPoint-500">
+                    <dd className="mt-2 text-base leading-7 text-slate-500">
                       {feature.description}
                     </dd>
                   </div>

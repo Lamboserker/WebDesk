@@ -51,7 +51,14 @@ export default withMT({
         ],
         mono: ["Source Code Pro", "Menlo", "monospace"],
       },
-
+      animation: {
+        'gradient': 'gradient 8s linear infinite',
+    },
+    keyframes: {
+        'gradient': {
+            to: { 'background-position': '200% center' },
+        },
+    },
       colors: {
         luckyPoint: {
           50: "#f4f6fe",

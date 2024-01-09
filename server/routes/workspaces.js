@@ -57,47 +57,46 @@ router.post("/create", upload.single("workspaceImages"), async (req, res) => {
     console.error(error);
     res
       .status(500)
-      .send("Fehler beim Erstellen des Workspaces: " + error.message);
+      .send("error at creating workspace: " + error.message);
   }
 });
 
 // update a Workspace
-router.put("/:workspaceId/update", async (req, res) => {
+router.put("/:workspaceId/update", upload.single("image"), async (req, res) => {
   try {
     const workspaceId = req.params.workspaceId;
-    const { name, description, image } = req.body; // Die zu aktualisierenden Daten
+    const { name, description } = req.body; // Die zu aktualisierenden Daten
+    let image;
 
-    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
-      return res.status(400).send("Ungültige Workspace-ID");
+    if (req.file) {
+      image = req.file.path; // Pfad des hochgeladenen Bildes, wenn vorhanden
     }
 
-    // Überprüfen, ob mindestens ein Wert zum Aktualisieren vorhanden ist
-    if (!name && !description && !image) {
-      return res
-        .status(400)
-        .send("Keine aktualisierbaren Daten bereitgestellt");
+    if (!mongoose.Types.ObjectId.isValid(workspaceId)) {
+      return res.status(400).send("invalid workspaceId");
     }
 
     // Konstruieren eines Objekts für die zu aktualisierenden Daten
     const updateData = {};
     if (name) updateData.name = name;
     if (description) updateData.description = description;
-    if (image) updateData.image = image;
+    if (image) updateData.image = image; // Fügen Sie das Bild nur hinzu, wenn es vorhanden ist
 
     const updatedWorkspace = await Workspace.findByIdAndUpdate(
       workspaceId,
-      updateData,
+      { $set: updateData },
       { new: true } // Gibt das aktualisierte Dokument zurück
     );
 
     if (!updatedWorkspace) {
-      return res.status(404).send("Workspace nicht gefunden");
+      return res.status(404).send("workspace not found");
     }
 
+    console.log("Updated workspace data:", updatedWorkspace); // Logging für Debugging-Zwecke
     res.json(updatedWorkspace);
   } catch (error) {
     console.error(error);
-    res.status(500).send("Fehler beim Aktualisieren des Workspaces");
+    res.status(500).send("Error at updating workspace");
   }
 });
 

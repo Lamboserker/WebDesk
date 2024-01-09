@@ -108,7 +108,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   };
 
   const handleChannelClick = (channel, e) => {
-    e.stopPropagation();
     setActiveChannel(channel);
     if (window.innerWidth < 768) {
       setIsMobileSidebarOpen(false);

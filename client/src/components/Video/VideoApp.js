@@ -7,6 +7,7 @@ import { LeaveScreen } from "./components/screens/LeaveScreen";
 import { JoiningScreen } from "./components/screens/JoiningScreen";
 import axios from "axios";
 import { createMeeting, getToken } from "./api";
+import "./styles/video.css";
 
 function VideoApp(channelId) {
   const [token, setToken] = useState("");

@@ -12,7 +12,8 @@ import { WorkspaceProvider } from "./Context/WorkspaceContext";
 import Loading from "./components/Loading/Loading"; // Bestätigen Sie den Pfad zur Loading-Komponente
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { FullScreenProvider } from "./Context/FullscreenContext";
-// Lazy loading for components
+import NotFound from "./components/NotFound/NotFound";
+
 const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
 );
@@ -25,19 +26,15 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Bestimmen Sie das Dunkle/Helle Thema
     checkDarkMode();
 
-    // Setzen Sie isLoading nach 2 Sekunden auf false
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 4000);
 
-    // Bereinigen Sie den Timer, wenn die Komponente unmountet wird
     return () => clearTimeout(timer);
   }, []);
 
-  // Eine generische Ladekomponente für alle Pfade
   const loadingComponent = <Loading />;
   const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   const renderLoading = () => {
@@ -77,6 +74,8 @@ function App() {
                     element={<WorkspaceModalWrapper isLoading={isLoading} />}
                   />
                   <Route path="/my-profile" element={<ProfileMenu />} />
+
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
             </div>

@@ -45,33 +45,38 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
   }, [selectedWorkspace]);
 
   // Funktion, um Workspace-Details zu aktualisieren
-  const updateWorkspaceDetails = async (dataToUpdate) => {
+  const updateWorkspaceDetails = async () => {
     try {
       const workspaceId = selectedWorkspace;
       const token = localStorage.getItem("userToken");
       const url = `http://localhost:9000/api/workspaces/${workspaceId}/update`;
 
       const requestData = {
-        // Fügen Sie hier die zu aktualisierenden Felder hinzu
         name: newName,
         description: newDescription,
-        image: newImage, // Wenn Sie das Bild aktualisieren möchten, übergeben Sie hier den Dateinamen oder Pfad
+        image: newImage,
       };
 
       const response = await axios.put(url, requestData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // Setzen Sie den Content-Type auf JSON
+          "Content-Type": "application/json",
         },
       });
 
-      // Aktualisieren Sie hier den lokalen Zustand oder den Kontext mit den neuen Workspace-Details
+      if (response.status === 200) {
+        setWorkspaceData(response.data.updatedWorkspace);
+
+        alert("Workspace erfolgreich aktualisiert!");
+      } else {
+        alert("Fehler beim Aktualisieren des Workspace!");
+      }
     } catch (error) {
       console.error("Fehler beim Aktualisieren des Workspace", error);
-      // Handhaben Sie hier Fehler, z.B. indem Sie eine Fehlermeldung anzeigen
+
+      alert("Fehler beim Aktualisieren des Workspace!");
     }
   };
-
   const getImageUrl = (imagePath) => {
     if (!imagePath) {
       return "https://picsum.photos/200"; // Standardbild
@@ -103,25 +108,24 @@ const WorkspaceSettingsModal = ({ isToggled, onClose, workspaceDetails }) => {
   };
 
   const handleSaveChanges = () => {
-    try{
-    const formData = new FormData();
-    if (newImage) {
-      formData.append("image", newImage);
+    try {
+      const formData = new FormData();
+      if (newImage) {
+        formData.append("image", newImage);
+      }
+      if (newName) {
+        formData.append("name", newName);
+      }
+      if (newDescription) {
+        formData.append("description", newDescription);
+      }
+      updateWorkspaceDetails(formData); // Implement this function to update workspace details in your backend
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren des Workspace", error);
+      // Handhaben Sie hier Fehler, z.B. indem Sie eine Fehlermeldung anzeigen
     }
-    if (newName) {
-      formData.append("name", newName);
-    }
-    if (newDescription) {
-      formData.append("description", newDescription);
-    }
-    updateWorkspaceDetails(formData); // Implement this function to update workspace details in your backend
-    setIsModalOpen(false);
-  } catch (error) {
-    console.error("Fehler beim Aktualisieren des Workspace", error);
-    // Handhaben Sie hier Fehler, z.B. indem Sie eine Fehlermeldung anzeigen
-  }
   };
-  
 
   const handleGenerateInviteLink = () => {
     const link = generateInviteLink(); // Implement this function to generate a personal invite link

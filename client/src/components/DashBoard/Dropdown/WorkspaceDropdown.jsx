@@ -49,7 +49,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
         });
 
         setWorkspaceDetails(response.data);
-      
+
         setError(null); // Fehler zurücksetzen, falls zuvor einer aufgetreten ist.
       } catch (error) {
         console.error(
@@ -114,11 +114,8 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
 
   return (
     <div ref={dropdownRef} style={style} onClick={(e) => e.stopPropagation()}>
-      <div className="flex items-center justify-center bg-white drop-shadow-md px-6">
-        {" "}
-        {/* Erhöhtes horizontales Padding */}
-        <div className="w-full max-w-sm rounded-lg bg-white py-4 px-6 divide-gray-100">
-          {" "}
+      <div className="flex items-center justify-center bg-white dark:bg-luckyPoint-600 drop-shadow-md px-6 rounded-md">
+        <div className="w-full max-w-sm rounded-lg bg-white dark:bg-luckyPoint-600  py-4 px-6 divide-gray-100">
           {/* Angepasstes Padding für inneren Container */}
           <div aria-label="header" className="flex space-x-4 items-center">
             <div
@@ -134,7 +131,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                     className="w-16 h-16 shrink-0 rounded-full"
                   />
                   <div className="space-y-2 flex flex-col flex-1">
-                    <div className="font-medium relative text-xl leading-tight text-gray-900">
+                    <div className="font-medium relative text-xl leading-tight text-gray-900 dark:text-white">
                       <span className="flex">
                         <span className="whitespace-normal break-words max-w-xs">
                           {workspaceDetails.name || "Workspace Name"}
@@ -145,7 +142,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               aria-hidden="true"
-                              className="w-6 h-6 ml-1 text-cyan-400"
+                              className="w-6 h-6 ml-1 text-cyan-400 dark:text-blue-300"
                               width="24"
                               height="24"
                               viewBox="0 0 24 24"
@@ -170,7 +167,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                         </span>
                       </span>
                     </div>
-                    <p className="font-normal text-base leading-tight text-gray-500 truncate">
+                    <p className="font-normal text-base leading-tight text-gray-500 dark:text-white truncate">
                       evanyou@gmail.com
                     </p>
                   </div>
@@ -181,15 +178,15 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
             </div>
           </div>
           <div aria-label="navigation" className="py-2">
-            <nav className="grid gap-1">
+            <nav className="flex flex-col space-y-3 ">
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
+                className=" flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
-                  className="w-7 h-7"
+                  className="w-7 h-7 absolute left-0 mx-5"
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -200,19 +197,22 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                   strokeLinejoin="round"
                 >
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
-                  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+                  <path d="M12 5v14"></path>{" "}
+                  {/* Vertikaler Strich des Plus-Zeichens */}
+                  <path d="M5 12h14"></path>{" "}
+                  {/* Horizontaler Strich des Plus-Zeichens */}
                 </svg>
-                <span>User Settings</span>
+
+                <span>Create Workspace</span>
               </a>
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
-                  className="w-7 h-7"
+                  className="w-7 h-7 absolute left-0 mx-5 "
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -232,12 +232,12 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               </a>
               <button
                 onClick={handleSettingsClick}
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
-                  className="w-7 h-7"
+                  className="w-7 h-7 absolute left-0 mx-5 "
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -265,12 +265,12 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                 )}
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white  focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
-                  className="w-7 h-7"
+                  className="w-7 h-7 absolute left-0 mx-5 "
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -290,12 +290,12 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               </a>
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white  focus:outline-none hover:bg-gray-100 rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   aria-hidden="true"
-                  className="w-7 h-7"
+                  className="w-7 h-7 absolute left-0 mx-5 "
                   width="24"
                   height="24"
                   viewBox="0 0 24 24"
@@ -320,13 +320,13 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                 <p className="font-medium text-xl text-gray-900 leading-none">
                   Free Plan
                 </p>
-                <p className="font-normal text-lg text-gray-500 leading-none">
+                <p className="font-normal text-lg text-gray-500 dark:text-white  leading-none">
                   12,000 views
                 </p>
               </div>
               <button
                 type="button"
-                className="inline-flex px-6 leading-6 py-3 rounded-md bg-indigo-50 hover:bg-indigo-50/80 transition-colors duration-200 text-indigo-500 font-medium text-lg"
+                className="inline-flex px-6 leading-6 py-3 rounded-md bg-indigo-50 dark:bg-luckyPoint-900 hover:bg-indigo-50/80 dark:hover:bg-luckyPoint-300 transition-colors duration-200 text-indigo-500 dark:text-luckyPoint-50 dark:hover:text-black font-medium text-lg"
               >
                 Upgrade
               </button>
