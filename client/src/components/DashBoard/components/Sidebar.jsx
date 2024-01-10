@@ -197,6 +197,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     // This effect should run when the `workspaces` array changes
   }, [workspaces]);
 
+  useEffect(() => {
+    if (workspaces.length > 0) {
+      setSelectedWorkspace(workspaces[0]);
+    }
+  }, [workspaces]);
   const fetchChannels = async (workspaceId) => {
     console.log("workspace here is:", workspaceId);
     const token = localStorage.getItem("userToken");

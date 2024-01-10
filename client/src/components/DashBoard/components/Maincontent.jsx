@@ -27,6 +27,7 @@ const Maincontent = ({ activeChannel }) => {
   const quillRef = useRef(null);
   const [filteredMessages, setFilteredMessages] = useState([]);
   const [displayWhiteboard, setDisplayWhiteboard] = useState(false);
+  const [channelInfo, setChannelInfo] = useState(null);
   const dropdownRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -36,6 +37,12 @@ const Maincontent = ({ activeChannel }) => {
   const navigate = useNavigate();
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const toggleMenu = () => setShowMenu(!showMenu);
+
+  useEffect(() => {
+    if (activeChannel) {
+      fetchChannelInfo(activeChannel).then((info) => setChannelInfo(info));
+    }
+  }, [activeChannel]);
 
   // Function to check if a new day has started and return a formatted date
 
@@ -297,6 +304,22 @@ const Maincontent = ({ activeChannel }) => {
     fetchUserData();
   }, []);
 
+  const fetchChannelInfo = async (channelId) => {
+    const token = localStorage.getItem("userToken");
+    try {
+      const response = await axios.get(
+        `http://localhost:9000/api/channels/${channelId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      return response.data; // Angenommen, dies gibt die Channel-Informationen zurück
+    } catch (error) {
+      console.error("Error fetching channel info:", error);
+      return null;
+    }
+  };
+
   return (
     <>
       {/* Main Content */}
@@ -372,9 +395,13 @@ const Maincontent = ({ activeChannel }) => {
             ref={messagesContainerRef}
             className="flex-1 p-4 overflow-y-auto bg-luckyPoint-200 dark:bg-luckyPoint-800 border border-t-2 border-luckyPoint-200 dark:border-luckyPoint-700"
           >
-            <h2 className="font-bold text-center text-2xl ">
-              {activeChannel ? `#${activeChannel}` : "Please choose a channel"}
-            </h2>
+            <div className="flex flex-col flex-1 h-full overflow-y-scroll">
+              <h2 className="font-bold text-center text-2xl">
+                {channelInfo
+                  ? `#${channelInfo.name}`
+                  : "Please choose a channel"}
+              </h2>
+            </div>
             <div className="space-y-4 text-black dark:text-luckyPoint-200">
               {displayedMessages && displayedMessages.length > 0 ? (
                 displayedMessages.map((message, index) => {
