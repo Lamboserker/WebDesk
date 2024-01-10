@@ -1,6 +1,6 @@
 import express from "express";
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server as SocketServer } from "socket.io";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/users.js";
 import videoRoutes from "./routes/videos.js";
@@ -20,12 +20,46 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const io = new SocketServer(httpServer, {
   cors: {
     origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
+ 
+io.on("connection", (socket) => {
+  console.log("Ein Benutzer hat sich verbunden");
+
+  socket.on("joinChannel", ({ channelId }) => {
+    socket.join(`channel_${channelId}`);
+  });
+
+  socket.on(
+    "sendMessage",
+    async ({ channelId, content, sender, senderImage }) => {
+      try {
+        const message = new ChatMessage({
+          content,
+          channel: channelId,
+          sender,
+          senderImage,
+          createdAt: new Date(),
+        });
+        await message.save();
+
+        io.to(`channel_${channelId}`).emit("newMessage", message);
+        socket.broadcast.emit("newMessageNotification", channelId);
+      } catch (error) {
+        console.error("Fehler beim Senden der Nachricht:", error);
+      }
+    }
+  );
+
+  // Fügen Sie hier weitere Socket.IO-Ereignisse hinzu, die Sie benötigen.
+}
+);
+
+
 // __dirname in ES-Modulen emulieren
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,36 +91,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("Something broke!");
 });
 
-io.on("connection", (socket) => {
-  console.log("Ein Benutzer hat sich verbunden");
 
-  socket.on("joinChannel", ({ channelId }) => {
-    socket.join(`channel_${channelId}`);
-  });
-
-  socket.on(
-    "sendMessage",
-    async ({ channelId, content, sender, senderImage }) => {
-      try {
-        const message = new ChatMessage({
-          content,
-          channel: channelId,
-          sender,
-          senderImage: senderImage,
-          createdAt: new Date(),
-        });
-        await message.save();
-
-        io.to(`channel_${channelId}`).emit("newMessage", message);
-        socket
-          .to(`channel_${channelId}`)
-          .emit("newMessageNotification", channelId);
-      } catch (error) {
-        console.error("Fehler beim Senden der Nachricht:", error);
-      }
-    }
-  );
-});
 
 const port = process.env.PORT || 9000;
 httpServer.listen(port, () => console.log(`Server läuft auf Port ${port}`));

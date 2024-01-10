@@ -32,6 +32,7 @@ router.post("/:workspaceId/send", Auth, async (req, res) => {
       sender: senderName,
       senderImage: senderImage,
       createdAt: new Date(),
+      readBy: [],
     });
 
     // Save the message to the database

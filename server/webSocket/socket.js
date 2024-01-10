@@ -2,6 +2,7 @@
 
 import { Server } from "socket.io";
 import httpServer from "./server"; // Importieren Sie Ihren HTTP-Server aus der Express-Anwendung
+import ChatMessage from "./models/ChatMessage.js";
 
 const io = new Server(httpServer, {
   cors: {
@@ -21,18 +22,17 @@ io.on("connection", (socket) => {
     "sendMessage",
     async ({ channelId, content, sender, senderImage }) => {
       try {
-        // Hier können Sie Ihre Nachrichtenverarbeitung durchführen und die Nachricht an andere Benutzer senden.
-        // Zum Beispiel können Sie die Nachricht in der Datenbank speichern und dann an die entsprechende Channel-Gruppe senden.
-
-        io.to(`channel_${channelId}`).emit("newMessage", {
-          channelId,
+        const message = new ChatMessage({
           content,
+          channel: channelId,
           sender,
           senderImage,
           createdAt: new Date(),
         });
+        await message.save();
 
-        // Senden Sie auch Benachrichtigungen an andere Benutzer, wenn erforderlich.
+        io.to(`channel_${channelId}`).emit("newMessage", message);
+        socket.broadcast.emit("newMessageNotification", channelId);
       } catch (error) {
         console.error("Fehler beim Senden der Nachricht:", error);
       }

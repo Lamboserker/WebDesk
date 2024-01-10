@@ -46,6 +46,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [channelPopupKey, setChannelPopupKey] = useState(0);
   const [hoveredChannel, setHoveredChannel] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showNotification, setShowNotification] = useState(true);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const [showWorkspaceOverview, setShowWorkspaceOverview] = useState(false);
   const socket = useRef(null);
@@ -107,8 +108,13 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsVideoModalOpen(false);
   };
 
-  const handleChannelClick = (channel, e) => {
+  const handleChannelClick = (channel, channelId) => {
+    setShowNotification(false);
     socket.current.emit("markAsRead", channel);
+    setNewMessagesCount((prevCounts) => ({
+      ...prevCounts,
+      [channelId]: 0,
+    }));
     setActiveChannel(channel);
     if (window.innerWidth < 768) {
       setIsMobileSidebarOpen(false);
@@ -117,28 +123,31 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
   useEffect(() => {
     // Initialisieren der Socket-Verbindung
-    socket.current = io("http://localhost:9000");
+    socket.current = io("http://localhost:9000", {
+      transports: ["websocket"], // Stellen Sie sicher, dass WebSockets verwendet werden
+      extraHeaders: {
+        "Cache-Control": "no-cache", // Verhindert Caching der WebSocket-Verbindung
+      },
+    });
 
     socket.current.on("connect", () => {
       console.log("Connected to the server");
     });
 
-    // Event Listener für neue Nachrichten
     socket.current.on("newMessage", (message) => {
       console.log("New message received:", message);
-      setNewMessagesCount((prevCounts) => ({
-        ...prevCounts,
-        [message.channelId]:
-          (prevCounts[message.channelId] || 0) + message.count,
-      }));
+      updateNewMessagesCount(message.channelId, message.count);
     });
 
     socket.current.on("newMessageNotification", (channelId) => {
-      console.log("New message notification for channel:", channelId);
       setNewMessagesCount((prevCounts) => ({
         ...prevCounts,
         [channelId]: (prevCounts[channelId] || 0) + 1,
       }));
+    });
+
+    socket.current.on("error", (error) => {
+      console.error("Socket error:", error);
     });
 
     // Aufräumen bei Unmount
@@ -146,11 +155,30 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       if (socket.current) {
         socket.current.off("newMessage");
         socket.current.off("newMessageNotification");
+        socket.current.off("error");
         socket.current.disconnect();
       }
     };
   }, []);
 
+  const updateNewMessagesCount = (channelId, count) => {
+    setNewMessagesCount((prevCounts) => ({
+      ...prevCounts,
+      [channelId]: (prevCounts[channelId] || 0) + count,
+    }));
+  };
+
+  const getNotificationBadge = (channelId) => {
+    const count = newMessagesCount[channelId];
+    if (count > 0) {
+      return (
+        <span className="px-2 py-1 ml-16 text-xs font-medium text-red-500 bg-red-50 rounded-full">
+          {count}
+        </span>
+      );
+    }
+    return null;
+  };
   useEffect(() => {
     const savedWorkspaceId = localStorage.getItem("lastVisitedWorkspace");
     if (savedWorkspaceId) {
@@ -540,20 +568,16 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                   key={channel._id}
                   onMouseEnter={() => setHoveredChannel(channel._id)}
                   onMouseLeave={() => setHoveredChannel(null)}
-                  className="flex justify-between items-center py-2 text-sm font-medium hover:bg-luckyPoint-700 ml-6 mb-2 "
+                  className="flex justify-between items-center py-2 text-sm font-medium hover:bg-luckyPoint-700 ml-6 mb-2"
                 >
                   {getChannelIcon(channel.type, hoveredChannel === channel._id)}
                   <div className="flex flex-grow items-center">
                     <button
                       onClick={() => handleChannelClick(channel._id)}
-                      className="truncate text-black dark:text-luckyPoint-200 hover:text-luckyPoint-700"
+                      className="truncate  text-black dark:text-luckyPoint-200 hover:text-luckyPoint-700"
                     >
                       {channel.name}
-                      {newMessagesCount[channel._id] > 0 && (
-                        <span className="notification-badge">
-                          {newMessagesCount[channel._id]}
-                        </span>
-                      )}
+                      {getNotificationBadge(channel._id)}
                     </button>
                   </div>
                 </div>
