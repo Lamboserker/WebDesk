@@ -6,6 +6,7 @@ import {
   faLinkedinIn,
 } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
+import "../styles/authstyles.css";
 
 
 const SignUp = () => {
