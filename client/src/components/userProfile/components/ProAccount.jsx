@@ -10,83 +10,401 @@ const ProAccount = () => {
     "Monthly newsletter with industry insights",
   ];
   return (
-    <div className="bg-luckyPoint-200 dark:bg-luckyPoint-700 w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
-      <div className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl sm:text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-              Straightforward No-Tricks Pricing
-            </h2>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Secure a premium membership to access all our content and take
-              your career to the next level.
-            </p>
-          </div>
-          <div className="mx-auto mt-16 max-w-2xl rounded-3xl ring-1 ring-gray-200 dark:ring-gray-700 sm:mt-20 lg:mx-0 lg:flex lg:max-w-none">
-            <div className="p-8 sm:p-10 lg:flex-auto">
-              <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Lifetime Membership
-              </h3>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-300">
-                Invest once in your future and enjoy lifelong access to valuable
-                learning resources and community events.
-              </p>
-              <div className="mt-10 flex items-center gap-x-4">
-                <h4 className="flex-none text-sm font-semibold leading-6 text-indigo-600 dark:text-indigo-400">
-                  What’s Included
-                </h4>
-                <div className="h-px flex-auto bg-gray-100 dark:bg-gray-700" />
+    <>
+      <div className="min-w-screen min-h-screen bg-gray-100 px-5 py-5">
+        <div className="w-full mx-auto bg-white px-5 py-10 text-gray-900 mb-10">
+          <div className="max-w-5xl mx-auto md:flex">
+            <div className="md:w-1/4 md:flex md:flex-col">
+              <div className="text-left w-full flex-grow md:pr-5">
+                <h1 className="text-4xl font-bold mb-5">Pricing</h1>
+                <h3 className="text-md font-medium mb-5">
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit
+                  repellat dignissimos laboriosam odit accusamus porro*
+                </h3>
               </div>
-              <ul
-                role="list"
-                className="mt-8 grid grid-cols-1 gap-4 text-sm leading-6 text-gray-600 dark:text-gray-300 sm:grid-cols-2 sm:gap-6"
-              >
-                {includedFeatures.map((feature) => (
-                  <li key={feature} className="flex gap-x-3">
-                    <CheckIcon
-                      className="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400"
-                      aria-hidden="true"
-                    />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+              <div className="w-full mb-2">
+                <p className="text-xs">*Lorem ipsum sit amet</p>
+              </div>
             </div>
-            <div className="-mt-2 p-2 lg:mt-0 lg:w-full lg:max-w-md lg:flex-shrink-0">
-              <div
-                className="rounded
-
--2xl bg-gray-50 dark:bg-gray-700 py-10 text-center ring-1 ring-inset ring-gray-900/5 dark:ring-gray-200/5 lg:flex lg:flex-col lg:justify-center lg:py-16"
-              >
-                <div className="mx-auto max-w-xs px-8">
-                  <p className="text-base font-semibold text-gray-600 dark:text-gray-300">
-                    Pay Once, Own it Forever
-                  </p>
-                  <p className="mt-6 flex items-baseline justify-center gap-x-2">
-                    <span className="text-5xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      $349
-                    </span>
-                    <span className="text-sm font-semibold leading-6 tracking-wide text-gray-600 dark:text-gray-300">
-                      USD
-                    </span>
-                  </p>
-                  <a
-                    href="#"
-                    className="mt-10 block w-full rounded-md bg-indigo-600 dark:bg-indigo-700 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 dark:hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                  >
-                    Get Access
-                  </a>
-                  <p className="mt-6 text-xs leading-5 text-gray-600 dark:text-gray-300">
-                    Invoices and receipts available for easy company
-                    reimbursement
-                  </p>
+            <div className="md:w-3/4">
+              <div className="max-w-4xl mx-auto md:flex">
+                <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-2 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+                  <div className="w-full flex-grow">
+                    <h2 className="text-center font-bold uppercase mb-4">
+                      PERSONAL
+                    </h2>
+                    <h3 className="text-center font-bold text-4xl mb-5">
+                      $5<span className="text-sm">/mo</span>
+                    </h3>
+                    <ul className="text-sm mb-8">
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Lorem
+                        ipsum
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                        amet
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="w-full">
+                    <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
+                <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:-mx-3 md:mb-0 rounded-md shadow-lg shadow-gray-600 md:relative md:z-50 md:flex md:flex-col">
+                  <div className="w-full flex-grow">
+                    <h2 className="text-center font-bold uppercase mb-4">
+                      TEAM
+                    </h2>
+                    <h3 className="text-center font-bold text-4xl md:text-5xl mb-5">
+                      $15<span className="text-sm">/mo</span>
+                    </h3>
+                    <ul className="text-sm mb-8">
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Lorem
+                        ipsum
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                        amet
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i>{" "}
+                        Consectetur
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i>{" "}
+                        Adipisicing
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Elit
+                        repellat
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="w-full">
+                    <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                      Buy Now
+                    </button>
+                  </div>
+                </div>
+                <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-2 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+                  <div className="w-full flex-grow">
+                    <h2 className="text-center font-bold uppercase mb-4">
+                      PRO
+                    </h2>
+                    <h3 className="text-center font-bold text-4xl mb-5">
+                      $35<span className="text-sm">/mo</span>
+                    </h3>
+                    <ul className="text-sm mb-8">
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Lorem
+                        ipsum
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                        amet
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i>{" "}
+                        Consectetur
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i>{" "}
+                        Adipisicing
+                      </li>
+                      <li className="leading-tight">
+                        <i className="mdi mdi-check-bold text-lg"></i> Much
+                        more...
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="w-full">
+                    <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                      Buy Now
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        <div className="w-full mx-auto bg-white px-5 py-10 text-gray-900 mb-10">
+          <div className="text-center max-w-xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold mb-5">Pricing</h1>
+            <h3 className="text-xl font-medium mb-10">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit repellat
+              dignissimos laboriosam odit accusamus porro
+            </h3>
+          </div>
+          <div className="max-w-4xl mx-auto md:flex">
+            <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-6 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">
+                  PERSONAL
+                </h2>
+                <h3 className="text-center font-bold text-4xl mb-5">$5/mo</h3>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:-mx-3 md:mb-0 rounded-md shadow-lg shadow-gray-600 md:relative md:z-50 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">TEAM</h2>
+                <h3 className="text-center font-bold text-4xl md:text-5xl mb-5">
+                  $15/mo
+                </h3>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Consectetur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Adipisicing
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Elit repellat
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/3 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-6 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">PRO</h2>
+                <h3 className="text-center font-bold text-4xl mb-5">$35/mo</h3>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Consectetur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Adipisicing
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Much more...
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="w-full mx-auto bg-white px-5 py-10 text-gray-900 mb-10">
+          <div className="text-center max-w-xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold mb-5">Pricing</h1>
+            <h3 className="text-xl font-medium mb-10">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit repellat
+              dignissimos laboriosam odit accusamus porro
+            </h3>
+          </div>
+          <div className="w-full md:flex mb-5">
+            <div className="w-full md:w-1/4 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-6 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">
+                  PERSONAL
+                </h2>
+                <h3 className="text-center font-bold text-4xl mb-2">
+                  $5<span className="text-lg">/mo</span>
+                </h3>
+                <p className="text-center font-bold mb-5">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-700 transition-all transform hover:scale-110 inline-block"
+                  >
+                    Read more<i className="mdi mdi-arrow-right-thick ml-1"></i>
+                  </a>
+                </p>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/4 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:-mx-3 md:my-3 rounded-md shadow-lg shadow-gray-600 md:relative md:z-50 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">TEAM</h2>
+                <h3 className="text-center font-bold text-3xl md:text-4xl mb-2">
+                  $15<span className="text-lg">/mo</span>
+                </h3>
+                <p className="text-center font-bold mb-5">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-700 transition-all transform hover:scale-110 inline-block"
+                  >
+                    Read more<i className="mdi mdi-arrow-right-thick ml-1"></i>
+                  </a>
+                </p>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Consectetur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Adipisicing
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Elit repellat
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/4 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:-mx-3 md:mb-0 rounded-md shadow-lg shadow-gray-600 md:relative md:z-50 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center font-bold uppercase mb-4">PRO</h2>
+                <h3 className="text-center font-bold text-4xl md:text-5xl mb-2">
+                  $35<span className="text-lg">/mo</span>
+                </h3>
+                <p className="text-center font-bold mb-5">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-700 transition-all transform hover:scale-110 inline-block"
+                  >
+                    Read more<i className="mdi mdi-arrow-right-thick ml-1"></i>
+                  </a>
+                </p>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Consectetur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Adipisicing
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Much more...
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/4 md:max-w-none bg-white px-8 md:px-10 py-8 md:py-10 mb-3 mx-auto md:my-3 rounded-md shadow-lg shadow-gray-600 md:flex md:flex-col">
+              <div className="w-full flex-grow">
+                <h2 className="text-center text-3xl font-bold uppercase mb-2">
+                  ENTERPRISE
+                </h2>
+                <p className="text-center font-bold mb-5">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-700 transition-all transform hover:scale-110 inline-block"
+                  >
+                    Read more<i className="mdi mdi-arrow-right-thick ml-1"></i>
+                  </a>
+                </p>
+                <ul className="text-sm px-5 mb-8">
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Lorem ipsum
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Consectetur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Adipisicing
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Sed do
+                    eiusmod
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Aliquip ex
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Excepteur
+                  </li>
+                  <li className="leading-tight">
+                    <i className="mdi mdi-check-bold text-lg"></i> Dolor sit
+                    amet*
+                  </li>
+                </ul>
+              </div>
+              <div className="w-full">
+                <button className="font-bold bg-gray-600 hover:bg-gray-700 text-white rounded-md px-10 py-2 transition-colors w-full">
+                  Enquire Now
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="text-center max-w-xl mx-auto">
+            <p className="text-xs leading-tight">
+              *Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam
+              eligendi officiis, impedit ducimus eaque a corporis, dolore quia
+              officia quam tenetur suscipit dolores, quos, quaerat quo provident
+              iusto. Eius, impedit!
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+
+  
+
+    </>
   );
 };
 

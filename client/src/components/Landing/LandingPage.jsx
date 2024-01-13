@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Dialog } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Banner from "./components/Banner.jsx";
 import Footer from "./components/Footer.jsx";
@@ -58,6 +58,22 @@ const statVariants = {
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("userToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Remove the token from LocalStorage
+    localStorage.removeItem("userToken");
+    setIsLoggedIn(false); // Update the isLoggedIn state
+    navigate("/");
+  };
 
   return (
     <div className="relative min-h-screen  max-w-screen antialiased bg-gray-100">
@@ -100,12 +116,21 @@ const LandingPage = () => {
               ))}
             </div>
             <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-              <a
-                href="/auth"
-                className="text-sm font-semibold leading-6 text-black"
-              >
-                Log in <span aria-hidden="true">&rarr;</span>
-              </a>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="text-sm font-semibold leading-6 text-black"
+                >
+                  Logout
+                </button>
+              ) : (
+                <a
+                  href="/auth"
+                  className="text-sm font-semibold leading-6 text-black"
+                >
+                  Log in <span aria-hidden="true">&rarr;</span>
+                </a>
+              )}
             </div>
           </nav>
           <Dialog

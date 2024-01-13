@@ -5,12 +5,13 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
+import { useAuth } from "../../Context/AuthContext";
 
 const SignIn = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const { login } = useAuth();
   const handleSignIn = async () => {
     try {
       const response = await axios.post(
@@ -33,6 +34,7 @@ const SignIn = ({ onLoginSuccess }) => {
   const checkUserWorkspace = async () => {
     try {
       const token = localStorage.getItem("userToken");
+      login(token); // Aktualisieren des Auth-Status
       const response = await axios.get(
         "http://localhost:9000/api/workspaces/workspace-status",
         {

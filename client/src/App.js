@@ -15,7 +15,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { FullScreenProvider } from "./Context/FullscreenContext";
 import NotFound from "./components/NotFound/NotFound";
 import Sidebar from "./components/userProfile/components/Sidebar";
-
+import { AuthProvider } from "./Context/AuthContext";
 const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
 );
@@ -47,50 +47,57 @@ function App() {
   };
   return (
     <GoogleOAuthProvider clientId={clientId}>
-      <WorkspaceProvider>
-        <WorkspaceModalProvider>
-          <FullScreenProvider>
-            <SidebarProvider>
-              <div className="App">
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/auth" element={<AuthContainer />} />
-                    <Route
-                      path="/dashboard"
-                      element={
-                        <Suspense fallback={renderLoading()}>
-                          <ProtectedRoute component={Dashboard} />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="/videoapp"
-                      element={
-                        <Suspense fallback={renderLoading()}>
-                          <VideoApp />
-                        </Suspense>
-                      }
-                    />
-                    <Route
-                      path="/create-workspace-modal"
-                      element={<WorkspaceModalWrapper isLoading={isLoading} />}
-                    />
+      <AuthProvider>
+        <WorkspaceProvider>
+          <WorkspaceModalProvider>
+            <FullScreenProvider>
+              <SidebarProvider>
+                <div className="App">
+                  <BrowserRouter>
+                    <Routes>
+                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/auth" element={<AuthContainer />} />
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <Suspense fallback={renderLoading()}>
+                            <ProtectedRoute component={Dashboard} />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/videoapp"
+                        element={
+                          <Suspense fallback={renderLoading()}>
+                            <VideoApp />
+                          </Suspense>
+                        }
+                      />
+                      <Route
+                        path="/create-workspace-modal"
+                        element={
+                          <WorkspaceModalWrapper isLoading={isLoading} />
+                        }
+                      />
 
-                    <Route path="/profile-form" element={<ProfileMenu />} />
+                      <Route path="/profile-form" element={<ProfileMenu />} />
 
-                    <Route path="/account-settings" element={<ProfileMenu />} />
-                    <Route path="/notifications" element={<ProfileMenu />} />
-                    <Route path="pro-account" element={<ProfileMenu />} />
+                      <Route
+                        path="/account-settings"
+                        element={<ProfileMenu />}
+                      />
+                      <Route path="/notifications" element={<ProfileMenu />} />
+                      <Route path="pro-account" element={<ProfileMenu />} />
 
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-              </div>
-            </SidebarProvider>
-          </FullScreenProvider>
-        </WorkspaceModalProvider>
-      </WorkspaceProvider>
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </BrowserRouter>
+                </div>
+              </SidebarProvider>
+            </FullScreenProvider>
+          </WorkspaceModalProvider>
+        </WorkspaceProvider>
+      </AuthProvider>
     </GoogleOAuthProvider>
   );
 }

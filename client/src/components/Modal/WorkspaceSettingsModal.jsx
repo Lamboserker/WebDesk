@@ -198,7 +198,7 @@ const WorkspaceSettingsModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-150 flex items-center justify-center" // z-index auf 150 gesetzt
+          className="fixed inset-0 bg-black bg-opacity-50 z-150 flex items-center justify-center"
         >
           <motion.div
             initial={{ scale: 0.95 }}
@@ -276,19 +276,19 @@ const WorkspaceSettingsModal = ({
               <div className="flex space-x-2">
                 <button
                   onClick={handleSaveChanges}
-                  className="bg-luckyPoint-300 hover:bg-luckyPoint-400 text-luckyPoint-800 font-bold text-sm py-2 px-4 rounded"
+                  className="bg-luckyPoint-900 hover:bg-luckyPoint-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2 mt-5"
                 >
                   Save Changes
                 </button>
                 <button
                   onClick={handleGenerateInviteLink}
-                  className="bg-luckyPoint-300 hover:bg-luckyPoint-400 text-luckyPoint-800 font-bold text-sm py-2 px-4 rounded"
+                  className="bg-luckyPoint-700 hover:bg-luckyPoint-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2 mt-5"
                 >
                   Generate Invite Link
                 </button>
                 <button
                   onClick={onClose}
-                  className="bg-luckyPoint-300 hover:bg-luckyPoint-400 text-luckyPoint-800 font-bold text-sm py-2 px-4 rounded"
+                  className="bg-luckyPoint-400 hover:bg-luckyPoint-700 text-white font-bold py-2 px-4 rounded flex items-center space-x-2 mt-5"
                 >
                   Close
                 </button>
@@ -303,7 +303,7 @@ const WorkspaceSettingsModal = ({
             >
               <FontAwesomeIcon
                 icon={faXmark}
-                className="rounded-full p-2 bg-white shadow-md"
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-red-500"
               />
             </button>
             <button
@@ -317,7 +317,7 @@ const WorkspaceSettingsModal = ({
                     ? faDownLeftAndUpRightToCenter
                     : faUpRightAndDownLeftFromCenter
                 } // Icon ändern basierend auf dem isExpanded-Zustand
-                className="rounded-full p-2 bg-white shadow-md"
+                className="rounded-full p-2 text-gray-600 text-4xl transition ease-in-out delay-150  hover:-translate-y-1 hover:scale-110 duration-300 transform hover:text-green-500"
               />
             </button>
           </motion.div>
