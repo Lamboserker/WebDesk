@@ -114,8 +114,8 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
 
   return (
     <div ref={dropdownRef} style={style} onClick={(e) => e.stopPropagation()}>
-      <div className="flex items-center justify-center bg-white dark:bg-luckyPoint-600 drop-shadow-md px-6 rounded-md">
-        <div className="w-full max-w-sm rounded-lg bg-white dark:bg-luckyPoint-600  py-4 px-6 divide-gray-100">
+      <div className="flex items-center justify-center bg-luckyPoint-200 dark:bg-luckyPoint-600 drop-shadow-md px-6 rounded-md">
+        <div className="w-full max-w-sm rounded-lg bg-luckyPoint-200 dark:bg-luckyPoint-600  py-4 px-6 divide-gray-100">
           {/* Angepasstes Padding für inneren Container */}
           <div aria-label="header" className="flex space-x-4 items-center">
             <div
@@ -177,11 +177,11 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               )}
             </div>
           </div>
-          <div aria-label="navigation" className="py-2">
+          <div aria-label="navigation" className="py-2 ">
             <nav className="flex flex-col space-y-3 ">
               <a
                 href="/"
-                className=" flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
+                className=" flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-900 dark:text-white focus:outline-none transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -207,7 +207,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               </a>
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-900 dark:text-white focus:outline-none  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -232,7 +232,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               </a>
               <button
                 onClick={handleSettingsClick}
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-900 dark:text-white focus:outline-none  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -265,7 +265,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
                 )}
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white  focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-900 dark:text-white  focus:outline-none  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -290,7 +290,7 @@ const WorkspaceDropdown = ({ position, triggerRef }) => {
               </a>
               <a
                 href="/"
-                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-600 dark:text-white  focus:outline-none hover:bg-gray-100 rounded-md"
+                className="flex items-center leading-6 space-x-3 py-3 px-4 w-full text-lg text-gray-900 dark:text-white  focus:outline-none  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

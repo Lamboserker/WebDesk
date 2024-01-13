@@ -142,7 +142,7 @@ export default function ChannelPopup() {
                   {options.map((option) => (
                     <button
                       key={option.name}
-                      className={`flex items-center px-4 py-2 mt-2 text-sm font-medium rounded focus:outline-none hover:bg-luckyPoint-600 shadow-2xl  ${
+                      className={`flex items-center px-4 py-2 mt-2 text-sm font-medium rounded focus:outline-none hover:bg-luckyPoint-600 shadow-2xl  transition duration-300 ease-in-out  dark:hover:bg-gray-700    ${
                         selectedOption === option.name
                           ? "bg-luckyPoint-900"
                           : "bg-luckyPoint-700"

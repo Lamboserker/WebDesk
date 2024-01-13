@@ -8,11 +8,13 @@ import {
   WorkspaceModalProvider,
   useWorkspaceModal,
 } from "./Context/WorkspaceModalContext";
+import { SidebarProvider } from "./Context/SidebarContext";
 import { WorkspaceProvider } from "./Context/WorkspaceContext";
 import Loading from "./components/Loading/Loading"; // Bestätigen Sie den Pfad zur Loading-Komponente
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { FullScreenProvider } from "./Context/FullscreenContext";
 import NotFound from "./components/NotFound/NotFound";
+import Sidebar from "./components/userProfile/components/Sidebar";
 
 const Dashboard = lazy(() =>
   import("./components/DashBoard/components/Dashboard")
@@ -48,37 +50,44 @@ function App() {
       <WorkspaceProvider>
         <WorkspaceModalProvider>
           <FullScreenProvider>
-            <div className="App">
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<LandingPage />} />
-                  <Route path="/auth" element={<AuthContainer />} />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <Suspense fallback={renderLoading()}>
-                        <ProtectedRoute component={Dashboard} />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/videoapp"
-                    element={
-                      <Suspense fallback={renderLoading()}>
-                        <VideoApp />
-                      </Suspense>
-                    }
-                  />
-                  <Route
-                    path="/create-workspace-modal"
-                    element={<WorkspaceModalWrapper isLoading={isLoading} />}
-                  />
-                  <Route path="/my-profile" element={<ProfileMenu />} />
+            <SidebarProvider>
+              <div className="App">
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<LandingPage />} />
+                    <Route path="/auth" element={<AuthContainer />} />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <Suspense fallback={renderLoading()}>
+                          <ProtectedRoute component={Dashboard} />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/videoapp"
+                      element={
+                        <Suspense fallback={renderLoading()}>
+                          <VideoApp />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/create-workspace-modal"
+                      element={<WorkspaceModalWrapper isLoading={isLoading} />}
+                    />
 
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </div>
+                    <Route path="/profile-form" element={<ProfileMenu />} />
+
+                    <Route path="/account-settings" element={<ProfileMenu />} />
+                    <Route path="/notifications" element={<ProfileMenu />} />
+                    <Route path="pro-account" element={<ProfileMenu />} />
+
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </div>
+            </SidebarProvider>
           </FullScreenProvider>
         </WorkspaceModalProvider>
       </WorkspaceProvider>

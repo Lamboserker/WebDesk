@@ -14,6 +14,13 @@ import { modules, formats } from "../index";
 import Switcher from "../../../Switcher";
 import "../../styles/dashboard.css";
 import Whiteboard from "./FigJam/Whiteboard";
+import {
+  faCircleInfo,
+  faQuestion,
+  faRightFromBracket,
+  faNewspaper,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const Maincontent = ({ activeChannel }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -354,31 +361,64 @@ const Maincontent = ({ activeChannel }) => {
           {showDropdown && (
             <div
               ref={dropdownRef}
-              className="absolute right-0 mt-2 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md z-50"
+              className="absolute right-0 mt-2 w-56 p-3 py-4 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md hover:rounded-lg shadow-md z-50"
             >
               {/* Grid-Layout Inhalte */}
-              <div className="grid grid-cols-2 grid-rows-4 gap-4 items-center  px-4 py-2 mt-2">
-                <div className="col-span-2  px-4 py-2 mt-2">
-                  <span className="text-black font-bold uppercase ">
-                    Get help
-                  </span>
+              <div className="flex flex-col">
+                <div className="flex items-center py-2 px-6 transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faCircleInfo}
+                      className="h-5 w-5 text-gray-700 dark:text-white mr-5"
+                    />
+                    <span className="ml-3 text-gray-700 dark:text-white font-bold uppercase">
+                      Get help
+                    </span>
+                  </div>
                 </div>
-                <div className="col-span-2 row-start-2  px-4 py-2 mt-2 text-black font-bold uppercase ">
-                  FAQ
+                <div className="flex items-center py-2 px-6 transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faQuestion}
+                      className="h-5 w-5 text-gray-700 dark:text-white mr-5"
+                    />
+                    <span className="ml-3 text-gray-700 dark:text-white font-bold uppercase">
+                      FAQ
+                    </span>
+                  </div>
                 </div>
-                <div className="col-span-2 row-start-3  px-4 py-2 mt-2 text-black font-bold uppercase ">
-                  News
+                <div className="flex items-center py-2 px-6 transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faNewspaper}
+                      className="h-5 w-5 text-gray-700 dark:text-white mr-5"
+                    />
+                    <span className="ml-3 text-gray-700 dark:text-white font-bold uppercase">
+                      News
+                    </span>
+                  </div>
                 </div>
-                <div className="row-start-4  px-4 py-2 mt-2">
-                  <button
-                    className=" text-black font-bold uppercase "
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
+                <div className="flex items-center py-2 px-6 transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md">
+                  <div className="flex items-center">
+                    <FontAwesomeIcon
+                      icon={faRightFromBracket}
+                      className="h-5 w-5 text-gray-700 dark:text-white mr-5"
+                    />
+                    <button
+                      className="ml-3 text-gray-700 dark:text-white font-bold uppercase"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
                 </div>
-                <div className="row-start-4  px-4 py-2 mt-2">
-                  <Switcher />
+                <div className="flex items-center py-2 transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700 rounded-md">
+                  <div className="flex items-center">
+                    <Switcher />
+                    <span className="ml-3 text-gray-700 dark:text-white font-bold uppercase">
+                      Dark Mode
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

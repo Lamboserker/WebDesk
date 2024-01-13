@@ -121,7 +121,7 @@ const LandingPage = () => {
                   <span className="sr-only">WebDesk</span>
                   <img
                     className="h-32 w-32"
-                    src="https://cdn.discordapp.com/attachments/1185665614086426674/1185669662676095066/iSi_iSi__1_-removebg-preview.png?ex=659073ec&is=657dfeec&hm=6d1b220e9702faf4d57e87690face9bfdb86ef8a698f9d524af577a4d6900b9d&"
+                    src="https://cdn.discordapp.com/attachments/1185665614086426674/1194230093527130162/WebDesk__2___1_-removebg-preview.png?ex=65af9872&is=659d2372&hm=b5514c628bb56612b2ad214dcb0efa6b97cb88f5f264d187f528d993b121eb1d&"
                     alt=""
                   />
                 </a>

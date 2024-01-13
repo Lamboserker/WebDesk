@@ -56,7 +56,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   );
   const { selectedWorkspace, setSelectedWorkspace, workspaces } =
     useContext(WorkspaceContext);
-    const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const sidebarRef = useRef(null);
   const triggerRef = useRef(null);
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
@@ -618,11 +618,11 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                           src={`http://localhost:9000/${userData.profileImage}`}
                         />
                       </MenuHandler>
-                      <MenuList className="bg-luckyPoint-200 dark:bg-luckyPoint-700">
+                      <MenuList className="bg-luckyPoint-200 dark:bg-luckyPoint-700 ">
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/profile-settings")}
-                          className="flex items-center gap-2 text-black dark:text-luckyPoint-200 "
+                          className="flex items-center gap-2 text-black dark:text-luckyPoint-200  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
                         >
                           <svg
                             width="16"
@@ -645,8 +645,8 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         </MenuItem>
                         <MenuItem
                           style={{ height: "50px" }}
-                          onClick={() => navigate("/my-profile")}
-                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
+                          onClick={() => navigate("/profile-form")}
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
                         >
                           <svg
                             width="16"
@@ -670,7 +670,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/inbox")}
-                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
                         >
                           <svg
                             width="14"
@@ -694,7 +694,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={() => navigate("/help")}
-                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2"
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
                         >
                           <svg
                             width="16"
@@ -718,7 +718,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
                         <MenuItem
                           style={{ height: "50px" }}
                           onClick={handleLogout}
-                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2 "
+                          className="text-black dark:text-luckyPoint-200 flex items-center gap-2  transition duration-300 ease-in-out hover:bg-gray-300 dark:hover:bg-gray-700  rounded-md"
                         >
                           <svg
                             width="16"

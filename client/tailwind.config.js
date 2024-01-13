@@ -52,14 +52,20 @@ export default withMT({
         mono: ["Source Code Pro", "Menlo", "monospace"],
       },
       animation: {
-        'gradient': 'gradient 8s linear infinite',
-    },
-    keyframes: {
-        'gradient': {
-            to: { 'background-position': '200% center' },
+        gradient: "gradient 8s linear infinite",
+      },
+      keyframes: {
+        gradient: {
+          to: { "background-position": "200% center" },
         },
-    },
+      },
       colors: {
+        backgroundColor: {
+          primary: "#676eeb", // Hintergrundfarbe für primäre Elemente
+        },
+        borderColor: {
+          primary: "#676eeb", // Rahmenfarbe für primäre Elemente
+        },
         luckyPoint: {
           50: "#f4f6fe",
           100: "#eaedfd",
