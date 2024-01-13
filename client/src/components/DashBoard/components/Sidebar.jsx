@@ -56,6 +56,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   );
   const { selectedWorkspace, setSelectedWorkspace, workspaces } =
     useContext(WorkspaceContext);
+    const [currentUserId, setCurrentUserId] = useState(null);
   const sidebarRef = useRef(null);
   const triggerRef = useRef(null);
   const dividerStyle = "relative w-48 h-px bg-gray-400 my-4 mb-10 ";
@@ -108,14 +109,14 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     setIsVideoModalOpen(false);
   };
 
-  const handleChannelClick = (channel, channelId) => {
+  const handleChannelClick = (channelId) => {
     setShowNotification(false);
-    socket.current.emit("markAsRead", channel);
+    socket.current.emit("markAsRead", channelId);
     setNewMessagesCount((prevCounts) => ({
       ...prevCounts,
       [channelId]: 0,
     }));
-    setActiveChannel(channel);
+    setActiveChannel(channelId);
     if (window.innerWidth < 768) {
       setIsMobileSidebarOpen(false);
     }
@@ -124,9 +125,9 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   useEffect(() => {
     // Initialisieren der Socket-Verbindung
     socket.current = io("http://localhost:9000", {
-      transports: ["websocket"], // Stellen Sie sicher, dass WebSockets verwendet werden
+      transports: ["websocket"],
       extraHeaders: {
-        "Cache-Control": "no-cache", // Verhindert Caching der WebSocket-Verbindung
+        "Cache-Control": "no-cache",
       },
     });
 
@@ -136,7 +137,9 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
     socket.current.on("newMessage", (message) => {
       console.log("New message received:", message);
-      updateNewMessagesCount(message.channelId, message.count);
+      if (currentUserId !== message.senderId) {
+        updateNewMessagesCount(message.channelId, message.count);
+      }
     });
 
     socket.current.on("newMessageNotification", (channelId) => {
@@ -281,6 +284,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       try {
         const token = localStorage.getItem("userToken");
         const userId = await validateToken();
+        setCurrentUserId(userId);
         // console.log("Aktuelle Benutzer-ID:", userId); // Zur Diagnose hinzugefügt
         const response = await axios.get("http://localhost:9000/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },

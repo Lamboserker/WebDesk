@@ -4,7 +4,6 @@ import "./index.css";
 import App from "./App";
 // import { ToastContainer } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -26,8 +25,7 @@ root.render(
       pauseOnHover
       theme="light"
     /> */}
-    <GoogleOAuthProvider clientId="63352990819-aa7bogch9i0hg9in1iihrmbgmcof95vc.apps.googleusercontent.com">
-      <App />
-    </GoogleOAuthProvider>
+
+    <App />
   </>
 );
