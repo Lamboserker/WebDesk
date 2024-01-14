@@ -1,63 +1,21 @@
 import colors from "tailwindcss/colors";
 import withMT from "@material-tailwind/react/utils/withMT";
+
 export default withMT({
   darkMode: "class",
-  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html",
+    "node_modules/flowbite-react/lib/esm/**/*.js",
+  ],
   mode: "jit",
   theme: {
-    colors: {
-      customLight: {
-        DEFAULT: "#000000", // Schwarz für Light-Modus
-      },
-      customDark: {
-        DEFAULT: "#FFFFFF", // Weiß für Dark-Modus
-      },
-      violet: colors.violet,
-      rose: colors.rose,
-      fuchsia: colors.fuchsia,
-      indigo: colors.indigo,
-      slate: colors.slate,
-      white: colors.white,
-      black: colors.black,
-      blue: colors.blue,
-      green: colors.green,
-      red: colors.red,
-      pink: colors.pink,
-    },
     extend: {
-      zIndex: {
-        150: "150",
-        200: "200",
-        250: "250",
-        300: "300",
-      },
-      fontFamily: {
-        lato: ["lato", "sans-serif"],
-        sans: [
-          "lato",
-          "BlinkMacSystemFont",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "Oxygen",
-          "Ubuntu",
-          "Cantarell",
-          "Fira Sans",
-          "Droid Sans",
-          "Helvetica Neue",
-          "Helvetica",
-          "Arial",
-          "sans-serif",
-        ],
-        mono: ["Source Code Pro", "Menlo", "monospace"],
-      },
-      animation: {
-        gradient: "gradient 8s linear infinite",
-      },
-      keyframes: {
-        gradient: {
-          to: { "background-position": "200% center" },
-        },
+      backgroundImage: {
+        "gradient-turquoise-purple-blue":
+          "linear-gradient(90deg, #00CED1, #800080, #00008B)",
+        "custom-gradient":
+          "linear-gradient(90deg, #ffffff , #6b6bff,  #14cdf2)",
       },
       colors: {
         backgroundColor: {
@@ -82,7 +40,6 @@ export default withMT({
         sidebarblue: { 200: "#16165f" },
         mainContent: { 200: "#f4f6fe" },
         searchbar: { 200: "#eaedfd" },
-
         orange: {
           250: "#FF5810",
           350: "#FF5D5D",
@@ -117,14 +74,42 @@ export default withMT({
         blue: {
           350: "#76d9e6",
         },
+        gradientTurquoise: "#00CED1",
+        gradientPurple: "#800080",
+        gradientBlue: "#00008B",
       },
     },
-    backgroundImage: {
-      "button-svg": 'url("/src/assets/img/button.jpg")',
+    fontFamily: {
+      lato: ["lato", "sans-serif"],
+      sans: [
+        "lato",
+        "BlinkMacSystemFont",
+        "-apple-system",
+        "Segoe UI",
+        "Roboto",
+        "Oxygen",
+        "Ubuntu",
+        "Cantarell",
+        "Fira Sans",
+        "Droid Sans",
+        "Helvetica Neue",
+        "Helvetica",
+        "Arial",
+        "sans-serif",
+      ],
+      mono: ["Source Code Pro", "Menlo", "monospace"],
+    },
+    animation: {
+      gradient: "gradient 8s linear infinite",
+    },
+    keyframes: {
+      gradient: {
+        to: { "background-position": "200% center" },
+      },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('flowbite/plugin')],
 });

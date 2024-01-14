@@ -26,6 +26,8 @@
     "buffer": "^6.0.3",
     "dompurify": "^3.0.6",
     "emoji-picker-react": "^4.5.15",
+    "flowbite": "^2.2.1",
+    "flowbite-react": "^0.7.2",
     "framer-motion": "^10.16.5",
     "google-auth-library": "^9.2.0",
     "googleapis": "^129.0.0",

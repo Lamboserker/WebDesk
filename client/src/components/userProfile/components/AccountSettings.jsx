@@ -19,8 +19,10 @@ const AccountSettings = () => {
 
   return (
     <div className="mx-4 min-h-screen max-w-screen-xl sm:mx-8 xl:mx-auto">
-      <h1 className="border-b py-6 text-4xl font-semibold">Account Settings</h1>
+      <h1 className="mb-10 text-3xl font-extrabold text-gray-900 dark:text-white  md:text-5xl lg:text-6xl ">Account Settings</h1>
       <div className="bg-white shadow-md rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
+
+        
         <div>
           <StyledInput
             searchTerm={email}
