@@ -6,7 +6,6 @@ import User from "../models/User.js";
 import Channel from "../models/Channel.js";
 import ChatMessage from "../models/ChatMessage.js";
 import path from "path";
-import fs from "fs";
 const router = express.Router();
 
 const storage = multer.diskStorage({

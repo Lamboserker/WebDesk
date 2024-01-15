@@ -241,7 +241,7 @@ const ProfileForm = () => {
         <div className="bg-white shadow-md rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
           <main className=" w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
             <div className="p-2 md:p-4 ">
-              <div className="bg-white shadow-md rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
+              <div className="bg-gray-100 shadow-xl rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
                 <h2 className="text-2xl font-bold">Public Profile</h2>
 
                 <div className="flex flex-col items-start">
@@ -317,7 +317,7 @@ const ProfileForm = () => {
                 )}
               </div>
             </div>
-            <div className="bg-white shadow-md rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
+            <div className="bg-gray-100 shadow-xl rounded-xl px-10 py-8 mb-8 flex flex-col space-y-6 mt-3">
               <div className="items-center mt-8 sm:mt-14 text-[#202142] ">
                 <form onSubmit={handleSubmit}>
                   <div className="flex flex-col items-center w-full mb-2 space-x-0 space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0 sm:mb-6">

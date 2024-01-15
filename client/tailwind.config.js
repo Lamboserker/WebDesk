@@ -1,12 +1,11 @@
-import colors from "tailwindcss/colors";
 import withMT from "@material-tailwind/react/utils/withMT";
-
+import "flowbite";
 export default withMT({
   darkMode: "class",
   content: [
     "./src/**/*.{js,jsx,ts,tsx}",
     "./public/index.html",
-    "node_modules/flowbite-react/lib/esm/**/*.js",
+    "node_modules/flowbite-react/lib/esm/**/*.{js,jsx,ts,tsx}",
   ],
   mode: "jit",
   theme: {
@@ -14,8 +13,8 @@ export default withMT({
       backgroundImage: {
         "gradient-turquoise-purple-blue":
           "linear-gradient(90deg, #00CED1, #800080, #00008B)",
-        "custom-gradient":
-          "linear-gradient(90deg, #ffffff , #6b6bff,  #14cdf2)",
+        "custom-gradient": "linear-gradient(90deg, #ffffff, #6b6bff, #14cdf2)",
+        "button-svg": "url('/src/assets/img/button.jpg')",
       },
       colors: {
         backgroundColor: {
@@ -104,12 +103,12 @@ export default withMT({
     },
     keyframes: {
       gradient: {
-        to: { "background-position": "200% center" },
+        to: { backgroundPosition: "200% center" },
       },
     },
   },
   variants: {
     extend: {},
   },
-  plugins: [require('flowbite/plugin')],
+  plugins: [require("flowbite/plugin")],
 });

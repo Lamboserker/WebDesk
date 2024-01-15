@@ -1,11 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChevronLeft,
-  faChevronRight,
-  faTable,
-} from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 const RightSidebar = ({ isOpen, setIsOpen }) => {
   const variants = {
@@ -18,7 +12,7 @@ const RightSidebar = ({ isOpen, setIsOpen }) => {
       <div className="relative">
         {/* Sidebar */}
         {isOpen && (
-          <div className="fixed right-0 top-0 w-64 h-full bg-white/30 backdrop-blur-md p-4">
+          <div className="fixed right-0 top-0 w-64 h-full bg-white/10 backdrop-blur-md p-4">
             {/* Sidebar Content */}
 
             <aside

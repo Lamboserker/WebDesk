@@ -33,8 +33,8 @@ const Maincontent = ({ activeChannel }) => {
   const [message, setMessage] = useState("");
   const quillRef = useRef(null);
   const [filteredMessages, setFilteredMessages] = useState([]);
-  const [displayWhiteboard, setDisplayWhiteboard] = useState(false);
   const [channelInfo, setChannelInfo] = useState(null);
+  const [displayMode, setDisplayMode] = useState("chat"); // "chat" oder "whiteboard"
   const dropdownRef = useRef(null);
   const emojiPickerRef = useRef(null);
   const messageInputRef = useRef(null);
@@ -44,14 +44,6 @@ const Maincontent = ({ activeChannel }) => {
   const navigate = useNavigate();
   const toggleDropdown = () => setShowDropdown(!showDropdown);
   const toggleMenu = () => setShowMenu(!showMenu);
-
-  useEffect(() => {
-    if (activeChannel) {
-      fetchChannelInfo(activeChannel).then((info) => setChannelInfo(info));
-    }
-  }, [activeChannel]);
-
-  // Function to check if a new day has started and return a formatted date
 
   const isNewDay = (currentMessage, previousMessage) => {
     if (!previousMessage) return true; // Wenn es die erste Nachricht ist, neuer Tag
@@ -137,7 +129,7 @@ const Maincontent = ({ activeChannel }) => {
         quillRoot.removeEventListener("keydown", handleKeyPress);
       };
     }
-  }, [quillRef]);
+  });
 
   const sendMessage = useCallback(() => {
     const senderImage = userData.profileImage ? userData.profileImage : null;
@@ -186,15 +178,23 @@ const Maincontent = ({ activeChannel }) => {
       socket.off("userStoppedTyping");
     };
   }, []);
-
   const handleDropdownSelection = (selection) => {
     setShowDropdown(false); // Dropdown schließen
-    if (selection === "switch to whiteboard") {
-      setDisplayWhiteboard(true); // Zeigt das Whiteboard an
-    } else {
-      // Andere Dropdown-Optionen handhaben
+
+    switch (selection) {
+      case "switch to whiteboard":
+        setDisplayMode("whiteboard");
+        console.log("Dropdown selection:", selection);
+        break;
+      case "switch to chat history":
+        setDisplayMode("chat");
+        console.log("Dropdown selection:", selection);
+        break;
+      default:
+        console.warn("Unhandled dropdown selection:", selection);
     }
   };
+
   // Filterfunktion, um Nachrichten basierend auf dem Suchbegriff zu filtern
   const filterMessages = useCallback(() => {
     console.log("Suchbegriff:", searchTerm);
@@ -217,10 +217,6 @@ const Maincontent = ({ activeChannel }) => {
   }, [searchTerm, messages, filterMessages]);
 
   const displayedMessages = searchTerm ? filteredMessages : messages;
-
-  const navigateTo = (path) => {
-    navigate(path);
-  };
 
   const handleLogout = () => {
     // Remove the token from LocalStorage
@@ -265,7 +261,21 @@ const Maincontent = ({ activeChannel }) => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [dropdownRef]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   async function validateToken() {
     try {
@@ -310,22 +320,6 @@ const Maincontent = ({ activeChannel }) => {
 
     fetchUserData();
   }, []);
-
-  const fetchChannelInfo = async (channelId) => {
-    const token = localStorage.getItem("userToken");
-    try {
-      const response = await axios.get(
-        `http://localhost:9000/api/channels/${channelId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      return response.data; // Angenommen, dies gibt die Channel-Informationen zurück
-    } catch (error) {
-      console.error("Error fetching channel info:", error);
-      return null;
-    }
-  };
 
   return (
     <>
@@ -427,7 +421,7 @@ const Maincontent = ({ activeChannel }) => {
 
         {/* chat history/main area */}
 
-        {displayWhiteboard ? (
+        {displayMode === "whiteboard" ? (
           <Whiteboard parentRef={messagesContainerRef} />
         ) : (
           // Whiteboard anzeigen
@@ -548,15 +542,21 @@ const Maincontent = ({ activeChannel }) => {
                 {showMenu && (
                   <div
                     ref={dropdownRef}
-                    className="absolute right-10 mt-10 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md z-50"
+                    className="absolute right-20 mb-24 w-56 bg-luckyPoint-200 dark:bg-luckyPoint-600 rounded-md shadow-md z-50"
                   >
                     <div
                       className="text-black font-bold uppercase px-4 py-2 cursor-pointer hover:bg-luckyPoint-300"
                       onClick={() =>
-                        handleDropdownSelection("switch to whiteboard")
+                        handleDropdownSelection(
+                          displayMode === "chat"
+                            ? "switch to whiteboard"
+                            : "switch to chat history"
+                        )
                       }
                     >
-                      Change to Whiteboard
+                      {displayMode === "chat"
+                        ? "Switch to Whiteboard"
+                        : "Switch to Chat History"}
                     </div>
                     {/* Weitere Dropdown-Optionen hier hinzufügen */}
                   </div>

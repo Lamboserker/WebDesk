@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Stage, Layer, Line, Text } from "react-konva";
+import { Stage, Layer, Line } from "react-konva";
 import Rectangle from "./structures/Rectangle";
 import Circle from "./structures/Circle";
 import Triangle from "./structures/Triangle";
 import EditableText from "./structures/Text"; // Achte darauf, dass der Importname nicht mit dem HTML-Tag kollidiert
-import FreeDraw from "./structures/FreeDraw";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCircle,
@@ -62,7 +61,7 @@ function Whiteboard() {
   const [tool, setTool] = useState("pen"); // Zustand für das ausgewählte Werkzeug
   const [lines, setLines] = useState([]); // Zustand für die Linien
   const [selectedId, setSelectedId] = useState(null);
-  const [mode, setMode] = useState("select"); // Zustand für den aktuellen Modus
+  const [, setMode] = useState("select"); // Zustand für den aktuellen Modus
   const stageRef = useRef(null);
   const isDrawing = useRef(false);
   const [color, setColor] = useState("#df4b26"); // Zustand für die Farbe
@@ -216,7 +215,7 @@ function Whiteboard() {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden">
+    <div className="flex h-screen  overflow-hidden">
       {/* Sidebar mit Schaltflächen zum Hinzufügen von Formen und Umschalten des Modus */}
       <div className="w-64 h-screen bg-gray-800 text-white p-4">
         <div className="flex flex-col items-center space-y-4">
@@ -278,7 +277,7 @@ function Whiteboard() {
       </div>
 
       {/* Hauptbereich für das Zeichnen */}
-      <div className="relative max-w-screen max-h-screen overflow-auto">
+      <div className="relative max-w-full max-h-screen overflow-auto">
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}

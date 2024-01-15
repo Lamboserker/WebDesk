@@ -46,9 +46,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const [channelPopupKey, setChannelPopupKey] = useState(0);
   const [hoveredChannel, setHoveredChannel] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [showNotification, setShowNotification] = useState(true);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
-  const [showWorkspaceOverview, setShowWorkspaceOverview] = useState(false);
   const socket = useRef(null);
   const workspaceRef = useRef(null);
   const [sidebarWidth, setSidebarWidth] = useState(
@@ -74,19 +72,13 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       setSelectedWorkspace(firstWorkspace);
       localStorage.setItem("lastActiveWorkspace", firstWorkspace);
     }
-  }, [workspaces]);
+  }, [workspaces, setSelectedWorkspace]);
 
   useEffect(() => {
     if (selectedWorkspace) {
       localStorage.setItem("lastActiveWorkspace", selectedWorkspace);
     }
   }, [selectedWorkspace]);
-
-  const handleMouseDownOnResizeBar = useCallback((e) => {
-    e.preventDefault();
-    window.addEventListener("mousemove", onResize);
-    window.addEventListener("mouseup", stopResizing);
-  }, []); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
 
   const onResize = useCallback((e) => {
     let newWidth = e.clientX - sidebarRef.current.getBoundingClientRect().left;
@@ -99,18 +91,22 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
   const stopResizing = useCallback(() => {
     window.removeEventListener("mousemove", onResize);
     window.removeEventListener("mouseup", stopResizing);
-  }, []); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
+  }, [onResize]); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
 
-  const openVideoModal = () => {
-    setIsVideoModalOpen(true);
-  };
+  const handleMouseDownOnResizeBar = useCallback(
+    (e) => {
+      e.preventDefault();
+      window.addEventListener("mousemove", onResize);
+      window.addEventListener("mouseup", stopResizing);
+    },
+    [onResize, stopResizing]
+  ); // Keine Abhängigkeiten, da es sich um eine stabile Operation handelt
 
   const closeVideoModal = () => {
     setIsVideoModalOpen(false);
   };
 
   const handleChannelClick = (channelId) => {
-    setShowNotification(false);
     socket.current.emit("markAsRead", channelId);
     setNewMessagesCount((prevCounts) => ({
       ...prevCounts,
@@ -162,7 +158,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
         socket.current.disconnect();
       }
     };
-  }, []);
+  }, [currentUserId]);
 
   const updateNewMessagesCount = (channelId, count) => {
     setNewMessagesCount((prevCounts) => ({
@@ -187,7 +183,7 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
     if (savedWorkspaceId) {
       setSelectedWorkspace(savedWorkspaceId);
     }
-  }, []);
+  }, [setSelectedWorkspace]);
 
   useEffect(() => {
     if (workspaces && workspaces.length === 1) {
@@ -198,13 +194,13 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
       fetchWorkspaceMembers(singleWorkspaceId);
     }
     // This effect should run when the `workspaces` array changes
-  }, [workspaces]);
+  }, [workspaces, setSelectedWorkspace]);
 
   useEffect(() => {
     if (workspaces.length > 0) {
       setSelectedWorkspace(workspaces[0]);
     }
-  }, [workspaces]);
+  }, [workspaces, setSelectedWorkspace]);
   const fetchChannels = async (workspaceId) => {
     console.log("workspace here is:", workspaceId);
     const token = localStorage.getItem("userToken");
@@ -302,10 +298,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
 
     fetchUserData();
   }, []);
-
-  const navigateToUserProfile = () => {
-    navigate("/user-profile");
-  };
 
   const handleVideoIconClick = (e) => {
     e.stopPropagation();
@@ -424,7 +416,6 @@ const SideBar = ({ activeChannel, setActiveChannel }) => {
               onClick={handleWorkspaceClick}
               sidebarWidth={sidebarWidth}
               isScrollDisabled={workspaces && workspaces.length === 1}
-              setShowWorkspaceOverview={setShowWorkspaceOverview}
             />
           </div>
           {isDropdownOpen && (
