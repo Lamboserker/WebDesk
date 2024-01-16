@@ -74,7 +74,7 @@ function App() {
                         }
                       />
                       <Route
-                        path="/create-workspace-modal"
+                        path="/workspace-modal"
                         element={
                           <WorkspaceModalWrapper isLoading={isLoading} />
                         }

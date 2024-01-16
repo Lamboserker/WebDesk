@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { WorkspaceContext } from "../../Context/WorkspaceContext";
 import StyledInput from "../StyledInput/StyledInput";
+import "../styles/workspacesettingsmodal.css"
 const WorkspaceSettingsModal = ({
   isToggled,
   onClose,
@@ -218,7 +219,7 @@ const WorkspaceSettingsModal = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-150 flex items-center justify-center"
+          className="fixed inset-0 bg-black bg-opacity-50 z-150 flex items-center justify-center WorkspaceSettingsModal"
         >
           <motion.div
             initial={{ scale: 0.95 }}
@@ -330,7 +331,7 @@ const WorkspaceSettingsModal = ({
             {/* Close and Expand/Collapse Buttons */}
             <button
               onClick={onClose}
-              className="absolute top-4 left-4 text-luckyPoint-600 hover:text-luckyPoint-700 transition-colors"
+              className="absolute top-0 left-0 text-luckyPoint-600 hover:text-luckyPoint-700 transition-colors"
               aria-label="Close"
             >
               <FontAwesomeIcon
@@ -340,7 +341,7 @@ const WorkspaceSettingsModal = ({
             </button>
             <button
               onClick={() => setIsExpanded(!isExpanded)} // Umschalten des isExpanded-Zustands
-              className="absolute top-4 right-4 text-luckyPoint-600 hover:text-luckyPoint-700 transition-colors"
+              className="absolute top-0 right-0 text-luckyPoint-600 hover:text-luckyPoint-700 transition-colors"
               aria-label="Expand/Collapse"
             >
               <FontAwesomeIcon

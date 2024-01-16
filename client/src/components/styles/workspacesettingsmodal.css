@@ -1,0 +1,14 @@
+/* In deinem globalen Stylesheet oder innerhalb der Komponente */
+.WorkspaceSettingsModal::-webkit-scrollbar {
+  width: 0; /* Breite auf 0 setzen, um die Scrollbar auszublenden */
+  background: transparent; /* Hintergrundfarbe auf transparent setzen */
+}
+
+.WorkspaceSettingsModal::-webkit-scrollbar-thumb {
+  display: none; /* Da die Breite 0 ist, wird der Daumen ausgeblendet */
+}
+
+.WorkspaceSettingsModal {
+  /* Füge overflow-y: auto hinzu, um sicherzustellen, dass die Komponente scrollt, wenn der Inhalt länger ist */
+  overflow: hidden;
+}

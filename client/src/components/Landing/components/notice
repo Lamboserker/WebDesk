@@ -1,0 +1,130 @@
+ 
+  <div className="relative flex flex-col h-full items-center justify-center bg-white  transition-bg">
+    <div className="absolute inset-0 overflow-hidden">
+      <div className="jumbo absolute -inset-[10px] opacity-50"></div>
+    </div>
+    <div className="relative min-h-screen  w-screen antialiased bg-transparent">
+      <div className="bg-transparent h-screen ">
+        <header className="absolute inset-x-0 top-0 "> 
+ 
+ 
+ 
+ 
+ 
+            <h1 className="relative flex items-center  text-6xl md:text-9xl font-extrabold text-black  dark:opacity-80 transition-colors">
+                web
+                <span className="ml-1 rounded-xl bg-black p-2 text-[0.7em] leading-none">
+                  <span className="  text-6xl md:text-9xl font-extrabold bg-clip-text  text-transparent bg-[linear-gradient(to_right,#818cf8,#e0e7ff,#38bdf8,#e879f9,#38bdf8,#e0e7ff,#818cf8)] bg-[length:200%_auto] animate-gradient">
+                    DESK:
+                  </span>
+                </span>
+              </h1>
+ 
+ 
+ 
+ 
+ 
+ <div
+          className="hidden sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
+          aria-hidden="true"
+        >
+          <div
+            className="aspect-[1097/845] w-full bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+            style={{
+              clipPath:
+                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+            }}
+          />
+        </div>
+        <div
+          className="absolute -top-52 left-1/2 -z-10 -translate-x-1/2 transform-gpu blur-3xl sm:top-[-28rem] sm:ml-16 sm:translate-x-0 sm:transform-gpu"
+          aria-hidden="true"
+        >
+          <div
+            className="aspect-[1097/845] w-full bg-gradient-to-tr from-[#ff4694] to-[#776fff] opacity-20"
+            style={{
+              clipPath:
+                "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+            }}
+          />
+        </div>
+
+        <div className="mx-auto max-w-7xl px-6 lg:px-8  lg:max-w-none  h-screen">
+          <div className="mx-auto max-w-2xl lg:mx-0">
+            <motion.h2
+              variants={textVariants}
+              initial="hidden"
+              whileInView="visible"
+              className="text-4xl font-bold tracking-tight text-luckyPoint-200 sm:text-6xl"
+            >
+              All-in-One Collaboration Hub
+            </motion.h2>
+            <p className="mt-6 text-lg leading-8 text-luckyPoint-200">
+              Connect with your team anywhere, anytime. Customizable spaces to
+              bring your projects to life. Direct access to your repositories
+              for streamlined development. Collaborate on documents, code, and
+              more in real time.
+            </p>
+          </div>
+          <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
+            <motion.dl
+              className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4"
+              variants={statVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.5 }}
+            >
+              {stats.map((stat) => (
+                <div key={stat.name} className="flex flex-col-reverse">
+                  <dt className="text-base leading-7 text-gray-600">
+                    {stat.name}
+                  </dt>
+                  <dd className="text-2xl font-bold leading-9 tracking-tight text-luckyPoint-200">
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
+            </motion.dl>
+          </div>
+          <div className="bg-transparent mt-16 px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto text-white py-10 sm:py-12 lg:py-16">
+              <div className="text-center">
+                <h3 className="text-2xl sm:text-3xl mb-3">
+                  Soon available on mobile devices!
+                </h3>
+                <div className="flex flex-wrap justify-center my-10 gap-4">
+                  <div className="flex items-center border w-52 rounded-lg px-4 py-2 mx-2">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/888/888857.png"
+                      alt="footer_alt"
+                      className="w-7 md:w-8"
+                    />
+                    <div className="text-left ml-3">
+                      <p className="text-xs text-gray-200">Soon at </p>
+                      <p className="text-sm md:text-base">Google Play Store</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center border w-52 rounded-lg px-4 py-2 mx-2">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/888/888841.png"
+                      alt="footer"
+                      className="w-7 md:w-8"
+                    />
+                    <div className="text-left ml-3">
+                      <p className="text-xs text-gray-200">Soon at </p>
+                      <p className="text-sm md:text-base"> Apple Store </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Footer */}
+        <div className="relative mt-40">
+          <Footer />
+        </div>
+      </div>
+    </div>
+
+
