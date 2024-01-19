@@ -13,6 +13,9 @@ export default withMT({
       rotate: {
         270: "270deg",
       },
+      zIndex: {
+        150: 150,
+      },
       backgroundImage: {
         "gradient-turquoise-purple-blue":
           "linear-gradient(90deg, #00CED1, #800080, #00008B)",
@@ -108,9 +111,6 @@ export default withMT({
       gradient: {
         to: { backgroundPosition: "200% center" },
       },
-    },
-    zIndex: {
-      150: 150,
     },
   },
   variants: {

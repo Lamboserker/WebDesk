@@ -84,19 +84,20 @@ const LandingPage = () => {
         <div className="bg-transparent h-screen ">
           <header className="absolute inset-x-0 top-0 ">
             <Banner />
+
             <nav
               className="flex items-center justify-between  lg:px-8"
               aria-label="Global"
             >
-              <div className="flex lg:flex-1 ">
-                <a href="/" className="-m-1.5 p-1.5">
-                  <span className="sr-only">WebDesk</span>
+              <div className="flex lg:flex-1">
+                <Link to="/" className="-m-1.5 p-1.5 z-10">
+                  <span className="sr-only">WebDesk:</span>
                   <img
                     className="h-full w-full "
                     src="https://cdn.discordapp.com/attachments/1185665614086426674/1194230093527130162/WebDesk__2___1_-removebg-preview.png?ex=65af9872&is=659d2372&hm=b5514c628bb56612b2ad214dcb0efa6b97cb88f5f264d187f528d993b121eb1d&"
                     alt=""
                   />
-                </a>
+                </Link>
               </div>
               <div className="flex lg:hidden">
                 <button
@@ -108,7 +109,7 @@ const LandingPage = () => {
                   <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                 </button>
               </div>
-              <div className="hidden lg:flex lg:gap-x-12">
+              <div className="hidden lg:flex lg:gap-x-12 z-10">
                 {navigation.map((item) => (
                   <a
                     key={item.name}
@@ -119,7 +120,7 @@ const LandingPage = () => {
                   </a>
                 ))}
               </div>
-              <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+              <div className="hidden lg:flex lg:flex-1 lg:justify-end z-10">
                 {isLoggedIn ? (
                   <button
                     onClick={handleLogout}
@@ -193,18 +194,6 @@ const LandingPage = () => {
           </header>
 
           <div className="relative isolate px-6 pt-14 lg:px-8 ">
-            <div
-              className="absolute inset-x-0 -top-40 -z-10 transform-gpu  overflow-hidden blur-3xl sm:-top-80"
-              aria-hidden="true"
-            >
-              <div
-                className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-full -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-full"
-                style={{
-                  clipPath:
-                    "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
-                }}
-              />
-            </div>
             <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
               {/* <div className="hidden sm:mb-8 sm:flex sm:justify-center">
               <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-gray-900 ring-1 ring-gray-900/10 hover:ring-gray-900/60">
@@ -292,13 +281,16 @@ const LandingPage = () => {
                 whileInView="visible"
                 viewport={{ once: true, amount: 1.0 }} // Startet die Animation, wenn das Element zu 100% im Viewport ist
               >
-                {features.map((feature) => (
+                {features.map((feature, index) => (
                   <motion.div
                     key={feature.name}
                     variants={itemVariants}
                     className="relative"
                   >
-                    <div className="flex items-center absolute left-0 top-0 h-full">
+                    <div
+                      className="flex items-center absolute left-0 top-0 h-full"
+                      style={{ "--accent-color": feature.accentColor }}
+                    >
                       <div className="h-full w-16 flex items-center justify-center rounded-lg bg-luckyPoint-600">
                         <div className="rounded-md h-10 w-10 shadow-md bg-luckyPoint-700 flex justify-center items-center">
                           <feature.icon
@@ -308,8 +300,24 @@ const LandingPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="pl-24 shadow-md rounded-md p-4">
-                      <dt className="text-base font-semibold leading-7 text-gray-900">
+                    <div className="pl-24 shadow-md rounded-md p-4 bg-white">
+                      <div className="flex items-center">
+                        <div
+                          className="h-full w-4"
+                          style={{ backgroundColor: feature.accentColor }}
+                        ></div>
+                        <div className="h-full w-16 flex items-center justify-center rounded-md">
+                          <feature.icon
+                            className="h-6 w-6 text-white"
+                            aria-hidden="true"
+                          />
+                        </div>
+                        <div
+                          className="h-full w-4"
+                          style={{ backgroundColor: feature.accentColor }}
+                        ></div>
+                      </div>
+                      <dt className="text-base font-semibold leading-7 text-gray-900 mt-2">
                         {feature.name}
                       </dt>
                       <dd className="mt-2 text-base leading-7 text-slate-500">
