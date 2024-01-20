@@ -67,7 +67,7 @@ const ChatInput = ({ inputHeight }) => {
           >
             <PaperAirplaneIcon
               className={`w-6 h-6 rotate-270 ${
-                message.length < 2 ? "text-gray-500 " : "text-white"
+                message.length < 2 ? "text-gray-500 " : "text-black"
               }`}
             />
           </button>

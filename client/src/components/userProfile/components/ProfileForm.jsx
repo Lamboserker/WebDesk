@@ -432,39 +432,46 @@ const ProfileForm = () => {
           </main>
           {/* Crop Modal */}
           {cropModalOpen && (
-            <div className="fixed top-0 left-0 w-screen h-screen flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-luckyPoint-200 p-5 rounded-lg">
-                {profileImagePreview && (
-                  <ReactCrop
-                    crop={crop}
-                    onImageLoaded={onImageLoaded}
-                    onComplete={makeClientCrop}
-                    onChange={handleImageCrop}
-                  >
-                    <img src={profileImagePreview} alt="Crop" />
-                    <button onClick={() => makeClientCrop(crop)}>Adjust</button>
-                  </ReactCrop>
-                )}
-                {croppedPreview && (
-                  <div className="flex justify-center mt-4">
-                    <img
-                      src={croppedPreview}
-                      alt="Vorschau des zugeschnittenen Bildes"
-                      style={{
-                        maxWidth: "300px",
-                        maxHeight: "300px",
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-                )}
+            <div className="fixed top-0 left-2 w-screen h-full overflow-x-scroll flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="flex flex-col md:flex-row bg-luckyPoint-200 p-5 rounded-lg h-screen max-w-screen-lg">
+                <div className="md:w-2/3 p-4">
+                  {profileImagePreview && (
+                    <ReactCrop
+                      crop={crop}
+                      onImageLoaded={onImageLoaded}
+                      onComplete={makeClientCrop}
+                      onChange={handleImageCrop}
+                      keepSelection
+                    >
+                      <img src={profileImagePreview} alt="Crop" />
+                      <button onClick={() => makeClientCrop(crop)}>
+                        Adjust
+                      </button>
+                    </ReactCrop>
+                  )}
+                </div>
+                <div className="md:w-1/3 p-4">
+                  {croppedPreview && (
+                    <div className="flex justify-center">
+                      <img
+                        src={croppedPreview}
+                        alt="Vorschau des zugeschnittenen Bildes"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                      />
+                    </div>
+                  )}
 
-                <button
-                  onClick={() => setCropModalOpen(false)}
-                  className="mb-8"
-                >
-                  Close
-                </button>
+                  <button
+                    onClick={() => setCropModalOpen(false)}
+                    className="mt-4"
+                  >
+                    Close
+                  </button>
+                </div>
               </div>
             </div>
           )}

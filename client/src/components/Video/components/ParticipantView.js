@@ -248,9 +248,7 @@ export const CornerDisplayName = ({
       {(webcamStream || micStream || screenShareStream) && (
         <div>
           <div
-            onClick={(e) => {
-              
-            }}
+            onClick={(e) => {}}
             className="absolute top-2 right-2 rounded-md  p-2 cursor-pointer "
           >
             <Popover className="relative ">
@@ -267,7 +265,6 @@ export const CornerDisplayName = ({
                           : "#FF5D5D",
                     }}
                     onClick={(e) => {
-                      
                       const rect = e.target.getBoundingClientRect();
                       setCoords({
                         left: Math.round(rect.x + rect.width / 2),
@@ -339,7 +336,6 @@ export const CornerDisplayName = ({
                               <button
                                 className="cursor-pointer text-white hover:bg-[#ffffff33] rounded-full px-1 text-center"
                                 onClick={(e) => {
-                                  
                                   close();
                                 }}
                               >
@@ -482,7 +478,7 @@ export function ParticipantView({ participantId }) {
       ) : (
         <div className="h-full w-full flex items-center justify-center">
           <div
-            className={`z-10 flex items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] h-[52px] 2xl:w-[92px] w-[52px]`}
+            className={`z-30 flex items-center justify-center rounded-full bg-gray-800 2xl:h-[92px] h-[52px] 2xl:w-[92px] w-[52px]`}
           >
             <p className="text-2xl text-white">
               {String(displayName).charAt(0).toUpperCase()}

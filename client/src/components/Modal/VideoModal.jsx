@@ -19,10 +19,10 @@ const Modal = ({ isToggled, children, onClose }) => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: isExpanded ? 1 : 0.5 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-10" // Tailwind für .modal-overlay
+          className="fixed inset-0 bg-black bg-opacity-50 z-50" // Tailwind für .modal-overlay
         >
           <motion.div
-            className="relative bg-white p-6 rounded shadow m-auto" // Tailwind für .modal-content
+            className="relative bg-white p-6 rounded shadow m-auto z-50" // Tailwind für .modal-content
             style={{
               width: isExpanded ? "100%" : "auto",
               height: isExpanded ? "100%" : "auto",
@@ -31,7 +31,7 @@ const Modal = ({ isToggled, children, onClose }) => {
             {children}
             <button
               onClick={onClose}
-              className="absolute top-0 left-0 m-5 text-center "
+              className="absolute top-0 left-0 m-5 text-center z-30"
             >
               <FontAwesomeIcon
                 icon={faXmark}
@@ -40,7 +40,7 @@ const Modal = ({ isToggled, children, onClose }) => {
             </button>
             <button
               onClick={onExpand}
-              className="absolute top-0 right-0 m-5 text center"
+              className="absolute top-0 right-0 m-5 text center z-30"
             >
               <FontAwesomeIcon
                 icon={faUpRightAndDownLeftFromCenter}

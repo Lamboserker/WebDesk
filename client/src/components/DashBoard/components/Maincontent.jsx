@@ -517,7 +517,7 @@ const Maincontent = ({ activeChannel }) => {
             />
 
             {/* Message Input with Emoji Picker */}
-            <div className="flex items-center p-2 rounded-b-lg justify-end z-50">
+            <div className="flex items-center p-2 rounded-b-lg justify-end">
               <button
                 className="text-gray-500 mx-1 z-20"
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
@@ -564,7 +564,7 @@ const Maincontent = ({ activeChannel }) => {
               </div>
               <button
                 onClick={handleSendMessage}
-                className="ml-2 text-luckyPoint-700 rounded-lg  z-50"
+                className="ml-2 text-luckyPoint-700 rounded-lg  z-10"
               >
                 <PaperAirplaneIcon className="h-6 mx-1 text-black dark:text-luckyPoint-200" />
               </button>

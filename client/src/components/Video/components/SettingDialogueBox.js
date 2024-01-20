@@ -153,7 +153,7 @@ export default function SettingDialogueBox({
   return (
     <>
       <Transition appear show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={handleClose}>
+        <Dialog as="div" className="relative z-30" onClose={handleClose}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -260,7 +260,7 @@ export default function SettingDialogueBox({
                                             leaveFrom="opacity-100 translate-y-0"
                                             leaveTo="opacity-0 translate-y-1"
                                           >
-                                            <Popover.Panel className="absolute left-1/2  z-10 mt-2 w-full -translate-x-1/2 transform px-4 sm:px-0 pb-4">
+                                            <Popover.Panel className="absolute left-1/2  z-30 mt-2 w-full -translate-x-1/2 transform px-4 sm:px-0 pb-4">
                                               <div className="max-h-20 overflow-y-auto rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div
                                                   className={"bg-gray-800 py-1"}
@@ -378,7 +378,7 @@ export default function SettingDialogueBox({
                                             leaveFrom="opacity-100 translate-y-0"
                                             leaveTo="opacity-0 translate-y-1"
                                           >
-                                            <Popover.Panel className="absolute left-1/2  z-10 mt-2 w-full -translate-x-1/2 transform px-4 sm:px-0 pb-4">
+                                            <Popover.Panel className="absolute left-1/2  z-30 mt-2 w-full -translate-x-1/2 transform px-4 sm:px-0 pb-4">
                                               <div className="overflow-y-auto max-h-20 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
                                                 <div
                                                   className={"bg-gray-800 py-1"}
